@@ -6,12 +6,17 @@
   "author": "Benjamin Ashbaugh <hi@benjaminashbaugh.me>",
   "license": "UNLICENSED",
   "scripts": {
-    "dev": "webpack serve --config ./webpack.config.js",
-    "build": "webpack --progress --config ./webpack.config.js",
-    "build-prod": "NODE_ENV=production yarn build",
+    "client:dev": "webpack serve --config ./webpack.config.js",
+    "client:build": "webpack --progress --config ./webpack.config.js",
+    "client:build-prod": "NODE_ENV=production yarn build",
+    "server:dev": "tsnd --respawn --exit-child --clear -r tsconfig-paths/register --project ./tsconfig.server.json src/server/index.ts",
+    "server:build": "rm -r serverbuild && NODE_ENV=production/ tsc --p ./tsconfig.server.json",
+    "server:start": "NODE_PATH=serverbuild/ node serverbuild/server/index.js",
     "format": "prettier --write \"src/**/*.{js,ts,tsx}\" --config ./prettier.config.js"
   },
   "dependencies": {
+    "@colyseus/monitor": "^0.14.22",
+    "@colyseus/ws-transport": "^0.14.21",
     "@pixi/app": "^6.3.0",
     "@pixi/constants": "^6.3.0",
     "@pixi/core": "^6.3.0",
@@ -21,7 +26,11 @@
     "@pixi/runner": "^6.3.0",
     "@pixi/settings": "^6.3.0",
     "@pixi/ticker": "^6.3.0",
-    "@pixi/utils": "^6.3.0"
+    "@pixi/utils": "^6.3.0",
+    "colyseus": "^0.14.23",
+    "colyseus.js": "^0.14.13",
+    "express": "^4.18.0",
+    "express-basic-auth": "^1.2.1"
   },
   "devDependencies": {
     "clean-webpack-plugin": "^4.0.0",
@@ -36,6 +45,8 @@
     "sass": "^1.50.1",
     "sass-loader": "^12.6.0",
     "ts-loader": "^9.2.8",
+    "ts-node-dev": "^1.1.8",
+    "tsconfig-paths": "^3.14.1",
     "typescript": "^4.6.3",
     "webpack": "^5.72.0",
     "webpack-cli": "^4.9.2",

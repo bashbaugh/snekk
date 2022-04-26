@@ -43,7 +43,7 @@ const config = {
           {
             loader: 'ts-loader',
             options: {
-              configFile: p('tsconfig.json')
+              configFile: p('tsconfig.client.json')
             }
           }
         ]

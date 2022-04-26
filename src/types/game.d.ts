@@ -3,4 +3,5 @@ interface XY {
   y: number
 }
 
+/** Up | Right | Down | Left  */
 type Direction = 1 | 2 | 3 | 4
