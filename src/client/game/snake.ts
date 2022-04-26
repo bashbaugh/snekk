@@ -2,6 +2,7 @@ import * as PIXI from 'pixi'
 import CONFIG from 'shared/config'
 import { randomInt } from 'shared/util'
 import Game from './game'
+import * as snakeBehaviour from 'shared/snake'
 
 export default class Snake {
   speed: number = CONFIG.snake.baseSpeed
@@ -31,13 +32,17 @@ export default class Snake {
   public get head() {
     return this.points[0]
   }
+  public set head(h: XY) {
+    this.points[0] = h
+  }
 
   update(delta: number) {
-    if (this.direction === 1) this.head.y -= this.speed * delta
-    if (this.direction === 2) this.head.x += this.speed * delta
-    if (this.direction === 3) this.head.y += this.speed * delta
-    if (this.direction === 4) this.head.x -= this.speed * delta
-
+    this.head = snakeBehaviour.moveHead(
+      this.head,
+      this.direction,
+      this.speed,
+      delta
+    )
     this.updateTail()
   }
 

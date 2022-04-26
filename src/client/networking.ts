@@ -11,7 +11,7 @@ export default class Network {
   async joinGame(nickname: string) {
     const r = await this.client.joinOrCreate('classic', { nickname })
     if (CONFIG.debug) console.log('[NETWORK] Joined session', r.sessionId)
-    
+
     r.onLeave((code: number) => {
       if (CONFIG.debug) console.log('[NETWORK] Left session. WS code:', code)
     })

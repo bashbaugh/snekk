@@ -36,11 +36,12 @@ export default class Game {
 
     this.snakes.push(this.playerSnake)
 
-    this.network.joinGame("Freddy")
+    this.network.joinGame('Freddy')
   }
 
   onTick(delta: number) {
-    this.snakes[0].update(delta)
+    const deltaMs = this.app.ticker.deltaMS
+    this.snakes[0].update(deltaMs)
     this.snakes[0].draw()
   }
 
