@@ -1,106 +1,82 @@
 import * as PIXI from 'pixi'
 import CONFIG from 'shared/config'
-import { randomInt } from 'shared/util'
+import SnakeBehaviour, { SharedSnakeState } from 'shared/game/snake'
 import Game from './game'
-import * as snakeBehaviour from 'shared/snake'
 
-export default class Snake {
-  speed: number = CONFIG.snake.baseSpeed
-  direction: Direction = 1
-  length: number = CONFIG.snake.startLength
+class ClientSnakeState implements SharedSnakeState {
+  points: XYS[]
+  direction: Direction
+  length: number
+  speed: number
 
-  private points: XY[]
+  constructor(spawn: XY) {
+    this.points = [
+      { ...spawn, s: 1 },
+      { ...spawn, s: 0 },
+    ]
+    this.direction = 1
+    this.length = CONFIG.snake.startLength
+    this.speed = CONFIG.snake.baseSpeed
+  }
 
+  makePoint({ x, y, s }: XYS) {
+    return { x, y, s }
+  }
+}
+
+export default class Snake extends SnakeBehaviour {
   private container: PIXI.Container
   private graphics: PIXI.Graphics
-  game: Game
+  private game: Game
+  public playerId: string
 
-  constructor(game: Game) {
+  constructor(game: Game, playerId: string, spawnPoint: XY) {
+    super(new ClientSnakeState(spawnPoint))
     this.game = game
-    const spawn = {
-      x: randomInt(game.arenaSize),
-      y: randomInt(game.arenaSize),
-    }
-    this.points = [spawn, { ...spawn }]
-    this.direction = 1
+    this.playerId = playerId
     this.container = new PIXI.Container()
     game.app.stage.addChild(this.container)
     this.graphics = new PIXI.Graphics()
     this.container.addChild(this.graphics)
   }
 
-  public get head() {
-    return this.points[0]
-  }
-  public set head(h: XY) {
-    this.points[0] = h
+  get serverState () {
+    return this.game.network.state?.players.get(this.playerId)?.snake!
   }
 
-  update(delta: number) {
-    this.head = snakeBehaviour.moveHead(
-      this.head,
-      this.direction,
-      this.speed,
-      delta
-    )
-    this.updateTail()
+  // TODO lerp
+  // TODO build a lerp function for self player
+  public interpolateServerState() {
+    const clientState = this.state
+    const serverState = this.serverState
+
+    console.log(this.playerId, clientState.points, serverState.points)
+
+    const { points, direction, length, speed } = serverState
+
+    clientState.direction = direction
+    clientState.length = length
+    clientState.speed = speed
+
+    // // Lerp the client position to the server position
+
+    // TODO lerp and check sequences
+    // points.forEach((p, i) => {
+    //   clientState.points[i] = p
+    // })
+    // // Delete stale client points
+    // clientState.points.splice(points.length + 1)
+    clientState.points = points
   }
 
   draw() {
     const g = this.graphics
-    const points = this.points.map(p => this.game.getViewRelativePoint(p))
+    const points = this.state.points.map(p => this.game.getViewRelativePoint(p))
     g.clear()
     g.lineStyle(4, 0xffffff)
     g.moveTo(points[0].x, points[0].y)
     for (let i = 1; i < points.length; i++) {
       g.lineTo(points[i].x, points[i].y)
     }
-  }
-
-  private updateTail() {
-    let l = 0
-    // Add length of segments to find new tail point
-    for (let i = 1; i < this.points.length; i++) {
-      const segLength = Math.hypot(
-        this.points[i].x - this.points[i - 1].x,
-        this.points[i].y - this.points[i - 1].y
-      )
-      if (l + segLength > this.length) {
-        const remaining = this.length - l
-        const newTailPoint = { ...this.points[i] }
-        if (
-          this.points[i].x == this.points[i - 1].x &&
-          this.points[i].y > this.points[i - 1].y
-        ) {
-          newTailPoint.y = this.points[i - 1].y + remaining
-        } else if (
-          this.points[i].x == this.points[i - 1].x &&
-          this.points[i].y < this.points[i - 1].y
-        ) {
-          newTailPoint.y = this.points[i - 1].y - remaining
-        } else if (
-          this.points[i].y == this.points[i - 1].y &&
-          this.points[i].x > this.points[i - 1].x
-        ) {
-          newTailPoint.x = this.points[i - 1].x + remaining
-        } else if (
-          this.points[i].y == this.points[i - 1].y &&
-          this.points[i].x < this.points[i - 1].x
-        ) {
-          newTailPoint.x = this.points[i - 1].x - remaining
-        }
-        // Remove unused tail coordinates and add new
-        this.points.splice(i, this.points.length - i, newTailPoint)
-      }
-
-      l += segLength
-    }
-  }
-
-  turn(d: Direction) {
-    // Prevent reversing
-    if (this.direction * d === 3 || this.direction * d === 8) return
-    this.direction = d
-    this.points.unshift({ ...this.head }) // New turn point
   }
 }

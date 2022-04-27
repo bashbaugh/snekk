@@ -1,0 +1,54 @@
+import { Schema, type, ArraySchema, MapSchema } from '@colyseus/schema'
+import CONFIG from 'shared/config'
+import { randomInt } from 'shared/util'
+import { SharedSnakeState } from './game/snake'
+
+export class Point extends Schema {
+  @type('int16') x: number
+  @type('int16') y: number
+  /** Sequence number */
+  @type('int16') s: number
+
+  constructor(x: number, y: number, s: number) {
+    super()
+    this.x = x
+    this.y = y
+    this.s = s
+  }
+}
+
+export class SnakeState extends Schema implements SharedSnakeState {
+  // Sequence number is increased with each new point in snake (lower = closer to tail)
+  @type([Point]) points = new ArraySchema<Point>()
+  @type('int8') direction: Direction = 1
+  @type('int16') length: number = CONFIG.snake.startLength
+  @type('int16') speed: number = CONFIG.snake.baseSpeed
+
+  constructor(arenaSize: number) {
+    super()
+
+    // const spawnX = randomInt(arenaSize),
+    //   spawnY = randomInt(arenaSize)
+    const spawnX = 50,
+      spawnY = 50
+    this.points.push(new Point(spawnX, spawnY, 0), new Point(spawnX, spawnY, 1))
+  }
+
+  get head() {
+    return this.points[0]
+  }
+
+  makePoint({ x, y, s }: XYS) {
+    return new Point(x, y, s)
+  }
+}
+
+export class PlayerState extends Schema {
+  @type(SnakeState) snake?: SnakeState
+  @type('string') name?: string
+}
+
+export default class GameState extends Schema {
+  @type('int16') arenaSize: number = 2000
+  @type({ map: PlayerState }) players = new MapSchema<PlayerState>()
+}

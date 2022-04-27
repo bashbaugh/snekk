@@ -1,4 +1,7 @@
-import Game from './game/game'
 import './css/styles.scss'
+import App from './game/app'
+;(() => {
+  new App()
+})()
 
-const g = new Game()
+console.log('%cSnekland.io', 'background:black;color:white;font-size:18px')

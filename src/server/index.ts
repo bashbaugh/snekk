@@ -2,7 +2,7 @@ import { Server } from 'colyseus'
 import { createServer } from 'http'
 import express from 'express'
 import { WebSocketTransport } from '@colyseus/ws-transport'
-import GameRoom from './GameRoom'
+import GameRoom from './game/GameRoom'
 import { monitor } from '@colyseus/monitor'
 import basicAuth from 'express-basic-auth'
 

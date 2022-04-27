@@ -1,3 +1,0 @@
-export enum MESSAGETYPE {
-  SPAWN,
-}

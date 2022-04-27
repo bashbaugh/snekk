@@ -108,7 +108,7 @@ if (devMode) {
 
   config.plugins.push(
     new webpack.BannerPlugin({
-      banner: `@license\nCOPYRIGHT (C) ${new Date().getFullYear()} BENJAMIN ASHBAUGH\nDO NOT MODIFY OR REDISTRIBUE THIS FILE`,
+      banner: `@license\nCOPYRIGHT (C) ${new Date().getFullYear()} BENJAMIN ASHBAUGH\nDO NOT MODIFY OR REDISTRIBUTE THIS FILE`,
       entryOnly: true,
     })
   )

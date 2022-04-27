@@ -8,9 +8,9 @@
   "scripts": {
     "client:dev": "webpack serve --config ./webpack.config.js",
     "client:build": "webpack --progress --config ./webpack.config.js",
-    "client:build-prod": "NODE_ENV=production yarn build",
-    "server:dev": "tsnd --respawn --exit-child --clear -r tsconfig-paths/register --project ./tsconfig.server.json src/server/index.ts",
-    "server:build": "rm -r serverbuild && NODE_ENV=production/ tsc --p ./tsconfig.server.json",
+    "client:build-prod": "NODE_ENV=production yarn client:build",
+    "server:dev": "tsnd --respawn --exit-child --clear --project ./tsconfig.server.json -r tsconfig-paths/register src/server/index.ts",
+    "server:build": "rm -rf serverbuild && NODE_ENV=production/ tsc --project ./tsconfig.server.json",
     "server:start": "NODE_PATH=serverbuild/ node serverbuild/server/index.js",
     "format": "prettier --write \"src/**/*.{js,ts,tsx}\" --config ./prettier.config.js"
   },

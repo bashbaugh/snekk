@@ -8,6 +8,10 @@
     "skipLibCheck": true
   },
   "include": [
-    "./src/server/**/*.ts",
-  ]
+    "./src/server/",
+    "./src/types/*.d.ts"
+  ],
+  "ts-node": {
+    "files": true
+  },
 }
