@@ -1,6 +1,8 @@
+import { debugLog } from 'client/util'
 import * as PIXI from 'pixi'
 import CONFIG from 'shared/config'
 import SnakeBehaviour, { SharedSnakeState } from 'shared/game/snake'
+import { debug } from 'webpack'
 import Game from './game'
 
 class ClientSnakeState implements SharedSnakeState {
@@ -37,7 +39,12 @@ export default class Snake extends SnakeBehaviour {
     this.container = new PIXI.Container()
     game.app.stage.addChild(this.container)
     this.graphics = new PIXI.Graphics()
-    this.container.addChild(this.graphics)
+    this.game.gameContainer.addChild(this.graphics)
+  }
+
+  cleanup () {
+    this.graphics.clear()
+    this.game.gameContainer.removeChild(this.container)
   }
 
   get serverState () {
@@ -50,13 +57,13 @@ export default class Snake extends SnakeBehaviour {
     const clientState = this.state
     const serverState = this.serverState
 
-    console.log(this.playerId, clientState.points, serverState.points)
-
     const { points, direction, length, speed } = serverState
 
     clientState.direction = direction
     clientState.length = length
     clientState.speed = speed
+
+    clientState.points = points
 
     // // Lerp the client position to the server position
 
@@ -66,12 +73,17 @@ export default class Snake extends SnakeBehaviour {
     // })
     // // Delete stale client points
     // clientState.points.splice(points.length + 1)
-    clientState.points = points
+  }
+
+  update (delta: number) {
+    this.updateHead(delta)
+    this.updateTail()
   }
 
   draw() {
     const g = this.graphics
     const points = this.state.points.map(p => this.game.getViewRelativePoint(p))
+    console.log('RENDERPOINTS', points[0], points[1])
     g.clear()
     g.lineStyle(4, 0xffffff)
     g.moveTo(points[0].x, points[0].y)

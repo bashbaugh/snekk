@@ -1,6 +1,5 @@
 import { Schema, type, ArraySchema, MapSchema } from '@colyseus/schema'
 import CONFIG from 'shared/config'
-import { randomInt } from 'shared/util'
 import { SharedSnakeState } from './game/snake'
 
 export class Point extends Schema {
@@ -24,14 +23,10 @@ export class SnakeState extends Schema implements SharedSnakeState {
   @type('int16') length: number = CONFIG.snake.startLength
   @type('int16') speed: number = CONFIG.snake.baseSpeed
 
-  constructor(arenaSize: number) {
+  constructor(spawnP: XY) {
     super()
 
-    // const spawnX = randomInt(arenaSize),
-    //   spawnY = randomInt(arenaSize)
-    const spawnX = 50,
-      spawnY = 50
-    this.points.push(new Point(spawnX, spawnY, 0), new Point(spawnX, spawnY, 1))
+    this.points.push(new Point(spawnP.x, spawnP.x, 0), new Point(spawnP.x, spawnP.y, 1))
   }
 
   get head() {

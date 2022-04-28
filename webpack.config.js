@@ -67,7 +67,13 @@ const config = {
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'development' // default
     }),
-    // new CopyWebpackPlugin(),
+    // new CopyWebpackPlugin({
+    //   patterns: [
+    //     {
+    //       from: p('public'),
+    //     }
+    //   ]
+    // }),
     new MiniCssExtractPlugin({
       filename: '[name].[contenthash].css',
     }),

@@ -2,6 +2,8 @@ import { Client, Room } from 'colyseus.js'
 import CONFIG from 'shared/config'
 import { Message, MESSAGETYPE } from 'types/networking'
 import GameState, { PlayerState } from 'shared/serverState'
+import { debugLog } from './util'
+import { debug } from 'webpack'
 
 export default class Network {
   client: Client
@@ -22,11 +24,10 @@ export default class Network {
   async findGame() {
     const r = await this.client.joinOrCreate<GameState>('classic', {})
     this.room = r
-    if (CONFIG.debug)
-      console.log('[NETWORK] Joined room', r.id, 'as', r.sessionId)
+    debugLog('[NETWORK] Joined room', r.id, 'as', r.sessionId)
 
     r.onLeave((code: number) => {
-      if (CONFIG.debug) console.log('[NETWORK] Left session. WS code:', code)
+      debugLog('[NETWORK] Left session. WS code:', code)
     })
   }
 

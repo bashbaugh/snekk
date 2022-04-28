@@ -3,6 +3,7 @@ import Network from 'client/networking'
 import { debugLog } from 'client/util'
 import * as PIXI from 'pixi'
 import { PlayerState } from 'shared/serverState'
+import { debug } from 'webpack'
 import Snake from './snake'
 
 export default class Game {
@@ -10,10 +11,12 @@ export default class Game {
   readonly input: KeyboardManager
   readonly network: Network
 
+  gameContainer: PIXI.Container
+
   arenaSize = 2000
 
   // ID/player map
-  private players: Map<
+  private players: Record<
     string,
     {
       snake?: Snake
@@ -27,7 +30,10 @@ export default class Game {
     this.network = network
     this.app.ticker.add(t => this.onTick(t))
 
-    this.players = new Map()
+    this.gameContainer = new PIXI.Container()
+    this.app.stage.addChild(this.gameContainer)
+
+    this.players = {}
 
     this.input = new KeyboardManager()
 
@@ -46,64 +52,68 @@ export default class Game {
         this.playerSnake?.turn(d)
         this.network.sendTurn(d)
       })
-      this.players.set(this.network.clientId!, {
+      this.players[this.network.clientId!] = {
         snake: this.playerSnake,
         state: pState,
-      })
+      }
     })
 
-    this.network.onPlayerJoin((id, state) => {
-      this.players.set(id, {
-        state,
-      })
-
-      // Monitor player state changes
-      state.onChange = changes => {
+    this.network.onPlayerJoin((id, pState) => {
+      this.players[id] = {
+        state: pState,
+      }
+  
+      pState.onChange = changes => {
         changes.forEach(c => {
           // If the player's snake changed...
           if (c.field === 'snake') {
-            debugLog('SNAKE ADDED!', c.value)
             if (c.value) {
               // the player now has a snake, add the new snake to the game
-              this.players.set(id, {
-                state,
-                snake: new Snake(this, id, c.value.points[0]),
-              })
+              this.addSnake(id)
             } else {
               // Otherwise remove their snake
-              this.players.delete(id)
+              this.removeSnake(id)
             }
           }
         })
       }
     })
+
     this.network.onPlayerLeave(id => {
-      this.players.delete(id)
+      this.removeSnake(id)
+      delete this.players[id]
     })
 
-    // TODO delete
-    // Every time we receive a patch from the server we need to update the position of all the snakes
-    // this.network.onStateChange(s => {
-    //   for (const [id, { snake }] of this.players.entries()) {
-    //     // Only include other players' snakes
-    //     if (snake && id !== this.network.clientId) {
-    //       snake.interpolateServerState(s.players.get(id)!.snake!)
-    //     }
-    //   }
-    // })
+    this.network.onStateChange(state => {
+      // Update snakes when we receive a new state patch
+      for (const [id, { snake }] of Object.entries(this.players)) {
+        if (snake && id !== this.network.clientId) {
+          // For all other snakes we need to interpolate the latest server state
+          snake.interpolateServerState()
+        }
+      }
+    })
+  }
+
+  addSnake(playerId: string) {
+    debugLog('[GAME] Creating snake', playerId)
+    const p = this.players[playerId]
+    p.snake =  new Snake(this, playerId, p.state.snake?.points[0]!)
+  }
+
+  removeSnake(playerId: string) {
+    debugLog('[GAME] Removing snake', playerId)
+    this.players[playerId].snake?.cleanup()
+    this.players[playerId].snake = undefined
   }
 
   onTick(delta: number) {
     const deltaMs = this.app.ticker.deltaMS
-    for (const [id, { snake }] of this.players.entries()) {
+    for (const [id, { snake }] of Object.entries(this.players)) {
       // If this player doesn't have an active snake skip them
       if (!snake) continue
       snake.update(deltaMs)
       snake.draw()
-      // For all the other snakes, we need to interpolate the latest server state
-      if (id !== this.network.clientId) {
-        snake.interpolateServerState()
-      }
     }
   }
 

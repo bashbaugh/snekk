@@ -26,10 +26,7 @@ export default abstract class SnakeBehaviour {
     this.state.points[0] = h
   }
 
-  public update(delta: number): void {
-    this.updateHead(delta)
-    this.updateTail()
-  }
+  abstract update(delta: number): void
 
   protected updateHead(delta: number) {
     const d = this.state.direction,
@@ -53,7 +50,7 @@ export default abstract class SnakeBehaviour {
       )
       if (l + segLength > this.state.length) {
         const remaining = this.state.length - l
-        const newTailPoint = { ...points[i] }
+        const newTailPoint = this.state.makePoint({ ...points[i] })
         if (points[i].x == points[i - 1].x && points[i].y > points[i - 1].y) {
           newTailPoint.y = points[i - 1].y + remaining
         } else if (
@@ -73,7 +70,11 @@ export default abstract class SnakeBehaviour {
           newTailPoint.x = points[i - 1].x - remaining
         }
         // Remove unused tail coordinates and add new
-        points.splice(i, points.length - i, newTailPoint)
+        console.log(points.map(p => [p.x, p.y]), newTailPoint.x, newTailPoint.y)
+        points.splice(i)
+        points.push(newTailPoint)
+        console.log(points.map(p => [p.x, p.y]))
+
       }
 
       l += segLength
