@@ -50,31 +50,28 @@ export default abstract class SnakeBehaviour {
       )
       if (l + segLength > this.state.length) {
         const remaining = this.state.length - l
-        const newTailPoint = this.state.makePoint({ ...points[i] })
+        // const newTailPoint = this.state.makePoint({ ...points[i] })
         if (points[i].x == points[i - 1].x && points[i].y > points[i - 1].y) {
-          newTailPoint.y = points[i - 1].y + remaining
+          points[i].y = points[i - 1].y + remaining
         } else if (
           points[i].x == points[i - 1].x &&
           points[i].y < points[i - 1].y
         ) {
-          newTailPoint.y = points[i - 1].y - remaining
+          points[i].y = points[i - 1].y - remaining
         } else if (
           points[i].y == points[i - 1].y &&
           points[i].x > points[i - 1].x
         ) {
-          newTailPoint.x = points[i - 1].x + remaining
+          points[i].x = points[i - 1].x + remaining
         } else if (
           points[i].y == points[i - 1].y &&
           points[i].x < points[i - 1].x
         ) {
-          newTailPoint.x = points[i - 1].x - remaining
+          points[i].x = points[i - 1].x - remaining
         }
         // Remove unused tail coordinates and add new
-        console.log(points.map(p => [p.x, p.y]), newTailPoint.x, newTailPoint.y)
-        points.splice(i)
-        points.push(newTailPoint)
-        console.log(points.map(p => [p.x, p.y]))
-
+        points.splice(i + 1) // Splice doesn't work correctly with Colyseus so we have to push
+        // points.push(newTailPoint)
       }
 
       l += segLength

@@ -48,6 +48,8 @@ export default class Snake extends SnakeBehaviour {
   }
 
   get serverState () {
+    console.log(this.game.network.state)
+    console.log(this.game.network.state?.players.get(this.playerId))
     return this.game.network.state?.players.get(this.playerId)?.snake!
   }
 
@@ -83,7 +85,6 @@ export default class Snake extends SnakeBehaviour {
   draw() {
     const g = this.graphics
     const points = this.state.points.map(p => this.game.getViewRelativePoint(p))
-    console.log('RENDERPOINTS', points[0], points[1])
     g.clear()
     g.lineStyle(4, 0xffffff)
     g.moveTo(points[0].x, points[0].y)
