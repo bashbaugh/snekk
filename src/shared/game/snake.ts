@@ -29,14 +29,29 @@ export default abstract class SnakeBehaviour {
   abstract update(delta: number): void
 
   protected updateHead(delta: number) {
-    const d = this.state.direction,
-      h = this.head,
-      speed = this.state.speed,
+    const newHead = this.getNextHead(
+      delta,
+      this.head,
+      this.state.direction,
+      this.state.speed
+    )
+    Object.assign(this.head, newHead)
+  }
+
+  protected getNextHead(
+    delta: number,
+    head: XYS,
+    direction: Direction,
+    speed: number
+  ): XY {
+    const h = { x: head.x, y: head.y },
+      d = direction,
       deltaSec = delta / 1000
     if (d === 1) h.y -= speed * deltaSec
     if (d === 2) h.x += speed * deltaSec
     if (d === 3) h.y += speed * deltaSec
     if (d === 4) h.x -= speed * deltaSec
+    return h
   }
 
   protected updateTail() {
@@ -78,7 +93,7 @@ export default abstract class SnakeBehaviour {
     }
   }
 
-  public turn(d: Direction) {
+  public turnHead(d: Direction) {
     // Prevent reversing
     if (this.state.direction * d === 3 || this.state.direction * d === 8) return
     this.state.direction = d

@@ -1,6 +1,6 @@
 import GameState, { PlayerState, Point, SnakeState } from 'shared/serverState'
 import GameRoom from './GameRoom'
-import { MESSAGETYPE } from 'types/networking'
+import { Message, MESSAGETYPE } from 'types/networking'
 import { Client } from 'colyseus'
 import Snake from './Snake'
 
@@ -12,6 +12,7 @@ export default class GameController {
     string,
     {
       snake: Snake
+      client: Client
     }
   > = {}
 
@@ -21,9 +22,10 @@ export default class GameController {
   }
 
   addPlayer(client: Client) {
-    const playerState = new PlayerState()
+    const playerState = new PlayerState(client.id)
     this.players[client.id] = {
-      snake: new Snake(playerState),
+      snake: new Snake(this, playerState),
+      client,
     }
     this.state.players.set(client.id, playerState)
     const { x, y } = playerState.snake!.points[0]
@@ -43,7 +45,13 @@ export default class GameController {
     }
   }
 
-  onPlayerTurn(client: Client, direction: Direction) {
-    this.players[client.id].snake.turn(direction)
+  /** Patch state immediately and notify client to avoid lag on client side when important things/failures happen */
+  patchClientImmediate(playerId: string) {
+    this.room.broadcastPatch()
+    this.players[playerId].client.send(MESSAGETYPE.PATCH)
+  }
+
+  onPlayerTurn(client: Client, data: Message[MESSAGETYPE.TURN]) {
+    this.players[client.id].snake.turn(data)
   }
 }

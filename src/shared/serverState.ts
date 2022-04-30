@@ -26,7 +26,10 @@ export class SnakeState extends Schema implements SharedSnakeState {
   constructor(spawnP: XY) {
     super()
 
-    this.points.push(new Point(spawnP.x, spawnP.x, 0), new Point(spawnP.x, spawnP.y, 1))
+    this.points.push(
+      new Point(spawnP.x, spawnP.x, 0),
+      new Point(spawnP.x, spawnP.y, 1)
+    )
   }
 
   get head() {
@@ -39,8 +42,14 @@ export class SnakeState extends Schema implements SharedSnakeState {
 }
 
 export class PlayerState extends Schema {
+  @type('string') clientId: string
   @type(SnakeState) snake?: SnakeState
   @type('string') name?: string
+
+  constructor(clientId: string) {
+    super()
+    this.clientId = clientId
+  }
 }
 
 export default class GameState extends Schema {

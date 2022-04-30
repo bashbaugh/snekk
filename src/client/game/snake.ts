@@ -32,6 +32,10 @@ export default class Snake extends SnakeBehaviour {
   private game: Game
   public playerId: string
 
+  // private lastServerTurnPoint: XYS & {
+  //   ts: number
+  // }
+
   constructor(game: Game, playerId: string, spawnPoint: XY) {
     super(new ClientSnakeState(spawnPoint))
     this.game = game
@@ -40,18 +44,44 @@ export default class Snake extends SnakeBehaviour {
     game.app.stage.addChild(this.container)
     this.graphics = new PIXI.Graphics()
     this.game.gameContainer.addChild(this.graphics)
+    // this.lastServerTurnPoint = {...this.state.points[1], ts: Date.now()}
   }
 
-  cleanup () {
+  cleanup() {
     this.graphics.clear()
     this.game.gameContainer.removeChild(this.container)
   }
 
-  get serverState () {
-    console.log(this.game.network.state)
-    console.log(this.game.network.state?.players.get(this.playerId))
+  get serverState() {
     return this.game.network.state?.players.get(this.playerId)?.snake!
   }
+
+  onServerState(serverState: SharedSnakeState, isPlayer: boolean) {
+    // Check if there's a new turn point
+    // if (this.lastServerTurnPoint!.s < serverState.points[1].s) {
+    //   this.lastServerTurnPoint = {...serverState.points[1], ts: Date.now()}
+    // }
+
+    const { points, direction, length, speed } = serverState
+
+    if (isPlayer) {
+      this.state.direction = direction
+      this.state.length = length
+      this.state.speed = speed
+    }
+
+    // this.state.points = points
+  }
+
+  // extrapolateHead (delta: number) {
+  //   const newHead = this.getNextHead(
+  //     delta,
+  //     this.head,
+  //     this.state.direction,
+  //     this.state.speed
+  //   )
+  //   Object.assign(this.head, newHead)
+  // }
 
   // TODO lerp
   // TODO build a lerp function for self player
@@ -77,7 +107,8 @@ export default class Snake extends SnakeBehaviour {
     // clientState.points.splice(points.length + 1)
   }
 
-  update (delta: number) {
+  update(delta: number) {
+    // this.updateHead(delta)
     this.updateHead(delta)
     this.updateTail()
   }

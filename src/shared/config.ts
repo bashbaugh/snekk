@@ -5,6 +5,8 @@ const CONFIG = Object.freeze({
     startLength: 150,
   },
   maxClientsPerRoom: 50,
+  maxLagMs: 500,
+  interpDelta: 100
 })
 
 export default CONFIG

@@ -39,8 +39,7 @@ export default class Network {
     this.room?.onStateChange(s => cb(s))
   }
 
-  sendTurn(d: Direction) {
-    const payload: Message[MESSAGETYPE.TURN] = { d }
+  sendTurn(payload: Message[MESSAGETYPE.TURN]) {
     this.room?.send(MESSAGETYPE.TURN, payload)
   }
 

@@ -3,6 +3,7 @@ import Network from 'client/networking'
 import { debugLog } from 'client/util'
 import * as PIXI from 'pixi'
 import { PlayerState } from 'shared/serverState'
+import { Message, MESSAGETYPE } from 'types/networking'
 import { debug } from 'webpack'
 import Snake from './snake'
 
@@ -43,14 +44,16 @@ export default class Game {
   private addNetworkHandlers() {
     // This is fired when the player's snake is created
     this.network.onSelfSpawn((spawnPoint, pState) => {
-      this.playerSnake = new Snake(
-        this,
-        this.network.clientId!,
-        spawnPoint
-      )
+      this.playerSnake = new Snake(this, this.network.clientId!, spawnPoint)
       this.input.addTurnListener(d => {
-        this.playerSnake?.turn(d)
-        this.network.sendTurn(d)
+        this.network.sendTurn({
+          d,
+          x: this.playerSnake!.head.x,
+          y: this.playerSnake!.head.y,
+          s: this.playerSnake!.head.s,
+        })
+
+        this.playerSnake?.turnHead(d)
       })
       this.players[this.network.clientId!] = {
         snake: this.playerSnake,
@@ -62,7 +65,7 @@ export default class Game {
       this.players[id] = {
         state: pState,
       }
-  
+
       pState.onChange = changes => {
         changes.forEach(c => {
           // If the player's snake changed...
@@ -87,9 +90,13 @@ export default class Game {
     this.network.onStateChange(state => {
       // Update snakes when we receive a new state patch
       for (const [id, { snake }] of Object.entries(this.players)) {
-        if (snake && id !== this.network.clientId) {
+        if (snake) {
           // For all other snakes we need to interpolate the latest server state
-          snake.interpolateServerState()
+          // snake.interpolateServerState()
+          snake.onServerState(
+            state.players.get(id)!.snake!,
+            id === this.network.clientId!
+          )
         }
       }
     })
@@ -98,7 +105,7 @@ export default class Game {
   addSnake(playerId: string) {
     debugLog('[GAME] Creating snake', playerId)
     const p = this.players[playerId]
-    p.snake =  new Snake(this, playerId, p.state.snake?.points[0]!)
+    p.snake = new Snake(this, playerId, p.state.snake?.points[0]!)
   }
 
   removeSnake(playerId: string) {
