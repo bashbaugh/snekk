@@ -32,10 +32,6 @@ export default class Snake extends SnakeBehaviour {
   private game: Game
   public playerId: string
 
-  // private lastServerTurnPoint: XYS & {
-  //   ts: number
-  // }
-
   constructor(game: Game, playerId: string, spawnPoint: XY) {
     super(new ClientSnakeState(spawnPoint))
     this.game = game
@@ -52,24 +48,40 @@ export default class Snake extends SnakeBehaviour {
     this.game.gameContainer.removeChild(this.container)
   }
 
-  get serverState() {
-    return this.game.network.state?.players.get(this.playerId)?.snake!
-  }
+  // get serverState() {
+  //   return this.game.network.state?.players.get(this.playerId)?.snake!
+  // }
 
   onServerState(serverState: SharedSnakeState, isPlayer: boolean) {
     // Check if there's a new turn point
     // if (this.lastServerTurnPoint!.s < serverState.points[1].s) {
     //   this.lastServerTurnPoint = {...serverState.points[1], ts: Date.now()}
     // }
+    const lastTs = this.game.network.lastServerTs
 
     const { points, direction, length, speed } = serverState
 
-    if (isPlayer) {
+    if (true) {
+      // Only update these values for other snakes from server
       this.state.direction = direction
       this.state.length = length
       this.state.speed = speed
+      this.state.points = points
+      for (let i = 0; i < points.length; i++) {
+        const p = points[i]
+        const s = p.s
+        Object.assign(this.state.points[i], p)
+      }
+      this.state.points.splice(points.length)
     }
 
+    // Merge server points with client points
+    // for (let i = 0; i < points.length; i++) {
+    //   const p = points[i]
+    //   const s = p.s
+    //   Object.assign(this.state.points[i], p)
+    // }
+    // this.state.points.splice(points.length)
     // this.state.points = points
   }
 
@@ -83,34 +95,10 @@ export default class Snake extends SnakeBehaviour {
   //   Object.assign(this.head, newHead)
   // }
 
-  // TODO lerp
-  // TODO build a lerp function for self player
-  public interpolateServerState() {
-    const clientState = this.state
-    const serverState = this.serverState
-
-    const { points, direction, length, speed } = serverState
-
-    clientState.direction = direction
-    clientState.length = length
-    clientState.speed = speed
-
-    clientState.points = points
-
-    // // Lerp the client position to the server position
-
-    // TODO lerp and check sequences
-    // points.forEach((p, i) => {
-    //   clientState.points[i] = p
-    // })
-    // // Delete stale client points
-    // clientState.points.splice(points.length + 1)
-  }
-
   update(delta: number) {
     // this.updateHead(delta)
-    this.updateHead(delta)
-    this.updateTail()
+    // this.updateHead(delta)
+    // this.updateTail()
   }
 
   draw() {

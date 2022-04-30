@@ -43,12 +43,7 @@ export default class GameController {
     for (const [id, player] of Object.entries(this.players)) {
       player.snake.update(delta)
     }
-  }
-
-  /** Patch state immediately and notify client to avoid lag on client side when important things/failures happen */
-  patchClientImmediate(playerId: string) {
-    this.room.broadcastPatch()
-    this.players[playerId].client.send(MESSAGETYPE.PATCH)
+    this.state.ts = this.room.clock.currentTime
   }
 
   onPlayerTurn(client: Client, data: Message[MESSAGETYPE.TURN]) {

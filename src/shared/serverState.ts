@@ -53,6 +53,8 @@ export class PlayerState extends Schema {
 }
 
 export default class GameState extends Schema {
+  /** Timestamp to track server time in updates */
+  @type('number') ts: number = 0
   @type('int16') arenaSize: number = 2000
   @type({ map: PlayerState }) players = new MapSchema<PlayerState>()
 }

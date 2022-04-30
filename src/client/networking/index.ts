@@ -1,13 +1,15 @@
 import { Client, Room } from 'colyseus.js'
-import CONFIG from 'shared/config'
 import { Message, MESSAGETYPE } from 'types/networking'
 import GameState, { PlayerState } from 'shared/serverState'
-import { debugLog } from './util'
-import { debug } from 'webpack'
+import { debugLog } from '../util'
+import ServerTimeManager from './time'
 
 export default class Network {
-  client: Client
-  room: Room<GameState> | null = null
+  private client: Client
+  private room: Room<GameState> | null = null
+  private sTime?: ServerTimeManager
+
+  public lastServerTs: number = 0
 
   constructor() {
     this.client = new Client('ws://localhost:3001')
@@ -21,10 +23,21 @@ export default class Network {
     return this.room?.state
   }
 
+  get serverTime() {
+    return this.sTime?.getServerTimeEstimate()
+  }
+
+  get ping () {
+    // TODO actual ping
+    return this.sTime?.roundtripPing
+  }
+
   async findGame() {
     const r = await this.client.joinOrCreate<GameState>('classic', {})
     this.room = r
     debugLog('[NETWORK] Joined room', r.id, 'as', r.sessionId)
+    this.sTime = new ServerTimeManager(r)
+    this.sTime.estimateOffset()
 
     r.onLeave((code: number) => {
       debugLog('[NETWORK] Left session. WS code:', code)
@@ -36,14 +49,17 @@ export default class Network {
   }
 
   public onStateChange(cb: (state: GameState) => void) {
-    this.room?.onStateChange(s => cb(s))
+    this.room?.onStateChange(s => {
+      this.lastServerTs = s.ts
+      cb(s)
+    })
   }
 
-  sendTurn(payload: Message[MESSAGETYPE.TURN]) {
+  public sendTurn(payload: Message[MESSAGETYPE.TURN]) {
     this.room?.send(MESSAGETYPE.TURN, payload)
   }
 
-  onSelfSpawn(cb: (point: XY, selfPlayerState: PlayerState) => void) {
+  public onSelfSpawn(cb: (point: XY, selfPlayerState: PlayerState) => void) {
     this.room?.onMessage(
       MESSAGETYPE.SPAWN,
       (data: Message[MESSAGETYPE.SPAWN]) => {
@@ -52,13 +68,13 @@ export default class Network {
     )
   }
 
-  onPlayerJoin(cb: (id: string, p: PlayerState) => void) {
+  public onPlayerJoin(cb: (id: string, p: PlayerState) => void) {
     this.room!.state.players.onAdd = (p, id) => {
       if (id !== this.clientId) cb(id, p)
     }
   }
 
-  onPlayerLeave(cb: (id: string) => void) {
+  public onPlayerLeave(cb: (id: string) => void) {
     this.room!.state.players.onRemove = (p, id) => {
       cb(id)
     }

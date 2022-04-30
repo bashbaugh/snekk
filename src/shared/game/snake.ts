@@ -1,5 +1,3 @@
-import { Point } from 'shared/serverState'
-import CONFIG from 'shared/config'
 import type { Schema } from '@colyseus/schema'
 
 export interface SharedSnakeState {

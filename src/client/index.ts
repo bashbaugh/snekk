@@ -5,4 +5,3 @@ import App from './game/app'
 })()
 
 console.log('%cSnekland.io', 'background:black;color:white;font-size:18px')
-

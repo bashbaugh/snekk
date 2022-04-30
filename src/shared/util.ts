@@ -11,8 +11,10 @@ export const lerpPoint = (a: XY, b: XY, t: number) => ({
 
 // https://stackoverflow.com/a/53577159/8748307
 /** Get standard deviation of array */
-export function calcStandardDev (array: number[]) {
+export function calcStandardDev(array: number[]) {
   const n = array.length
   const mean = array.reduce((a, b) => a + b) / n
-  return Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n)
+  return Math.sqrt(
+    array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n
+  )
 }

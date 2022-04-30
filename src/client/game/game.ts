@@ -3,8 +3,6 @@ import Network from 'client/networking'
 import { debugLog } from 'client/util'
 import * as PIXI from 'pixi'
 import { PlayerState } from 'shared/serverState'
-import { Message, MESSAGETYPE } from 'types/networking'
-import { debug } from 'webpack'
 import Snake from './snake'
 
 export default class Game {
@@ -42,25 +40,6 @@ export default class Game {
   }
 
   private addNetworkHandlers() {
-    // This is fired when the player's snake is created
-    this.network.onSelfSpawn((spawnPoint, pState) => {
-      this.playerSnake = new Snake(this, this.network.clientId!, spawnPoint)
-      this.input.addTurnListener(d => {
-        this.network.sendTurn({
-          d,
-          x: this.playerSnake!.head.x,
-          y: this.playerSnake!.head.y,
-          s: this.playerSnake!.head.s,
-        })
-
-        this.playerSnake?.turnHead(d)
-      })
-      this.players[this.network.clientId!] = {
-        snake: this.playerSnake,
-        state: pState,
-      }
-    })
-
     this.network.onPlayerJoin((id, pState) => {
       this.players[id] = {
         state: pState,
@@ -87,12 +66,29 @@ export default class Game {
       delete this.players[id]
     })
 
+    // This is fired when the player's snake is created
+    this.network.onSelfSpawn((spawnPoint, pState) => {
+      this.playerSnake = new Snake(this, this.network.clientId!, spawnPoint)
+      this.input.addTurnListener(d => {
+        this.network.sendTurn({
+          d,
+          x: this.playerSnake!.head.x,
+          y: this.playerSnake!.head.y,
+          s: this.playerSnake!.head.s,
+        })
+
+        // this.playerSnake?.turnHead(d)
+      })
+      this.players[this.network.clientId!] = {
+        snake: this.playerSnake,
+        state: pState,
+      }
+    })
+
     this.network.onStateChange(state => {
       // Update snakes when we receive a new state patch
       for (const [id, { snake }] of Object.entries(this.players)) {
         if (snake) {
-          // For all other snakes we need to interpolate the latest server state
-          // snake.interpolateServerState()
           snake.onServerState(
             state.players.get(id)!.snake!,
             id === this.network.clientId!
@@ -117,8 +113,7 @@ export default class Game {
   onTick(delta: number) {
     const deltaMs = this.app.ticker.deltaMS
     for (const [id, { snake }] of Object.entries(this.players)) {
-      // If this player doesn't have an active snake skip them
-      if (!snake) continue
+      if (!snake) continue // If this player doesn't have an active snake skip them
       snake.update(deltaMs)
       snake.draw()
     }

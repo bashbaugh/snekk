@@ -1,7 +1,7 @@
 export enum MESSAGETYPE {
   SPAWN,
   TURN,
-  TIMESYNC
+  TIMESYNC,
 }
 
 export interface Message {

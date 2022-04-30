@@ -21,16 +21,15 @@ export default class Snake extends SnakeBehaviour {
   }
 
   turn(data: Message[MESSAGETYPE.TURN]) {
-    // Discard this turn if the point index doesn't match up and patch the client to cancel the turn
-    if (this.head.s !== data.s)
-      return this.game.patchClientImmediate(this.player.clientId)
-    // Make sure that we're turning only on the correct axis
-    if (
-      ((data.d === 1 || data.d === 3) && data.y !== this.head.y) ||
-      ((data.d === 2 || data.d === 4) && data.x !== this.head.x)
-    )
-      return this.game.patchClientImmediate(this.player.clientId)
-
-    
+    this.turnHead(data.d)
+    // // Discard this turn if the point index doesn't match up and patch the client to cancel the turn
+    // if (this.head.s !== data.s)
+    //   return this.game.patchClientImmediate(this.player.clientId)
+    // // Make sure that we're turning only on the correct axis
+    // if (
+    //   ((data.d === 1 || data.d === 3) && data.y !== this.head.y) ||
+    //   ((data.d === 2 || data.d === 4) && data.x !== this.head.x)
+    // )
+    //   return this.game.patchClientImmediate(this.player.clientId)
   }
 }
