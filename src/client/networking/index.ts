@@ -7,6 +7,8 @@ import ServerPinger from './ping'
 import { Server } from 'colyseus'
 // import ServerTimeManager from './time'
 
+const SERVER_URL = 'ws://localhost:3001'
+
 export default class Network {
   private client: Client
   private room: Room<GameState> | null = null
@@ -17,7 +19,7 @@ export default class Network {
   public lastServerTimeOffset: number = 0
 
   constructor() {
-    this.client = new Client('ws://localhost:3001')
+    this.client = new Client(SERVER_URL)
   }
 
   get clientId() {

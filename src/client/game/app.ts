@@ -36,8 +36,10 @@ export default class App {
   }
 
   private async findGame() {
+    this.ui.setState({ loadingText: 'Connecting...'})
     await this.network.findGame()
+    this.ui.setState({ readyToPlay: true })
 
-    this.game = new Game(this.app, this.network, this.ui)
+    // this.game = new Game(this.app, this.network, this.ui)
   }
 }

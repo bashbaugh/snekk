@@ -8,15 +8,32 @@ export interface UIState {
     ping?: number
   }
   showStats: boolean
+  loadingText: string
+  readyToPlay: boolean
 }
 
-export default class UI {
+export type UIEventType = 'startPlaying'
+export interface UIEventData {
+  'startPlaying': {
+    name: string
+  }
+}
+export class UIEvent<T extends UIEventType> extends Event {
+  constructor(type: T, public data: UIEventData[T]) {
+    super(type as unknown as string)
+  }
+}
+
+export default class UI extends EventTarget {
   private _state: UIState
   private _setState?: StateUpdater<UIState>
 
   constructor() {
+    super()
     this._state = {
       showStats: true,
+      loadingText: 'Loading...',
+      readyToPlay: false
     }
   }
 
