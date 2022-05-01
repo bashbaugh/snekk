@@ -4,9 +4,9 @@ export const randomInt = (minmax: number, max?: number): number =>
   (max ? minmax : 0)
 
 export const lerp = (a: number, b: number, t: number) => a + (b - a) * t
-export const lerpPoint = (a: XY, b: XY, t: number) => ({
-  x: lerp(a.x, b.x, t),
-  y: lerp(a.y, b.y, t),
+export const lerpPoint = (a: XY, b: XY, t: number, round?: boolean) => ({
+  x: round ? Math.round(lerp(a.x, b.x, t)) : lerp(a.x, b.x, t),
+  y: round ? Math.round(lerp(a.y, b.y, t)) : lerp(a.y, b.y, t),
 })
 
 // https://stackoverflow.com/a/53577159/8748307

@@ -1,13 +1,13 @@
 import type { Schema } from '@colyseus/schema'
 
 export interface SharedSnakeState {
-  points: XYS[] | Array<XYS & Schema>
+  points: SPoint[] | Array<SPoint & Schema>
   direction: Direction
   length: number
   speed: number
 
   /** Make a point and increment the sequence number */
-  makePoint: ({ x, y, s }: XYS) => any
+  makePoint: ({ x, y, s }: SPoint) => any
 }
 
 export default abstract class SnakeBehaviour {
@@ -20,8 +20,8 @@ export default abstract class SnakeBehaviour {
   public get head() {
     return this.state.points[0]
   }
-  public set head(h: XYS) {
-    this.state.points[0] = h
+  public get tail() {
+    return this.state.points[this.state.points.length - 1]
   }
 
   abstract update(delta: number): void
@@ -38,17 +38,19 @@ export default abstract class SnakeBehaviour {
 
   protected getNextHead(
     delta: number,
-    head: XYS,
+    head: SPoint,
     direction: Direction,
     speed: number
   ): XY {
     const h = { x: head.x, y: head.y },
       d = direction,
       deltaSec = delta / 1000
-    if (d === 1) h.y -= speed * deltaSec
-    if (d === 2) h.x += speed * deltaSec
-    if (d === 3) h.y += speed * deltaSec
-    if (d === 4) h.x -= speed * deltaSec
+    const m = Math.round(speed * deltaSec)
+    if (d === 1) h.y -= m
+    if (d === 2) h.x += m
+    if (d === 3) h.y += m
+    if (d === 4) h.x -= m
+    // console.log(h)
     return h
   }
 
@@ -62,27 +64,19 @@ export default abstract class SnakeBehaviour {
         points[i].y - points[i - 1].y
       )
       if (l + segLength > this.state.length) {
-        const remaining = this.state.length - l
-        // const newTailPoint = this.state.makePoint({ ...points[i] })
-        if (points[i].x == points[i - 1].x && points[i].y > points[i - 1].y) {
+        // console.log(points[i])
+        const remaining = Math.round(this.state.length - l)
+        const isHorizontal = points[i].d === 2 || points[i].d === 4
+        const isVertical = points[i].d === 1 || points[i].d === 3
+        if (isVertical && points[i].y > points[i - 1].y) {
           points[i].y = points[i - 1].y + remaining
-        } else if (
-          points[i].x == points[i - 1].x &&
-          points[i].y < points[i - 1].y
-        ) {
+        } else if (isVertical && points[i].y < points[i - 1].y) {
           points[i].y = points[i - 1].y - remaining
-        } else if (
-          points[i].y == points[i - 1].y &&
-          points[i].x > points[i - 1].x
-        ) {
+        } else if (isHorizontal && points[i].x > points[i - 1].x) {
           points[i].x = points[i - 1].x + remaining
-        } else if (
-          points[i].y == points[i - 1].y &&
-          points[i].x < points[i - 1].x
-        ) {
+        } else if (isHorizontal && points[i].x < points[i - 1].x) {
           points[i].x = points[i - 1].x - remaining
         }
-        // Remove unused tail coordinates and add new
         points.splice(i + 1) // Splice doesn't work correctly with Colyseus so we have to push
         // points.push(newTailPoint)
       }
@@ -94,8 +88,9 @@ export default abstract class SnakeBehaviour {
   public turnHead(d: Direction) {
     // Prevent reversing
     if (this.state.direction * d === 3 || this.state.direction * d === 8) return
-    this.state.direction = d
     // Add new turn point and increment sequence number so that we can track it on server/client
+    this.state.direction = d
+    this.head.d = d
     this.state.points.unshift(
       this.state.makePoint({ ...this.head, s: this.head.s + 1 })
     )

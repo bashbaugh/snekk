@@ -1,28 +1,27 @@
-import { debugLog } from 'client/util'
 import * as PIXI from 'pixi'
 import CONFIG from 'shared/config'
 import SnakeBehaviour, { SharedSnakeState } from 'shared/game/snake'
-import { debug } from 'webpack'
+import { lerpPoint } from 'shared/util'
 import Game from './game'
 
 class ClientSnakeState implements SharedSnakeState {
-  points: XYS[]
+  points: SPoint[]
   direction: Direction
   length: number
   speed: number
 
   constructor(spawn: XY) {
     this.points = [
-      { ...spawn, s: 1 },
-      { ...spawn, s: 0 },
+      { ...spawn, s: 1, d: 1 },
+      { ...spawn, s: 0, d: 1 },
     ]
     this.direction = 1
     this.length = CONFIG.snake.startLength
     this.speed = CONFIG.snake.baseSpeed
   }
 
-  makePoint({ x, y, s }: XYS) {
-    return { x, y, s }
+  makePoint({ x, y, s, d }: SPoint): SPoint {
+    return { x, y, s, d }
   }
 }
 
@@ -43,62 +42,88 @@ export default class Snake extends SnakeBehaviour {
     // this.lastServerTurnPoint = {...this.state.points[1], ts: Date.now()}
   }
 
+  get tail() {
+    return this.state.points[this.state.points.length - 1]
+  }
+  set tail (t: SPoint) {
+    this.state.points[this.state.points.length - 1] = t
+  }
+
   cleanup() {
     this.graphics.clear()
     this.game.gameContainer.removeChild(this.container)
   }
 
-  // get serverState() {
-  //   return this.game.network.state?.players.get(this.playerId)?.snake!
-  // }
+  private serverQueue: Array<{
+    serverTs: number
+    clientTs: number
+    snake: SharedSnakeState
+  }> = []
 
   onServerState(serverState: SharedSnakeState, isPlayer: boolean) {
-    // Check if there's a new turn point
-    // if (this.lastServerTurnPoint!.s < serverState.points[1].s) {
-    //   this.lastServerTurnPoint = {...serverState.points[1], ts: Date.now()}
-    // }
-    const lastTs = this.game.network.lastServerTs
-
     const { points, direction, length, speed } = serverState
 
     if (true) {
-      // Only update these values for other snakes from server
       this.state.direction = direction
       this.state.length = length
       this.state.speed = speed
-      this.state.points = points
+      // Copy points into local state
       for (let i = 0; i < points.length; i++) {
         const p = points[i]
-        const s = p.s
-        Object.assign(this.state.points[i], p)
+        this.state.points[i] = {...p}
       }
       this.state.points.splice(points.length)
-    }
 
-    // Merge server points with client points
-    // for (let i = 0; i < points.length; i++) {
-    //   const p = points[i]
-    //   const s = p.s
-    //   Object.assign(this.state.points[i], p)
-    // }
-    // this.state.points.splice(points.length)
-    // this.state.points = points
+      // Insert a copy of this frame into the queue
+      this.serverQueue.unshift({
+        serverTs: this.game.network.lastServerTs,
+        clientTs: Date.now(),
+        points: this.state.points.map(p => (this.state.makePoint(p))),
+        head: this.state.makePoint(points[0]),
+        tail: this.state.makePoint(points[points.length - 1]),
+      })
+
+      // Only need to keep 2 frames at a time
+      this.serverQueue.splice(CONFIG.interpDeltaFrames + 2)
+    }
   }
 
-  // extrapolateHead (delta: number) {
-  //   const newHead = this.getNextHead(
-  //     delta,
-  //     this.head,
-  //     this.state.direction,
-  //     this.state.speed
-  //   )
-  //   Object.assign(this.head, newHead)
-  // }
+  /** Interpolate snake points between server frames */
+  interpolatePoints() {
+    const [nextF, previousF] = this.serverQueue.slice(CONFIG.interpDeltaFrames)
+    if (!previousF) return
+
+    const timeSinceLast = Date.now() - nextF.clientTs
+    // TODO smooth frametime
+    const frameTime = nextF.clientTs - previousF.clientTs
+    const percent = timeSinceLast / frameTime
+    if (percent > 1) {
+      // Can't interpolate; extrapolate and recalculate tail instead
+      const newHead = this.getNextHead(
+        timeSinceLast,
+        nextF.head,
+        this.state.direction,
+        this.state.speed
+      )
+      Object.assign(this.head, newHead)
+
+      this.updateTail()
+    }
+    // Lerp head and tail latest server frames
+    else {
+      /*if (nextF.head.s === previousF.head.s)*/ Object.assign(this.head, lerpPoint(previousF.head, nextF.head, percent, true))
+      // if (nextF.tail.s === previousF.tail.s) Object.assign(this.tail, lerpPoint(previousF.tail, nextF.tail, percent, true))
+    }
+      
+    // Recalculate tail
+    // console.log(previousF.tail.s, this.tail?.s)
+    // this.tail = previousF.tail.s === this.tail?.s ? previousF.tail : nextF.tail
+    // this.updateTail()
+  }
 
   update(delta: number) {
-    // this.updateHead(delta)
-    // this.updateHead(delta)
-    // this.updateTail()
+    this.interpolatePoints()
+    // console.log(this.state.points.map(p => `${p.x},${p.y}`))
   }
 
   draw() {

@@ -127,13 +127,17 @@ export default class Game {
       x: center.x - this.app.view.width / 2,
       y: center.y - this.app.view.height / 2,
     }
+    // return {
+    //   x: -200,
+    //   y: -200,
+    // }
   }
 
   public getViewRelativePoint(p: XY): XY {
     const o = this.getViewOffset()
     return {
-      x: p.x - o.x,
-      y: p.y - o.y,
+      x: Math.round(p.x - o.x),
+      y: Math.round(p.y - o.y),
     }
   }
 }

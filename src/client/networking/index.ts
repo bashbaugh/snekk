@@ -27,7 +27,7 @@ export default class Network {
     return this.sTime?.getServerTimeEstimate()
   }
 
-  get ping () {
+  get ping() {
     // TODO actual ping
     return this.sTime?.roundtripPing
   }

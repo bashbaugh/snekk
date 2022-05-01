@@ -3,8 +3,9 @@ interface XY {
   y: number
 }
 
-/** XY with a Sequence number in order to reliably keep the right points in the right spots in snakes */
-type XYS = XY & {
+/** Snake Point with a Sequence number in order to reliably keep the right points in the right spots in snakes. d is for direction in non-head points */
+type SPoint = XY & {
+  d: Direction
   s: number
 }
 
