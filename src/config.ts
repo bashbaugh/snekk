@@ -3,6 +3,7 @@ const CONFIG = Object.freeze({
   snake: {
     baseSpeed: 100,
     startLength: 150,
+    startTerritoryMargin: 100,
   },
   maxClientsPerRoom: 50,
   interpDeltaMs: 50,

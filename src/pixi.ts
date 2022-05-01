@@ -21,3 +21,9 @@ Renderer.registerPlugin('batch', BatchRenderer)
 import { Application } from '@pixi/app'
 import { TickerPlugin } from '@pixi/ticker'
 Application.registerPlugin(TickerPlugin)
+
+// Filters
+// import { OutlineFilter } from '@pixi/filter-outline'
+export const filters = {
+  // OutlineFilter
+}

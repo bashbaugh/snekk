@@ -27,7 +27,7 @@ const PreGameModal: preact.FunctionComponent<{
           let name = nameRef.current!.value.trim()
           if (name) window.localStorage.setItem('playername', name)
           else name = 'unnamed'
-          
+
           dispatchEvent('startPlaying', {
             name,
           })

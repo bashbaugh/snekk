@@ -3,6 +3,9 @@ interface XY {
   y: number
 }
 
+/** Up | Right | Down | Left  */
+type Direction = 1 | 2 | 3 | 4
+
 /** Snake Point
  *  s: sequence number to identify turns.
  *  d: direction the point turns the snake
@@ -14,5 +17,12 @@ type SPoint = XY & {
   t: number
 }
 
-/** Up | Right | Down | Left  */
-type Direction = 1 | 2 | 3 | 4
+/** Represents a 2d region in snake's territory */
+interface SRegion {
+  /** Sequence number to order regions */
+  s: number
+  /** Timestamp of region creation */
+  t: number
+  /** Points defining region. First point is also point at which shape is closed. */
+  p: XY[]
+}

@@ -5,6 +5,7 @@ import { debugLog } from '../util'
 import { DeathReason } from 'types/game'
 import ServerPinger from './ping'
 import { Server } from 'colyseus'
+import { SharedSnakeState } from 'shared/snake'
 // import ServerTimeManager from './time'
 
 const SERVER_URL = 'ws://localhost:3001'
@@ -62,7 +63,7 @@ export default class Network {
 
   public joinGame(name: string) {
     this.room?.send(MESSAGETYPE.JOIN, {
-      n: name
+      n: name,
     })
   }
 
@@ -70,11 +71,13 @@ export default class Network {
     this.room?.send(MESSAGETYPE.TURN, payload)
   }
 
-  public onSelfSpawn(cb: (point: XY, selfPlayerState: PlayerState) => void) {
+  public onSelfSpawn(
+    cb: (state: SharedSnakeState, selfPlayerState: PlayerState) => void
+  ) {
     this.room?.onMessage(
       MESSAGETYPE.SPAWN,
       (data: Message[MESSAGETYPE.SPAWN]) => {
-        cb(data.p, this.room!.state.players.get(this.clientId!)!)
+        cb(data.s, this.room!.state.players.get(this.clientId!)!)
       }
     )
   }

@@ -1,4 +1,8 @@
-import GameState, { PlayerState, Point, SnakeState } from 'shared/serverState'
+import GameState, {
+  PlayerState,
+  SnakePoint,
+  SnakeState,
+} from 'shared/serverState'
 import ArenaRoom from './ArenaRoom'
 import { Message, MESSAGETYPE } from 'types/networking'
 import { Client } from 'colyseus'
@@ -29,7 +33,6 @@ export default class GameController {
       client,
     }
     this.state.players.set(client.id, playerState)
-    
   }
 
   spawnSnake(playerId: string) {
@@ -38,7 +41,7 @@ export default class GameController {
     p.snake = new Snake(this, this.state.players.get(playerId)!)
     const { x, y } = p.snake.state.points[0]
     p.client.send(MESSAGETYPE.SPAWN, {
-      point: { x, y },
+      s: p.snake.state,
     })
   }
 

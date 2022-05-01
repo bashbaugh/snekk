@@ -73,8 +73,8 @@ export default class Game {
     })
 
     // This is fired when the player's snake is created
-    this.network.onSelfSpawn((spawnPoint, pState) => {
-      this.playerSnake = new Snake(this, this.network.clientId!, spawnPoint)
+    this.network.onSelfSpawn((state, pState) => {
+      this.playerSnake = new Snake(this, this.network.clientId!, state)
       this.input.addTurnListener(d => {
         this.network.sendTurn({
           d,
@@ -114,7 +114,7 @@ export default class Game {
   addSnake(playerId: string) {
     debugLog('[GAME] Creating snake', playerId)
     const p = this.players[playerId]
-    p.snake = new Snake(this, playerId, p.state.snake?.points[0]!)
+    p.snake = new Snake(this, playerId, p.state.snake!)
   }
 
   removeSnake(playerId: string) {

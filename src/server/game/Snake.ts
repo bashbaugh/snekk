@@ -1,4 +1,4 @@
-import SnakeBehaviour from 'shared/game/snake'
+import SnakeBehaviour from 'shared/snake'
 import { PlayerState, SnakeState } from 'shared/serverState'
 import { randomInt } from 'shared/util'
 import { Message, MESSAGETYPE } from 'types/networking'

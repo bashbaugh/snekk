@@ -1,3 +1,4 @@
+import { SharedSnakeState } from 'shared/snake'
 import { DeathReason } from './game'
 
 export enum MESSAGETYPE {
@@ -5,12 +6,12 @@ export enum MESSAGETYPE {
   TURN,
   TIMESYNC,
   DEATH,
-  JOIN
+  JOIN,
 }
 
 export interface Message {
   [MESSAGETYPE.SPAWN]: {
-    p: XY
+    s: SharedSnakeState
   }
   [MESSAGETYPE.TURN]: {
     /** Direction */

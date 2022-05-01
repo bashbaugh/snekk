@@ -1,7 +1,7 @@
 import { Room, Client } from 'colyseus'
-import CONFIG from 'shared/config'
+import CONFIG from 'config'
 import { RoomClientOptions } from 'types/room'
-import GameState, { PlayerState, Point } from 'shared/serverState'
+import GameState, { PlayerState, SnakePoint } from 'shared/serverState'
 import GameController from './GameController'
 import { Message, MESSAGETYPE } from 'types/networking'
 
@@ -37,13 +37,10 @@ export default class ArenaRoom extends Room<GameState> {
       }
     )
 
-    this.onMessage<Message[MESSAGETYPE.JOIN]>(
-      MESSAGETYPE.JOIN,
-      (client, d) => {
-        this.state.players.get(client.sessionId)!.name = d.n
-        this.game.spawnSnake(client.sessionId)
-      }
-    )
+    this.onMessage<Message[MESSAGETYPE.JOIN]>(MESSAGETYPE.JOIN, (client, d) => {
+      this.state.players.get(client.sessionId)!.name = d.n
+      this.game.spawnSnake(client.sessionId)
+    })
   }
 
   onJoin(client: Client, options: RoomClientOptions) {

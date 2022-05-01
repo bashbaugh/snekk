@@ -18,3 +18,14 @@ export function calcStandardDev(array: number[]) {
     array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n
   )
 }
+
+/** Convert HSL (0-360, 0-1, 0-1) to RGB */
+export function hslToRgb(h: number, s: number, l: number) {
+  let a = s * Math.min(l, 1 - l)
+  let f = (n: number, k = (n + h / 30) % 12) =>
+    l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1)
+  const rgb = [f(0), f(8), f(4)]
+  const hexString = rgb.reduce((a, b) => a + Math.floor(b * 255).toString(16), '')
+  const hex = parseInt(hexString, 16)
+  return hex
+}

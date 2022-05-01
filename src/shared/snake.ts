@@ -1,13 +1,19 @@
-import type { Schema } from '@colyseus/schema'
+import type { Region, SnakePoint } from './serverState'
 
 export interface SharedSnakeState {
-  points: SPoint[] | Array<SPoint & Schema>
+  points: SPoint[] | Array<SnakePoint>
+  trail: SPoint[] | Array<SnakePoint>
+  territory: SRegion[] | Array<Region>
   direction: Direction
   length: number
   speed: number
+  hue: number
 
-  /** Make a point and increment the sequence number */
-  makePoint: ({ x, y, s, d, t }: SPoint) => any
+  /** Get a point */
+  makeSnakePoint: ({ x, y, s, d, t }: SPoint) => any
+
+  /** Get a region */
+  makeRegion: ({ s, t, p }: SRegion) => any
 }
 
 export default abstract class SnakeBehaviour {
@@ -99,7 +105,7 @@ export default abstract class SnakeBehaviour {
     this.head.d = d
     this.head.t = Date.now()
     this.state.points.unshift(
-      this.state.makePoint({ ...this.head, s: this.head.s + 1 })
+      this.state.makeSnakePoint({ ...this.head, s: this.head.s + 1 })
     )
   }
 }
