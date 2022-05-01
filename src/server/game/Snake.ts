@@ -10,7 +10,6 @@ export default class Snake extends SnakeBehaviour {
 
   constructor(gameController: GameController, player: PlayerState) {
     const spawn = { x: randomInt(800), y: randomInt(500) }
-    console.log(spawn)
     const snake = new SnakeState(spawn)
     super(snake)
     this.player = player

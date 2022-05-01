@@ -1,5 +1,5 @@
 import Network from 'client/networking'
-import UI from 'client/ui'
+import UI, { UIEventListener } from 'client/ui'
 import * as PIXI from 'pixi'
 import Game from './game'
 
@@ -36,10 +36,17 @@ export default class App {
   }
 
   private async findGame() {
-    this.ui.setState({ loadingText: 'Connecting...'})
+    this.ui.setState({ loadingText: 'Connecting...' })
     await this.network.findGame()
     this.ui.setState({ readyToPlay: true })
 
-    // this.game = new Game(this.app, this.network, this.ui)
+    const startListener: UIEventListener = e => {
+      this.ui.setState({ readyToPlay: false, loadingText: 'Loading...' })
+      this.ui.removeEventListener('startPlaying', startListener)
+      this.network.joinGame(e.data.name)
+      this.game = new Game(this.app, this.network, this.ui)
+    }
+
+    this.ui.addEventListener('startPlaying', startListener)
   }
 }

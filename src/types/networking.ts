@@ -5,6 +5,7 @@ export enum MESSAGETYPE {
   TURN,
   TIMESYNC,
   DEATH,
+  JOIN
 }
 
 export interface Message {
@@ -32,5 +33,9 @@ export interface Message {
     c: DeathReason
     /** Killer */
     k?: string
+  }
+  [MESSAGETYPE.JOIN]: {
+    /** Name */
+    n: string
   }
 }

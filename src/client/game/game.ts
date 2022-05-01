@@ -82,13 +82,15 @@ export default class Game {
           y: this.playerSnake!.head.y,
           s: this.playerSnake!.head.s,
         })
-
         // this.playerSnake?.turnHead(d)
       })
       this.players[this.network.clientId!] = {
         snake: this.playerSnake,
         state: pState,
       }
+      this.ui.setState({
+        inGame: true,
+      })
     })
 
     this.network.onStateChange(state => {

@@ -35,7 +35,7 @@ export class SnakeState extends Schema implements SharedSnakeState {
 
     this.points.push(
       new Point(spawnP.x, spawnP.x, 1, 1),
-      new Point(spawnP.x, spawnP.y, 0, 1)
+      new Point(spawnP.x, spawnP.y - 10, 0, 1)
     )
   }
 

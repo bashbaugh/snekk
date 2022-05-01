@@ -13,7 +13,7 @@ export default class GameController {
   players: Record<
     string,
     {
-      snake: Snake
+      snake?: Snake
       client: Client
     }
   > = {}
@@ -26,12 +26,18 @@ export default class GameController {
   addPlayer(client: Client) {
     const playerState = new PlayerState(client.id)
     this.players[client.id] = {
-      snake: new Snake(this, playerState),
       client,
     }
     this.state.players.set(client.id, playerState)
-    const { x, y } = playerState.snake!.points[0]
-    client.send(MESSAGETYPE.SPAWN, {
+    
+  }
+
+  spawnSnake(playerId: string) {
+    // Create a new snake instance and spawn it
+    const p = this.players[playerId]
+    p.snake = new Snake(this, this.state.players.get(playerId)!)
+    const { x, y } = p.snake.state.points[0]
+    p.client.send(MESSAGETYPE.SPAWN, {
       point: { x, y },
     })
   }
@@ -44,7 +50,7 @@ export default class GameController {
   killSnake(id: string, cause: DeathReason, killer?: string) {
     const player = this.players[id]
     if (!player) return
-    player.snake.die()
+    player.snake?.die()
     delete this.state.players.get(id)?.snake
 
     const deathMsg: Message[MESSAGETYPE.DEATH] = {
@@ -58,11 +64,13 @@ export default class GameController {
   checkCollisions() {
     // Check for collisions against other snakes
     for (const [id, player] of Object.entries(this.players)) {
+      if (!player.snake) continue
+
       // First segment to check is player's head
       const [a1, a2] = player.snake.state.points
 
       for (const [id2, player2] of Object.entries(this.players)) {
-        if (id === id2) continue // Skip self
+        if (id === id2 || !player2.snake) continue // Skip self
         const points = player2.snake.state.points
         // Check player's head against all segments of other player
         for (let i = 0; i < points.length - 1; i++) {
@@ -78,7 +86,7 @@ export default class GameController {
 
   loop(delta: number) {
     for (const [id, player] of Object.entries(this.players)) {
-      player.snake.update(delta)
+      player.snake?.update(delta)
     }
 
     this.checkCollisions()
@@ -87,6 +95,6 @@ export default class GameController {
   }
 
   onPlayerTurn(client: Client, data: Message[MESSAGETYPE.TURN]) {
-    this.players[client.id].snake.turn(data)
+    this.players[client.id].snake?.turn(data)
   }
 }

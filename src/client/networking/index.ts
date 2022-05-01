@@ -60,6 +60,12 @@ export default class Network {
     })
   }
 
+  public joinGame(name: string) {
+    this.room?.send(MESSAGETYPE.JOIN, {
+      n: name
+    })
+  }
+
   public sendTurn(payload: Message[MESSAGETYPE.TURN]) {
     this.room?.send(MESSAGETYPE.TURN, payload)
   }

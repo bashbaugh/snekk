@@ -10,11 +10,12 @@ export interface UIState {
   showStats: boolean
   loadingText: string
   readyToPlay: boolean
+  inGame: boolean
 }
 
 export type UIEventType = 'startPlaying'
 export interface UIEventData {
-  'startPlaying': {
+  startPlaying: {
     name: string
   }
 }
@@ -23,18 +24,42 @@ export class UIEvent<T extends UIEventType> extends Event {
     super(type as unknown as string)
   }
 }
+export type UIEventDispatcher = <T extends UIEventType>(
+  type: T,
+  data: UIEventData[T]
+) => boolean
+export type UIEventListener = <T extends UIEventType>(e: UIEvent<T>) => void
 
-export default class UI extends EventTarget {
+export default class UI {
   private _state: UIState
   private _setState?: StateUpdater<UIState>
+  private eventTarget: EventTarget
 
   constructor() {
-    super()
+    this.eventTarget = new EventTarget()
     this._state = {
       showStats: true,
       loadingText: 'Loading...',
-      readyToPlay: false
+      readyToPlay: false,
+      inGame: false,
     }
+  }
+
+  /** Dispatch a UI event to this event target */
+  dispatchEvent: UIEventDispatcher = (type, data) => {
+    return this.eventTarget.dispatchEvent(new UIEvent(type, data))
+  }
+
+  /** Add an event listener to this event target */
+  addEventListener<T extends UIEventType>(type: T, listener: UIEventListener) {
+    this.eventTarget.addEventListener(type, listener as any)
+  }
+
+  removeEventListener<T extends UIEventType>(
+    type: T,
+    listener: UIEventListener
+  ) {
+    this.eventTarget.removeEventListener(type, listener as any)
   }
 
   get state(): Readonly<UIState> {
@@ -57,6 +82,7 @@ export default class UI extends EventTarget {
     root.id = 'ui-root'
     document.body.appendChild(root)
     const node = createElement(UIApp, {
+      dispatchEvent: this.dispatchEvent,
       initialState: this.state,
       // Hook the UI component's setState function so that we can modify state outside of Preact
       setStateUpdater: f => {

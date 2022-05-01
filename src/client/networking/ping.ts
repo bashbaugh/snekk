@@ -34,10 +34,6 @@ export default class ServerPinger {
   startPinging(interval: number) {
     this.pingInterval = setInterval(async () => {
       this.lastPing = await this.ping()
-      console.log(
-        this.lastPing.serverTimeOffsetWithLatency,
-        this.lastPing.serverTimeOffset
-      )
     }, interval)
   }
 
