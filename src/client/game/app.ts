@@ -27,8 +27,8 @@ export default class App {
     this.ui.renderUI()
 
     this.app.ticker.start()
-    this.app.ticker.minFPS = 50
-    this.app.ticker.maxFPS = 120
+    this.app.ticker.minFPS = 40
+    this.app.ticker.maxFPS = 80
 
     this.network = new Network()
 

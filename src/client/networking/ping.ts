@@ -11,7 +11,7 @@ interface PingData {
   serverTimeOffset: number
 }
 
-export default class ServerTimeManager {
+export default class ServerPinger {
   private room: Room
   private pingIndex: number = 0
   private resCbQueue: Record<number, (serverTs: number) => void> = {}
@@ -32,11 +32,6 @@ export default class ServerTimeManager {
   }
 
   startPinging(interval: number) {
-    // Ping three times in quick succession to get initial estimate
-    // const initialPings = Promise.all([
-    //   this.ping, this.ping, this.ping
-    // ])
-
     this.pingInterval = setInterval(async () => {
       this.lastPing = await this.ping()
       console.log(
@@ -50,9 +45,9 @@ export default class ServerTimeManager {
     clearInterval(this.pingInterval!)
   }
 
-  getServerTimeEstimate() {
-    return Date.now() + (this.lastPing?.serverTimeOffset ?? 0)
-  }
+  // getServerTimeEstimate() {
+  //   return Date.now() + (this.lastPing?.serverTimeOffset ?? 0)
+  // }
 
   /** Get latency and server time */
   private ping() {

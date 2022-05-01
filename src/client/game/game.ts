@@ -133,7 +133,10 @@ export default class Game {
       snake.draw()
     }
 
-    // this.ui.updateText()
+    this.ui.setStats({
+      fps: this.app.ticker.FPS,
+      ping: this.network.pinger?.lastPing?.latency,
+    })
   }
 
   public getViewOffset(): XY {

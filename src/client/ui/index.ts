@@ -5,6 +5,7 @@ import UIApp from './UIApp'
 export interface UIState {
   stats?: {
     fps: number
+    ping?: number
   }
   showStats: boolean
 }

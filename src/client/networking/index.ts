@@ -3,6 +3,8 @@ import { Message, MESSAGETYPE } from 'types/networking'
 import GameState, { PlayerState } from 'shared/serverState'
 import { debugLog } from '../util'
 import { DeathReason } from 'types/game'
+import ServerPinger from './ping'
+import { Server } from 'colyseus'
 // import ServerTimeManager from './time'
 
 export default class Network {
@@ -10,6 +12,7 @@ export default class Network {
   private room: Room<GameState> | null = null
   // private sTime?: ServerTimeManager
 
+  public pinger?: ServerPinger
   public lastServerTs: number = 0
   public lastServerTimeOffset: number = 0
 
@@ -25,10 +28,6 @@ export default class Network {
     return this.room?.state
   }
 
-  // get serverTime() {
-  //   return this.sTime?.getServerTimeEstimate()
-  // }
-
   get serverTime() {
     return Date.now() + this.lastServerTimeOffset
   }
@@ -36,9 +35,13 @@ export default class Network {
   async findGame() {
     const r = await this.client.joinOrCreate<GameState>('arena', {})
     this.room = r
+    this.pinger = new ServerPinger(r)
+    this.pinger.startPinging(2000)
+
     debugLog('[NETWORK] Joined room', r.id, 'as', r.sessionId)
 
     r.onLeave((code: number) => {
+      this.pinger?.stopPinging()
       debugLog('[NETWORK] Left session. WS code:', code)
     })
   }
