@@ -7,9 +7,10 @@ import ServerTimeManager from './time'
 export default class Network {
   private client: Client
   private room: Room<GameState> | null = null
-  private sTime?: ServerTimeManager
+  // private sTime?: ServerTimeManager
 
   public lastServerTs: number = 0
+  public lastServerTimeOffset: number = 0
 
   constructor() {
     this.client = new Client('ws://localhost:3001')
@@ -23,23 +24,23 @@ export default class Network {
     return this.room?.state
   }
 
-  get serverTime() {
-    return this.sTime?.getServerTimeEstimate()
-  }
+  // get serverTime() {
+  //   return this.sTime?.getServerTimeEstimate()
+  // }
 
-  get ping() {
-    // TODO actual ping
-    return this.sTime?.roundtripPing
+  get serverTime() {
+    return Date.now() + this.lastServerTimeOffset
   }
 
   async findGame() {
     const r = await this.client.joinOrCreate<GameState>('classic', {})
     this.room = r
     debugLog('[NETWORK] Joined room', r.id, 'as', r.sessionId)
-    this.sTime = new ServerTimeManager(r)
-    this.sTime.estimateOffset()
+    // this.sTime = new ServerTimeManager(r)
+    // this.sTime.startPinging(2000)
 
     r.onLeave((code: number) => {
+      // this.sTime!.stopPinging()
       debugLog('[NETWORK] Left session. WS code:', code)
     })
   }
@@ -51,6 +52,7 @@ export default class Network {
   public onStateChange(cb: (state: GameState) => void) {
     this.room?.onStateChange(s => {
       this.lastServerTs = s.ts
+      this.lastServerTimeOffset = s.ts - Date.now()
       cb(s)
     })
   }

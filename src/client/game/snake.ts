@@ -25,6 +25,14 @@ class ClientSnakeState implements SharedSnakeState {
   }
 }
 
+interface ServerFrame {
+  serverTs: number
+  clientTs: number
+  snake: Omit<SharedSnakeState, 'makePoint'>
+  head: SPoint
+  tail: SPoint
+}
+
 export default class Snake extends SnakeBehaviour {
   private container: PIXI.Container
   private graphics: PIXI.Graphics
@@ -45,7 +53,7 @@ export default class Snake extends SnakeBehaviour {
   get tail() {
     return this.state.points[this.state.points.length - 1]
   }
-  set tail (t: SPoint) {
+  set tail(t: SPoint) {
     this.state.points[this.state.points.length - 1] = t
   }
 
@@ -54,67 +62,96 @@ export default class Snake extends SnakeBehaviour {
     this.game.gameContainer.removeChild(this.container)
   }
 
-  private serverQueue: Array<{
-    serverTs: number
-    clientTs: number
-    snake: SharedSnakeState
-  }> = []
+  private serverQueue: Array<ServerFrame> = []
 
   onServerState(serverState: SharedSnakeState, isPlayer: boolean) {
     const { points, direction, length, speed } = serverState
 
-    if (true) {
-      this.state.direction = direction
-      this.state.length = length
-      this.state.speed = speed
-      // Copy points into local state
-      for (let i = 0; i < points.length; i++) {
-        const p = points[i]
-        this.state.points[i] = {...p}
-      }
-      this.state.points.splice(points.length)
+    const _snakePoints = points.map(p => this.state.makePoint(p))
 
-      // Insert a copy of this frame into the queue
-      this.serverQueue.unshift({
-        serverTs: this.game.network.lastServerTs,
-        clientTs: Date.now(),
-        points: this.state.points.map(p => (this.state.makePoint(p))),
-        head: this.state.makePoint(points[0]),
-        tail: this.state.makePoint(points[points.length - 1]),
-      })
+    this.serverQueue.unshift({
+      serverTs: this.game.network.lastServerTs,
+      clientTs: Date.now(),
+      // Clone state
+      snake: {
+        points: _snakePoints,
+        length,
+        direction,
+        speed,
+      },
+      head: _snakePoints[0],
+      tail: _snakePoints[points.length - 1],
+    })
 
-      // Only need to keep 2 frames at a time
-      this.serverQueue.splice(CONFIG.interpDeltaFrames + 2)
-    }
+    // TODO remove old frames
+    // this.serverQueue.splice(CONFIG.interpDeltaFrames + 2)
+  }
+
+  /** If we can't interpolate we can extrapolate the position of the snakes from the last frame */
+  extrapolatePosition() {
+    if (!this.serverQueue[0]) return
+    const lastFrameTs = this.serverQueue[0].serverTs
+    const serverTime = this.game.network.serverTime
+    // Time between extrapolation target and last available frame
+    const delta = serverTime - CONFIG.interpDeltaMs - lastFrameTs
+    const lastF = this.serverQueue[0]
+
+    const newHead = this.getNextHead(
+      delta,
+      lastF.head,
+      lastF.snake.direction,
+      lastF.snake.speed
+    )
+    Object.assign(this.head, newHead)
+
+    // Recalculate tail
+    this.updateTail()
   }
 
   /** Interpolate snake points between server frames */
-  interpolatePoints() {
-    const [nextF, previousF] = this.serverQueue.slice(CONFIG.interpDeltaFrames)
-    if (!previousF) return
+  interpolatePosition() {
+    // This is the timestamp (on the server) that we're hoping to interpolate to
+    const interpTarget = this.game.network.serverTime - CONFIG.interpDeltaMs
 
-    const timeSinceLast = Date.now() - nextF.clientTs
-    // TODO smooth frametime
-    const frameTime = nextF.clientTs - previousF.clientTs
-    const percent = timeSinceLast / frameTime
-    if (percent > 1) {
-      // Can't interpolate; extrapolate and recalculate tail instead
-      const newHead = this.getNextHead(
-        timeSinceLast,
-        nextF.head,
-        this.state.direction,
-        this.state.speed
-      )
-      Object.assign(this.head, newHead)
+    // Make sure that we have a frame between now and target time
+    if (this.serverQueue[0]?.serverTs >= interpTarget) {
+      const nextF = this.serverQueue[0]
 
-      this.updateTail()
+      // Find a frame on the other side of the target ts
+      let lastF: ServerFrame | undefined
+      for (const f of this.serverQueue) {
+        if (f.serverTs < interpTarget) {
+          lastF = f
+          break
+        }
+      }
+      if (!lastF) return // Cancel interpolation if we don't have enough frames
+
+      const frameDelta = nextF.serverTs - lastF.serverTs
+      const targetDelta = interpTarget - lastF.serverTs
+      const percent = targetDelta / frameDelta
+
+      // TODO filter points at target time
+      this.state.points = lastF.snake.points
+      // for (let i = 0; i < this.state.points.length; i++) {
+      //   const p = lastF.snake.points[i]
+      //   this.state.points[i] = p
+      // }
+      // this.state.points.splice(lastF.snake.points.length)
+
+      // Interpolate points
+      Object.assign(this.head, lerpPoint(lastF.head, nextF.head, percent, true))
+      Object.assign(this.tail, lerpPoint(lastF.tail, nextF.tail, percent, true))
     }
-    // Lerp head and tail latest server frames
-    else {
-      /*if (nextF.head.s === previousF.head.s)*/ Object.assign(this.head, lerpPoint(previousF.head, nextF.head, percent, true))
-      // if (nextF.tail.s === previousF.tail.s) Object.assign(this.tail, lerpPoint(previousF.tail, nextF.tail, percent, true))
-    }
-      
+    // Can't interpolate; extrapolate instead
+    else this.extrapolatePosition()
+
+    // // Lerp head and tail latest server frames
+    // else {
+    //   /*if (nextF.head.s === previousF.head.s)*/ Object.assign(this.head, lerpPoint(previousF.head, nextF.head, percent, true))
+    //   // if (nextF.tail.s === previousF.tail.s) Object.assign(this.tail, lerpPoint(previousF.tail, nextF.tail, percent, true))
+    // }
+
     // Recalculate tail
     // console.log(previousF.tail.s, this.tail?.s)
     // this.tail = previousF.tail.s === this.tail?.s ? previousF.tail : nextF.tail
@@ -122,7 +159,7 @@ export default class Snake extends SnakeBehaviour {
   }
 
   update(delta: number) {
-    this.interpolatePoints()
+    this.interpolatePosition()
     // console.log(this.state.points.map(p => `${p.x},${p.y}`))
   }
 

@@ -123,14 +123,14 @@ export default class Game {
     if (!this.playerSnake) return { x: 0, y: 0 }
     // Player snake should be centered in view, so the view should be offset according to its head
     const center = this.playerSnake.head
-    return {
-      x: center.x - this.app.view.width / 2,
-      y: center.y - this.app.view.height / 2,
-    }
     // return {
-    //   x: -200,
-    //   y: -200,
+    //   x: center.x - this.app.view.width / 2,
+    //   y: center.y - this.app.view.height / 2,
     // }
+    return {
+      x: -200,
+      y: -200,
+    }
   }
 
   public getViewRelativePoint(p: XY): XY {
