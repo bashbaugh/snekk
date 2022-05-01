@@ -3,18 +3,19 @@ import Network from 'client/networking'
 import { debugLog } from 'client/util'
 import * as PIXI from 'pixi'
 import { PlayerState } from 'shared/serverState'
+import BaseObject from './baseObject'
+import Background from './objects/background'
 import Snake from './snake'
 
 export default class Game {
   readonly app: PIXI.Application
   readonly input: KeyboardManager
   readonly network: Network
-
   gameContainer: PIXI.Container
 
-  arenaSize = 2000
+  private gameObjects: BaseObject[] = []
 
-  // ID/player map
+  // ID:player map
   private players: Record<
     string,
     {
@@ -37,6 +38,8 @@ export default class Game {
     this.input = new KeyboardManager()
 
     this.addNetworkHandlers()
+
+    this.gameObjects.push(new Background(this))
   }
 
   private addNetworkHandlers() {
@@ -112,6 +115,10 @@ export default class Game {
 
   onTick(delta: number) {
     const deltaMs = this.app.ticker.deltaMS
+
+    for (const obj of this.gameObjects) obj.update(deltaMs)
+    for (const obj of this.gameObjects) obj.draw()
+
     for (const [id, { snake }] of Object.entries(this.players)) {
       if (!snake) continue // If this player doesn't have an active snake skip them
       snake.update(deltaMs)

@@ -48,14 +48,6 @@ export default class Snake extends SnakeBehaviour {
     game.app.stage.addChild(this.container)
     this.graphics = new PIXI.Graphics()
     this.game.gameContainer.addChild(this.graphics)
-    // this.lastServerTurnPoint = {...this.state.points[1], ts: Date.now()}
-  }
-
-  get tail() {
-    return this.state.points[this.state.points.length - 1]
-  }
-  set tail(t: SPoint) {
-    this.state.points[this.state.points.length - 1] = t
   }
 
   cleanup() {
@@ -83,12 +75,9 @@ export default class Snake extends SnakeBehaviour {
       head: _snakePoints[0],
       tail: _snakePoints[points.length - 1],
     })
-
-    // TODO remove old frames
-    // this.serverQueue.splice(CONFIG.interpDeltaFrames + 2)
   }
 
-  /** If we can't interpolate we can extrapolate the position of the snakes from the last frame */
+  /** extrapolate the position of the snake from the last available frame */
   extrapolatePosition() {
     // TODO fix extrapolation diagonal bug that can occur with low intrapolation delta/patch rate
     if (!this.serverQueue[0]) return
@@ -121,17 +110,16 @@ export default class Snake extends SnakeBehaviour {
 
       // Find a frame on the other side of the target ts
       let lastF: ServerFrame | undefined
-      for (const f of this.serverQueue) {
+      for (const [i, f] of this.serverQueue.entries()) {
         if (f.serverTs < interpTarget) {
           lastF = f
+
+          // Remove old frames
+          this.serverQueue.splice(i + 1)
           break
         }
       }
       if (!lastF) return // Cancel interpolation if we don't have enough frames
-
-      // const frameDelta = nextF.serverTs - lastF.serverTs
-      // const targetDelta = interpTarget - lastF.serverTs
-      // const percent = targetDelta / frameDelta
 
       // we need to find the timestamps of the frame we will interpolate the head from and the start/end points
       let headInterpStart = lastF.serverTs
@@ -176,32 +164,17 @@ export default class Snake extends SnakeBehaviour {
       const headPercent =  headInterpProgress / headInterpDelta
 
       // Interpolate head using computer points and timestamps
-      console.log("BEFORE", this.head)
       Object.assign(this.head, lerpPoint(headFromPoint, headToPoint, headPercent, true))
-      console.log("AFTTER", this.head)
 
       // Recalculate tail
       this.updateTail()
-      // Object.assign(this.tail, lerpPoint(lastF.tail, nextF.tail, percent, true))
     }
     // Can't interpolate; extrapolate instead
     else this.extrapolatePosition()
-
-    // // Lerp head and tail latest server frames
-    // else {
-    //   /*if (nextF.head.s === previousF.head.s)*/ Object.assign(this.head, lerpPoint(previousF.head, nextF.head, percent, true))
-    //   // if (nextF.tail.s === previousF.tail.s) Object.assign(this.tail, lerpPoint(previousF.tail, nextF.tail, percent, true))
-    // }
-
-    // Recalculate tail
-    // console.log(previousF.tail.s, this.tail?.s)
-    // this.tail = previousF.tail.s === this.tail?.s ? previousF.tail : nextF.tail
-    // this.updateTail()
   }
 
   update(delta: number) {
     this.interpolatePosition()
-    // console.log(this.state.points.map(p => `${p.x},${p.y}`))
   }
 
   draw() {

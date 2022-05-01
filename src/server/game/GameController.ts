@@ -1,11 +1,11 @@
 import GameState, { PlayerState, Point, SnakeState } from 'shared/serverState'
-import GameRoom from './GameRoom'
+import ArenaRoom from './ArenaRoom'
 import { Message, MESSAGETYPE } from 'types/networking'
 import { Client } from 'colyseus'
 import Snake from './Snake'
 
 export default class GameController {
-  room: GameRoom
+  room: ArenaRoom
   state: GameState
 
   players: Record<
@@ -16,7 +16,7 @@ export default class GameController {
     }
   > = {}
 
-  constructor(room: GameRoom) {
+  constructor(room: ArenaRoom) {
     this.room = room
     this.state = room.state
   }

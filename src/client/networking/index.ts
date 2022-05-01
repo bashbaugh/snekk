@@ -33,14 +33,11 @@ export default class Network {
   }
 
   async findGame() {
-    const r = await this.client.joinOrCreate<GameState>('classic', {})
+    const r = await this.client.joinOrCreate<GameState>('arena', {})
     this.room = r
     debugLog('[NETWORK] Joined room', r.id, 'as', r.sessionId)
-    // this.sTime = new ServerTimeManager(r)
-    // this.sTime.startPinging(2000)
 
     r.onLeave((code: number) => {
-      // this.sTime!.stopPinging()
       debugLog('[NETWORK] Left session. WS code:', code)
     })
   }

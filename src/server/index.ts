@@ -2,7 +2,7 @@ import { Server } from 'colyseus'
 import { createServer } from 'http'
 import express from 'express'
 import { WebSocketTransport } from '@colyseus/ws-transport'
-import GameRoom from './game/GameRoom'
+import ArenaRoom from './game/ArenaRoom'
 import { monitor } from '@colyseus/monitor'
 import basicAuth from 'express-basic-auth'
 
@@ -33,14 +33,14 @@ const gameServer = new Server({
   }),
 })
 
-gameServer.define('classic', GameRoom)
+gameServer.define('arena', ArenaRoom)
 
 const port = Number(process.env.port) || 3001
 
 const start = async () => {
   gameServer.listen(port)
   if (process.env.NODE_ENV !== 'production') {
-    // gameServer.simulateLatency(200)
+    gameServer.simulateLatency(200)
   }
   console.log('👾 Game server listening on port', port)
 }

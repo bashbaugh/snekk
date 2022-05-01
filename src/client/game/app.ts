@@ -13,6 +13,7 @@ export default class App {
       width: window.innerWidth,
       height: window.innerHeight,
       backgroundColor: 0x000000,
+      antialias: true,
     })
     document.body.appendChild(this.app.view)
 

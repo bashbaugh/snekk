@@ -5,11 +5,11 @@ import GameState, { PlayerState, Point } from 'shared/serverState'
 import GameController from './GameController'
 import { Message, MESSAGETYPE } from 'types/networking'
 
-export default class GameRoom extends Room<GameState> {
+export default class ArenaRoom extends Room<GameState> {
   game: GameController = undefined as any
 
   onCreate() {
-    console.log('🎮 Initializing classic game room')
+    console.log('🎮 Initializing classic arena room')
     this.setState(new GameState())
     this.setPatchRate(1000 / CONFIG.server.patchRate)
     this.setSimulationInterval(dt => this.game.loop(dt), 1000 / 60)
