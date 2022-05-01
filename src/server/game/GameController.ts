@@ -46,11 +46,11 @@ export default class GameController {
     if (!player) return
     player.snake.die()
     delete this.state.players.get(id)?.snake
-    
+
     const deathMsg: Message[MESSAGETYPE.DEATH] = {
       c: cause,
       p: id,
-      k: killer
+      k: killer,
     }
     player.client.send(MESSAGETYPE.DEATH, deathMsg)
   }
@@ -60,7 +60,7 @@ export default class GameController {
     for (const [id, player] of Object.entries(this.players)) {
       // First segment to check is player's head
       const [a1, a2] = player.snake.state.points
-      
+
       for (const [id2, player2] of Object.entries(this.players)) {
         if (id === id2) continue // Skip self
         const points = player2.snake.state.points
@@ -69,7 +69,7 @@ export default class GameController {
           const [b1, b2] = [points[i], points[i + 1]]
           if (linesAreIntersecting(a1, a2, b1, b2)) {
             // Player collided
-            this.killSnake(id, DeathReason.player_collision, id2)
+            // this.killSnake(id, DeathReason.player_collision, id2)
           }
         }
       }

@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "lib": ["DOM"]
+    "lib": ["DOM"],
   },
   "exclude": [
     "./src/server/"

@@ -71,7 +71,7 @@ export default class Network {
   public onSelfDie(cb: (reason: DeathReason, killer?: string) => void) {
     this.room?.onMessage<Message[MESSAGETYPE.DEATH]>(
       MESSAGETYPE.DEATH,
-      (data) => {
+      data => {
         if (data.p === this.clientId) cb(data.c, data.k)
       }
     )

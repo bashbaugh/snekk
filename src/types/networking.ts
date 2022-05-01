@@ -1,4 +1,4 @@
-import { DeathReason } from "./game"
+import { DeathReason } from './game'
 
 export enum MESSAGETYPE {
   SPAWN,

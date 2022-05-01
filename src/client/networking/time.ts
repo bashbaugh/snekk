@@ -31,7 +31,7 @@ export default class ServerTimeManager {
     )
   }
 
-  startPinging (interval: number) {
+  startPinging(interval: number) {
     // Ping three times in quick succession to get initial estimate
     // const initialPings = Promise.all([
     //   this.ping, this.ping, this.ping
@@ -39,11 +39,14 @@ export default class ServerTimeManager {
 
     this.pingInterval = setInterval(async () => {
       this.lastPing = await this.ping()
-      console.log(this.lastPing.serverTimeOffsetWithLatency, this.lastPing.serverTimeOffset)
+      console.log(
+        this.lastPing.serverTimeOffsetWithLatency,
+        this.lastPing.serverTimeOffset
+      )
     }, interval)
   }
 
-  stopPinging () {
+  stopPinging() {
     clearInterval(this.pingInterval!)
   }
 
@@ -69,7 +72,7 @@ export default class ServerTimeManager {
           serverTs,
           latency,
           serverTimeOffsetWithLatency: serverTs - recTs,
-          serverTimeOffset: serverTs - recTs + latency / 2
+          serverTimeOffset: serverTs - recTs + latency / 2,
         })
       }
     })

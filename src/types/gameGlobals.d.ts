@@ -4,7 +4,7 @@ interface XY {
 }
 
 /** Snake Point
- *  s: sequence number to identify turns. 
+ *  s: sequence number to identify turns.
  *  d: direction the point turns the snake
  *  t: server timestamp when the turn was received or point was moved
  */

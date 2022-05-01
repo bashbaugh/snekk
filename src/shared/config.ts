@@ -5,7 +5,7 @@ const CONFIG = Object.freeze({
     startLength: 150,
   },
   maxClientsPerRoom: 50,
-  interpDeltaMs: 100,
+  interpDeltaMs: 50,
   server: {
     // maxLagMs: 500,
     patchRate: 20,

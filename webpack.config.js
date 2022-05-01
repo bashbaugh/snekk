@@ -25,7 +25,7 @@ const config = {
     filename: '[name].[contenthash].js'
   },
   resolve: {
-    extensions: ['.ts', '.js', 'json'],
+    extensions: ['.ts', '.tsx', '.js', 'json'],
     modules: [
       p('src'),
       p('node_modules')
@@ -38,7 +38,7 @@ const config = {
     rules: [
       // TODO should we use Babel as well for JS?
       {
-        test: /\.(js|ts)$/,
+        test: /\.(js|tsx?)$/,
         use: [
           {
             loader: 'ts-loader',
@@ -49,8 +49,22 @@ const config = {
         ]
       },
       {
-        test: /\.(css|scss)$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
+        test: /\.(css)$/,
+        use: [
+          MiniCssExtractPlugin.loader, 
+          'css-loader',
+          {
+            loader: "postcss-loader",
+            options: {
+              postcssOptions: {
+                plugins: {
+                  tailwindcss: {},
+                  autoprefixer: {},
+                }
+              },
+            },
+          },
+        ],
         exclude: /node_modules/,
       },
       {

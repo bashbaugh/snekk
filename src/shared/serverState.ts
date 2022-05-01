@@ -10,7 +10,7 @@ export class Point extends Schema {
   /** Direction (for turn points9) */
   @type('int8') d: Direction
   /** Server timestamp */
-  @type ('number') t: number
+  @type('number') t: number
 
   constructor(x: number, y: number, s: number, d: Direction, t?: number) {
     super()

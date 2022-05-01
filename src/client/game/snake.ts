@@ -128,7 +128,7 @@ export default class Snake extends SnakeBehaviour {
 
       // Snake should include all points from last frame
       const targetPoints = lastF.snake.points.slice()
-      
+
       // Now, iterate from tail to head in next frame's points
       for (let i = nextF.snake.points.length - 1; i >= 0; i--) {
         const p = nextF.snake.points[i]
@@ -161,10 +161,13 @@ export default class Snake extends SnakeBehaviour {
 
       const headInterpDelta = nextF.serverTs - headInterpStart
       const headInterpProgress = interpTarget - headInterpStart
-      const headPercent =  headInterpProgress / headInterpDelta
+      const headPercent = headInterpProgress / headInterpDelta
 
       // Interpolate head using computer points and timestamps
-      Object.assign(this.head, lerpPoint(headFromPoint, headToPoint, headPercent, true))
+      Object.assign(
+        this.head,
+        lerpPoint(headFromPoint, headToPoint, headPercent, true)
+      )
 
       // Recalculate tail
       this.updateTail()
@@ -188,7 +191,5 @@ export default class Snake extends SnakeBehaviour {
     }
   }
 
-  die () {
-    
-  }
+  die() {}
 }

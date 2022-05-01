@@ -9,7 +9,9 @@ export default class Snake extends SnakeBehaviour {
   game: GameController
 
   constructor(gameController: GameController, player: PlayerState) {
-    const snake = new SnakeState({ x: randomInt(800), y: randomInt(500) })
+    const spawn = { x: randomInt(800), y: randomInt(500) }
+    console.log(spawn)
+    const snake = new SnakeState(spawn)
     super(snake)
     this.player = player
     this.game = gameController
@@ -40,7 +42,5 @@ export default class Snake extends SnakeBehaviour {
     // if (this.state.direction * data.d === 3 || this.state.direction * data.d === 8) return
   }
 
-  die () {
-    
-  }
+  die() {}
 }

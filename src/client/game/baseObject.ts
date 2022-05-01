@@ -19,7 +19,7 @@ export default abstract class BaseObject {
     this.game.gameContainer.removeChild(this.container)
   }
 
-  abstract update (delta: number): void
+  abstract update(delta: number): void
 
-  abstract draw (): void
+  abstract draw(): void
 }

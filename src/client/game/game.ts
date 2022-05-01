@@ -1,5 +1,6 @@
 import KeyboardManager from 'client/input/keyboard'
 import Network from 'client/networking'
+import UI from 'client/ui'
 import { debugLog } from 'client/util'
 import * as PIXI from 'pixi'
 import { PlayerState } from 'shared/serverState'
@@ -11,6 +12,7 @@ export default class Game {
   readonly app: PIXI.Application
   readonly input: KeyboardManager
   readonly network: Network
+  readonly ui: UI
   gameContainer: PIXI.Container
 
   private gameObjects: BaseObject[] = []
@@ -25,9 +27,10 @@ export default class Game {
   >
   private playerSnake?: Snake
 
-  constructor(app: PIXI.Application, network: Network) {
+  constructor(app: PIXI.Application, network: Network, ui: UI) {
     this.app = app
     this.network = network
+    this.ui = ui
     this.app.ticker.add(t => this.onTick(t))
 
     this.gameContainer = new PIXI.Container()
@@ -129,6 +132,8 @@ export default class Game {
       snake.update(deltaMs)
       snake.draw()
     }
+
+    // this.ui.updateText()
   }
 
   public getViewOffset(): XY {

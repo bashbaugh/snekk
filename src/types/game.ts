@@ -1,3 +1,3 @@
 export enum DeathReason {
-  player_collision
+  player_collision,
 }

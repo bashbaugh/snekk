@@ -1,4 +1,4 @@
-import './css/styles.scss'
+import './css/styles.css'
 import App from './game/app'
 ;(() => {
   new App()
