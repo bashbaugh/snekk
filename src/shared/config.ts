@@ -8,7 +8,7 @@ const CONFIG = Object.freeze({
   interpDeltaMs: 100,
   server: {
     // maxLagMs: 500,
-    patchRate: 10,
+    patchRate: 20,
   },
 })
 

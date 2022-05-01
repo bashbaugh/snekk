@@ -11,17 +11,18 @@ class ClientSnakeState implements SharedSnakeState {
   speed: number
 
   constructor(spawn: XY) {
+    const t = Date.now()
     this.points = [
-      { ...spawn, s: 1, d: 1 },
-      { ...spawn, s: 0, d: 1 },
+      { ...spawn, s: 1, d: 1, t },
+      { ...spawn, s: 0, d: 1, t },
     ]
     this.direction = 1
     this.length = CONFIG.snake.startLength
     this.speed = CONFIG.snake.baseSpeed
   }
 
-  makePoint({ x, y, s, d }: SPoint): SPoint {
-    return { x, y, s, d }
+  makePoint({ x, y, s, d, t }: SPoint): SPoint {
+    return { x, y, s, d, t }
   }
 }
 
@@ -89,6 +90,7 @@ export default class Snake extends SnakeBehaviour {
 
   /** If we can't interpolate we can extrapolate the position of the snakes from the last frame */
   extrapolatePosition() {
+    // TODO fix extrapolation diagonal bug that can occur with low intrapolation delta/patch rate
     if (!this.serverQueue[0]) return
     const lastFrameTs = this.serverQueue[0].serverTs
     const serverTime = this.game.network.serverTime
@@ -127,21 +129,60 @@ export default class Snake extends SnakeBehaviour {
       }
       if (!lastF) return // Cancel interpolation if we don't have enough frames
 
-      const frameDelta = nextF.serverTs - lastF.serverTs
-      const targetDelta = interpTarget - lastF.serverTs
-      const percent = targetDelta / frameDelta
+      // const frameDelta = nextF.serverTs - lastF.serverTs
+      // const targetDelta = interpTarget - lastF.serverTs
+      // const percent = targetDelta / frameDelta
 
-      // TODO filter points at target time
-      this.state.points = lastF.snake.points
-      // for (let i = 0; i < this.state.points.length; i++) {
-      //   const p = lastF.snake.points[i]
-      //   this.state.points[i] = p
-      // }
-      // this.state.points.splice(lastF.snake.points.length)
+      // we need to find the timestamps of the frame we will interpolate the head from and the start/end points
+      let headInterpStart = lastF.serverTs
+      let headFromPoint = lastF.head
+      let headToPoint = nextF.head
 
-      // Interpolate points
-      Object.assign(this.head, lerpPoint(lastF.head, nextF.head, percent, true))
-      Object.assign(this.tail, lerpPoint(lastF.tail, nextF.tail, percent, true))
+      // Snake should include all points from last frame
+      const targetPoints = lastF.snake.points.slice()
+      
+      // Now, iterate from tail to head in next frame's points
+      for (let i = nextF.snake.points.length - 1; i >= 0; i--) {
+        const p = nextF.snake.points[i]
+
+        // Check if the next frame has points which aren't present in the last frame
+        // And filter points that were created after the target time
+        if (p.s > targetPoints[0].s && p.t < interpTarget) {
+          // Include the point in our interpolation
+          targetPoints.unshift(p)
+
+          // This point is the new head; we need to interpolate to it from from the point before it
+          const previousPoint = nextF.snake.points[i + 1]
+          headInterpStart = previousPoint.t
+          headFromPoint = previousPoint
+          headToPoint = p
+        }
+        // If we don't find any new turns in the next frame
+        // We still need to find the head's point in the next frame
+        else if (p.s === headFromPoint.s) {
+          headToPoint = p
+        }
+      }
+
+      // Set non-head points on snake without interpolation
+      for (let i = 1; i < targetPoints.length; i++) {
+        const p = targetPoints[i]
+        this.state.points[i] = p
+      }
+      this.state.points.splice(targetPoints.length)
+
+      const headInterpDelta = nextF.serverTs - headInterpStart
+      const headInterpProgress = interpTarget - headInterpStart
+      const headPercent =  headInterpProgress / headInterpDelta
+
+      // Interpolate head using computer points and timestamps
+      console.log("BEFORE", this.head)
+      Object.assign(this.head, lerpPoint(headFromPoint, headToPoint, headPercent, true))
+      console.log("AFTTER", this.head)
+
+      // Recalculate tail
+      this.updateTail()
+      // Object.assign(this.tail, lerpPoint(lastF.tail, nextF.tail, percent, true))
     }
     // Can't interpolate; extrapolate instead
     else this.extrapolatePosition()

@@ -7,7 +7,7 @@ export interface SharedSnakeState {
   speed: number
 
   /** Make a point and increment the sequence number */
-  makePoint: ({ x, y, s }: SPoint) => any
+  makePoint: ({ x, y, s, d, t }: SPoint) => any
 }
 
 export default abstract class SnakeBehaviour {
@@ -42,7 +42,7 @@ export default abstract class SnakeBehaviour {
     direction: Direction,
     speed: number
   ): XY {
-    const h = { x: head.x, y: head.y },
+    const h = { x: head.x, y: head.y, /*t: Date.now()*/ },
       d = direction,
       deltaSec = delta / 1000
     const m = Math.round(speed * deltaSec)
@@ -91,6 +91,7 @@ export default abstract class SnakeBehaviour {
     // Add new turn point and increment sequence number so that we can track it on server/client
     this.state.direction = d
     this.head.d = d
+    this.head.t = Date.now()
     this.state.points.unshift(
       this.state.makePoint({ ...this.head, s: this.head.s + 1 })
     )

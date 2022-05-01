@@ -40,7 +40,7 @@ const port = Number(process.env.port) || 3001
 const start = async () => {
   gameServer.listen(port)
   if (process.env.NODE_ENV !== 'production') {
-    gameServer.simulateLatency(200)
+    // gameServer.simulateLatency(200)
   }
   console.log('👾 Game server listening on port', port)
 }

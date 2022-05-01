@@ -22,6 +22,7 @@ export default class Snake extends SnakeBehaviour {
 
   turn(data: Message[MESSAGETYPE.TURN]) {
     this.turnHead(data.d)
+
     // TODO handle out of order turns
     // Discard this turn if the point index doesn't match up and patch the client to cancel the turn
     // if (this.head.s !== data.s) return
@@ -36,12 +37,5 @@ export default class Snake extends SnakeBehaviour {
     // }
 
     // if (this.state.direction * data.d === 3 || this.state.direction * data.d === 8) return
-    // this.state.direction = data.d
-    // this.head.x = data.x
-    // this.head.y = data.y
-    // this.head.d = data.d
-    // this.state.points.unshift(
-    //   this.state.makePoint({ ...this.head, s: this.head.s + 1 })
-    // )
   }
 }

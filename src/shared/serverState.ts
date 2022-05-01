@@ -9,14 +9,17 @@ export class Point extends Schema {
   @type('int16') s: number
   /** Direction (for turn points9) */
   @type('int8') d: Direction
+  /** Server timestamp */
+  @type ('number') t: number
 
-  constructor(x: number, y: number, s: number, d: Direction) {
+  constructor(x: number, y: number, s: number, d: Direction, t?: number) {
     super()
     // Object.assign(this, arguments)
     this.x = x
     this.y = y
     this.s = s
     this.d = d
+    this.t = t || Date.now()
   }
 }
 
@@ -31,8 +34,8 @@ export class SnakeState extends Schema implements SharedSnakeState {
     super()
 
     this.points.push(
-      new Point(spawnP.x, spawnP.x, 0, 1),
-      new Point(spawnP.x, spawnP.y, 1, 1)
+      new Point(spawnP.x, spawnP.x, 1, 1),
+      new Point(spawnP.x, spawnP.y, 0, 1)
     )
   }
 

@@ -2,7 +2,7 @@ import { Client, Room } from 'colyseus.js'
 import { Message, MESSAGETYPE } from 'types/networking'
 import GameState, { PlayerState } from 'shared/serverState'
 import { debugLog } from '../util'
-import ServerTimeManager from './time'
+// import ServerTimeManager from './time'
 
 export default class Network {
   private client: Client
