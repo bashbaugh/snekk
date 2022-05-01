@@ -2,6 +2,7 @@ import { Client, Room } from 'colyseus.js'
 import { Message, MESSAGETYPE } from 'types/networking'
 import GameState, { PlayerState } from 'shared/serverState'
 import { debugLog } from '../util'
+import { DeathReason } from 'types/game'
 // import ServerTimeManager from './time'
 
 export default class Network {
@@ -62,7 +63,16 @@ export default class Network {
     this.room?.onMessage(
       MESSAGETYPE.SPAWN,
       (data: Message[MESSAGETYPE.SPAWN]) => {
-        cb(data.point, this.room!.state.players.get(this.clientId!)!)
+        cb(data.p, this.room!.state.players.get(this.clientId!)!)
+      }
+    )
+  }
+
+  public onSelfDie(cb: (reason: DeathReason, killer?: string) => void) {
+    this.room?.onMessage<Message[MESSAGETYPE.DEATH]>(
+      MESSAGETYPE.DEATH,
+      (data) => {
+        if (data.p === this.clientId) cb(data.c, data.k)
       }
     )
   }

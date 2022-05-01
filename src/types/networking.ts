@@ -1,12 +1,15 @@
+import { DeathReason } from "./game"
+
 export enum MESSAGETYPE {
   SPAWN,
   TURN,
   TIMESYNC,
+  DEATH,
 }
 
 export interface Message {
   [MESSAGETYPE.SPAWN]: {
-    point: XY
+    p: XY
   }
   [MESSAGETYPE.TURN]: {
     /** Direction */
@@ -21,5 +24,13 @@ export interface Message {
     i: number
     /** Timestamp */
     t: number
+  }
+  [MESSAGETYPE.DEATH]: {
+    /** Player (victim) */
+    p: string
+    /** Cause */
+    c: DeathReason
+    /** Killer */
+    k?: string
   }
 }

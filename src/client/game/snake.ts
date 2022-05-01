@@ -187,4 +187,8 @@ export default class Snake extends SnakeBehaviour {
       g.lineTo(points[i].x, points[i].y)
     }
   }
+
+  die () {
+    
+  }
 }

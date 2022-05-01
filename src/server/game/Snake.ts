@@ -1,5 +1,6 @@
 import SnakeBehaviour from 'shared/game/snake'
 import { PlayerState, SnakeState } from 'shared/serverState'
+import { randomInt } from 'shared/util'
 import { Message, MESSAGETYPE } from 'types/networking'
 import GameController from './GameController'
 
@@ -8,7 +9,7 @@ export default class Snake extends SnakeBehaviour {
   game: GameController
 
   constructor(gameController: GameController, player: PlayerState) {
-    const snake = new SnakeState({ x: 50, y: 50 })
+    const snake = new SnakeState({ x: randomInt(800), y: randomInt(500) })
     super(snake)
     this.player = player
     this.game = gameController
@@ -37,5 +38,9 @@ export default class Snake extends SnakeBehaviour {
     // }
 
     // if (this.state.direction * data.d === 3 || this.state.direction * data.d === 8) return
+  }
+
+  die () {
+    
   }
 }

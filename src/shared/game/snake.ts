@@ -25,6 +25,7 @@ export default abstract class SnakeBehaviour {
   }
 
   abstract update(delta: number): void
+  abstract die (): void
 
   protected updateHead(delta: number) {
     const newHead = this.getNextHead(
@@ -87,7 +88,7 @@ export default abstract class SnakeBehaviour {
 
   public turnHead(d: Direction) {
     // Prevent reversing
-    if (this.state.direction * d === 3 || this.state.direction * d === 8) return
+    if (this.state.direction * d === 3 || this.state.direction * d === 8 || this.state.direction === d) return
     // Add new turn point and increment sequence number so that we can track it on server/client
     this.state.direction = d
     this.head.d = d

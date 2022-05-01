@@ -11,7 +11,7 @@ export default class Background extends BaseObject {
     const offset = this.game.getViewOffset()
     const [w, h] = [this.game.app.view.width, this.game.app.view.height]
 
-    for (let i = 0; i < w / GRID_LINE_SPACING; i++) {
+    for (let i = 0; i < w / GRID_LINE_SPACING + 1; i++) {
       g.lineStyle(2, 0xab0311, 0.3)
       g.moveTo(i * GRID_LINE_SPACING - offset.x % GRID_LINE_SPACING, 0)
       g.lineTo(i * GRID_LINE_SPACING - offset.x % GRID_LINE_SPACING, h)

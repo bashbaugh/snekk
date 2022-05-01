@@ -99,6 +99,11 @@ export default class Game {
         }
       }
     })
+
+    this.network.onSelfDie((reason, killerId) => {
+      this.playerSnake?.die()
+      alert(`Killed by ${killerId} (${reason})`)
+    })
   }
 
   addSnake(playerId: string) {
