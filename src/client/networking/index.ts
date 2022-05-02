@@ -35,7 +35,7 @@ export default class Network {
     return Date.now() + this.lastServerTimeOffset
   }
 
-  async findGame() {
+  async findGame(onDisconnect: (code: number) => void) {
     const r = await this.client.joinOrCreate<GameState>('arena', {})
     this.room = r
     this.pinger = new ServerPinger(r)
@@ -45,6 +45,7 @@ export default class Network {
 
     r.onLeave((code: number) => {
       this.pinger?.stopPinging()
+      onDisconnect(code)
       debugLog('[NETWORK] Left session. WS code:', code)
     })
   }

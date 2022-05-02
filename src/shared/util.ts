@@ -25,7 +25,13 @@ export function hslToRgb(h: number, s: number, l: number) {
   let f = (n: number, k = (n + h / 30) % 12) =>
     l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1)
   const rgb = [f(0), f(8), f(4)]
-  const hexString = rgb.reduce((a, b) => a + Math.floor(b * 255).toString(16), '')
+  const hexString = rgb.reduce(
+    (a, b) => a + Math.floor(b * 255).toString(16),
+    ''
+  )
   const hex = parseInt(hexString, 16)
   return hex
 }
+
+export const asyncDelay = (ms: number) =>
+  new Promise(resolve => setTimeout(resolve, ms))

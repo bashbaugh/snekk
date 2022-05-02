@@ -89,7 +89,7 @@ export default class Game {
         state: pState,
       }
       this.ui.setState({
-        inGame: true,
+        ui: 'inGame',
       })
     })
 

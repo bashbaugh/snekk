@@ -3,14 +3,14 @@ import type { StateUpdater } from 'preact/hooks'
 import UIApp from './UIApp'
 
 export interface UIState {
+  ui: 'inGame' | 'loading' | 'readyToPlay' | 'disconnected'
   stats?: {
     fps: number
     ping?: number
   }
   showStats: boolean
   loadingText: string
-  readyToPlay: boolean
-  inGame: boolean
+  wsDisconnectCode?: number
 }
 
 export type UIEventType = 'startPlaying'
@@ -38,10 +38,9 @@ export default class UI {
   constructor() {
     this.eventTarget = new EventTarget()
     this._state = {
+      ui: 'loading',
       showStats: true,
       loadingText: 'Loading...',
-      readyToPlay: false,
-      inGame: false,
     }
   }
 

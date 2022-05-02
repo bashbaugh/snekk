@@ -1,7 +1,11 @@
 import Network from 'client/networking'
 import UI, { UIEventListener } from 'client/ui'
 import * as PIXI from 'pixi'
+import { asyncDelay } from 'shared/util'
+import { theme } from '../../../tailwind.config'
 import Game from './game'
+
+const CONNECTION_RETRY_INTERVAL = 5000
 
 export default class App {
   readonly app: PIXI.Application
@@ -37,11 +41,29 @@ export default class App {
 
   private async findGame() {
     this.ui.setState({ loadingText: 'Connecting...' })
-    await this.network.findGame()
-    this.ui.setState({ readyToPlay: true })
+
+    let success = false
+    while (!success) {
+      await this.network
+        .findGame(wsdisconnectCode => {
+          this.ui.setState({
+            ui: 'disconnected',
+            wsDisconnectCode:
+              wsdisconnectCode !== 1000 ? wsdisconnectCode : undefined,
+          })
+        })
+        .then(() => {
+          success = true
+        })
+        .catch(console.error)
+
+      if (!success) await asyncDelay(CONNECTION_RETRY_INTERVAL)
+    }
+
+    this.ui.setState({ ui: 'readyToPlay' })
 
     const startListener: UIEventListener = e => {
-      this.ui.setState({ readyToPlay: false, loadingText: 'Loading...' })
+      this.ui.setState({ ui: 'loading', loadingText: 'Loading...' })
       this.ui.removeEventListener('startPlaying', startListener)
       this.network.joinGame(e.data.name)
       this.game = new Game(this.app, this.network, this.ui)

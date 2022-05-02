@@ -1,6 +1,6 @@
 import preact from 'preact'
 import { useEffect, useRef } from 'preact/hooks'
-import { UIEventDispatcher } from '.'
+import { UIEventDispatcher } from '..'
 
 const PreGameModal: preact.FunctionComponent<{
   dispatchEvent: UIEventDispatcher
