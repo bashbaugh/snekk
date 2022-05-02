@@ -17,6 +17,8 @@ export default class ArenaRoom extends Room<GameState> {
 
     this.game = new GameController(this)
 
+    this.clock.setInterval(() => this.game.addFood(), CONFIG.food.foodInterval)
+
     this.registerMessageHandlers()
   }
 

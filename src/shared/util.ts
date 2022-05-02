@@ -20,7 +20,7 @@ export function calcStandardDev(array: number[]) {
 }
 
 /** Convert HSL (0-360, 0-1, 0-1) to RGB */
-export function hslToRgb(h: number, s: number, l: number) {
+export function hslToHex(h: number, s: number, l: number) {
   let a = s * Math.min(l, 1 - l)
   let f = (n: number, k = (n + h / 30) % 12) =>
     l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1)
@@ -35,3 +35,5 @@ export function hslToRgb(h: number, s: number, l: number) {
 
 export const asyncDelay = (ms: number) =>
   new Promise(resolve => setTimeout(resolve, ms))
+
+export const mean = (arr: number[]) => arr.reduce((a, b) => a + b, 0) / arr.length

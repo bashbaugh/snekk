@@ -3,7 +3,7 @@ import CONFIG from 'config'
 import { SharedSnakeState } from './snake'
 import { randomInt } from './util'
 
-export class Point extends Schema implements XY {
+export class RegionPoint extends Schema implements XY {
   @type('int16') x: number
   @type('int16') y: number
 
@@ -41,9 +41,9 @@ export class Region extends Schema implements SRegion {
   /** Timestamp of region creation */
   @type('number') t: number
   /** Points defining region. First point is also point at which shape is closed. */
-  @type([Point]) p: Point[]
+  @type([RegionPoint]) p: RegionPoint[]
 
-  constructor(s: number, p: Point[], t?: number) {
+  constructor(s: number, p: RegionPoint[], t?: number) {
     super()
     this.s = s
     this.t = t || Date.now()
@@ -74,10 +74,10 @@ export class SnakeState extends Schema implements SharedSnakeState {
     const m = CONFIG.snake.startTerritoryMargin
     this.territory.push(
       new Region(0, [
-        new Point(spawnP.x - m, spawnP.y - m),
-        new Point(spawnP.x + m, spawnP.y - m),
-        new Point(spawnP.x + m, spawnP.y + m),
-        new Point(spawnP.x - m, spawnP.y + m),
+        new RegionPoint(spawnP.x - m, spawnP.y - m),
+        new RegionPoint(spawnP.x + m, spawnP.y - m),
+        new RegionPoint(spawnP.x + m, spawnP.y + m),
+        new RegionPoint(spawnP.x - m, spawnP.y + m),
       ])
     )
 
@@ -96,7 +96,7 @@ export class SnakeState extends Schema implements SharedSnakeState {
   makeRegion({ s, t, p }: SRegion) {
     return new Region(
       s,
-      p.map(p => new Point(p.x, p.y)),
+      p.map(p => new RegionPoint(p.x, p.y)),
       t
     )
   }
@@ -113,9 +113,25 @@ export class PlayerState extends Schema {
   }
 }
 
+export class Food extends Schema {
+  @type('int16') x: number
+  @type('int16') y: number
+  @type('int16') hue: number
+  @type('number') t: number
+
+  constructor(p: XY, hue: number) {
+    super()
+    this.x = p.x
+    this.y = p.y
+    this.hue = hue
+    this.t = Date.now()
+  }
+}
+
 export default class GameState extends Schema {
   /** Timestamp to track server time in updates */
   @type('number') ts: number = 0
-  @type('int16') arenaSize: number = 2000
+  @type('int16') arenaSize: number = 1000
   @type({ map: PlayerState }) players = new MapSchema<PlayerState>()
+  @type([Food]) food = new ArraySchema<Food>()
 }

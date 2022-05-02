@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi'
 import CONFIG from 'config'
 import SnakeBehaviour, { SharedSnakeState } from 'shared/snake'
-import { hslToRgb, lerpPoint } from 'shared/util'
+import { hslToHex, lerpPoint } from 'shared/util'
 import Game from './game'
 
 const SNAKE_SATURATION = 1
@@ -192,6 +192,8 @@ export default class Snake extends SnakeBehaviour {
         lerpPoint(headFromPoint, headToPoint, headPercent, true)
       )
 
+      this.state.length = lastF.snake.length
+
       // Recalculate tail
       this.updateTail()
     }
@@ -205,7 +207,7 @@ export default class Snake extends SnakeBehaviour {
 
   drawSnake(g: PIXI.Graphics) {
     const points = this.state.points.map(p => this.game.getViewRelativePoint(p))
-    g.lineStyle(4, hslToRgb(this.state.hue, SNAKE_SATURATION, SNAKE_LIGHTNESS))
+    g.lineStyle(6, hslToHex(this.state.hue, SNAKE_SATURATION, SNAKE_LIGHTNESS))
     g.moveTo(points[0].x, points[0].y)
     for (let i = 1; i < points.length; i++) {
       g.lineTo(points[i].x, points[i].y)
@@ -215,13 +217,13 @@ export default class Snake extends SnakeBehaviour {
   drawTerritory(g: PIXI.Graphics) {
     for (const r of this.state.territory) {
       g.beginFill(
-        hslToRgb(this.state.hue, TERRITORY_SATURATION, TERRITORY_LIGHTNESS)
+        hslToHex(this.state.hue, TERRITORY_SATURATION, TERRITORY_LIGHTNESS)
       )
       g.drawPolygon(
-        r.p.flatMap(p => {
+        r.p.map(p => {
           const rp = this.game.getViewRelativePoint(p)
           return [rp.x, rp.y]
-        })
+        }).flat()
       )
       g.endFill()
     }

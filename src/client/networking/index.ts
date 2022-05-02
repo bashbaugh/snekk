@@ -6,9 +6,12 @@ import { DeathReason } from 'types/game'
 import ServerPinger from './ping'
 import { Server } from 'colyseus'
 import { SharedSnakeState } from 'shared/snake'
+import { mean } from 'shared/util'
 // import ServerTimeManager from './time'
 
 const SERVER_URL = 'ws://localhost:3001'
+
+const SERVERTIMEOFFSET_MOVING_AVG_SAMPLES = 10
 
 export default class Network {
   private client: Client
@@ -17,10 +20,15 @@ export default class Network {
 
   public pinger?: ServerPinger
   public lastServerTs: number = 0
-  public lastServerTimeOffset: number = 0
+
+  private serverTimeOffsets: number[] = []
 
   constructor() {
     this.client = new Client(SERVER_URL)
+  }
+
+  public get lastServerTimeOffset() {
+    return this.serverTimeOffsets[0]
   }
 
   get clientId() {
@@ -31,8 +39,15 @@ export default class Network {
     return this.room?.state
   }
 
+  get smoothedServerTimeOffset() {
+    // Return the mean of the last n server time offsets to smooth interpolation
+    this.serverTimeOffsets.splice(SERVERTIMEOFFSET_MOVING_AVG_SAMPLES)
+    return mean(this.serverTimeOffsets)
+  }
+
+  /** Get the estimated server time (not lag-adjusted) */
   get serverTime() {
-    return Date.now() + this.lastServerTimeOffset
+    return Date.now() + this.smoothedServerTimeOffset
   }
 
   async findGame(onDisconnect: (code: number) => void) {
@@ -57,7 +72,7 @@ export default class Network {
   public onStateChange(cb: (state: GameState) => void) {
     this.room?.onStateChange(s => {
       this.lastServerTs = s.ts
-      this.lastServerTimeOffset = s.ts - Date.now()
+      this.serverTimeOffsets.unshift(s.ts - Date.now())
       cb(s)
     })
   }

@@ -6,6 +6,7 @@ import * as PIXI from 'pixi'
 import { PlayerState } from 'shared/serverState'
 import BaseObject from './baseObject'
 import Background from './objects/background'
+import Food from './objects/food'
 import Snake from './snake'
 
 export default class Game {
@@ -42,7 +43,30 @@ export default class Game {
 
     this.addNetworkHandlers()
 
-    this.gameObjects.push(new Background(this))
+    // Initialize players and snakes
+    this.initializePlayers()
+
+    this.gameObjects.push(
+      new Background(this),
+      new Food(this)
+    )
+  }
+
+  private getPlayerChangeListener (playerId: string) {
+    return (changes: Parameters<Exclude<PlayerState['onChange'], undefined>>[0]) => {
+      changes.forEach(c => {
+        // If the player's snake changed...
+        if (c.field === 'snake') {
+          if (c.value) {
+            // the player now has a snake, add the new snake to the game
+            this.addSnake(playerId)
+          } else {
+            // Otherwise remove their snake
+            this.removeSnake(playerId)
+          }
+        }
+      })
+    }
   }
 
   private addNetworkHandlers() {
@@ -51,20 +75,7 @@ export default class Game {
         state: pState,
       }
 
-      pState.onChange = changes => {
-        changes.forEach(c => {
-          // If the player's snake changed...
-          if (c.field === 'snake') {
-            if (c.value) {
-              // the player now has a snake, add the new snake to the game
-              this.addSnake(id)
-            } else {
-              // Otherwise remove their snake
-              this.removeSnake(id)
-            }
-          }
-        })
-      }
+      pState.onChange = this.getPlayerChangeListener(id)
     })
 
     this.network.onPlayerLeave(id => {
@@ -111,10 +122,22 @@ export default class Game {
     })
   }
 
+  private initializePlayers () {
+    for (const [id, p] of this.network.state!.players) {
+      if (id === this.network.clientId) continue // Skip self
+      this.players[id] = {
+        state: p,
+      }
+      this.addSnake(id)
+      p.onChange = this.getPlayerChangeListener(id)
+    }
+  }
+
   addSnake(playerId: string) {
     debugLog('[GAME] Creating snake', playerId)
     const p = this.players[playerId]
-    p.snake = new Snake(this, playerId, p.state.snake!)
+    if (!p.state.snake) return
+    p.snake = new Snake(this, playerId, p.state.snake)
   }
 
   removeSnake(playerId: string) {
@@ -158,8 +181,8 @@ export default class Game {
   public getViewRelativePoint(p: XY): XY {
     const o = this.getViewOffset()
     return {
-      x: Math.round(p.x - o.x),
-      y: Math.round(p.y - o.y),
+      x: p.x - o.x,
+      y: p.y - o.y,
     }
   }
 }

@@ -20,4 +20,8 @@ html, body {
   body {
     @apply text-white;
   }
+
+  div, p, span, h2, h3, h4, a {
+    @apply cursor-default select-none;
+  }
 }
