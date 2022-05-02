@@ -2,7 +2,7 @@ import preact from 'preact'
 import { useEffect, useRef } from 'preact/hooks'
 import { UIEventDispatcher } from '..'
 
-const PreGameModal: preact.FunctionComponent<{
+const PlayModal: preact.FunctionComponent<{
   dispatchEvent: UIEventDispatcher
 }> = ({ dispatchEvent }) => {
   const nameRef = useRef<HTMLInputElement>(null)
@@ -39,4 +39,4 @@ const PreGameModal: preact.FunctionComponent<{
   )
 }
 
-export default PreGameModal
+export default PlayModal

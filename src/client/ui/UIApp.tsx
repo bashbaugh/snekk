@@ -1,7 +1,7 @@
 import preact from 'preact'
 import { StateUpdater, useState } from 'preact/hooks'
 import { UIEventDispatcher, UIState } from '.'
-import PreGameModal from './components/PreGameModal'
+import Home from './components/Home'
 import StatsDisplay from './StatsDisplay'
 
 const UIApp: preact.FunctionComponent<{
@@ -23,7 +23,7 @@ const UIApp: preact.FunctionComponent<{
           <div class="font-bold text-3xl">{state.loadingText}</div>
         )}
         {state.ui == 'readyToPlay' && (
-          <PreGameModal dispatchEvent={dispatchEvent} />
+          <Home dispatchEvent={dispatchEvent} />
         )}
         {state.ui === 'disconnected' && (
           <div class="bg-black bg-opacity-50 p-10 rounded-lg flex flex-col gap-3 items-center">

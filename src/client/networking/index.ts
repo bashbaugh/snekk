@@ -4,14 +4,13 @@ import GameState, { PlayerState } from 'shared/serverState'
 import { debugLog } from '../util'
 import { DeathReason } from 'types/game'
 import ServerPinger from './ping'
-import { Server } from 'colyseus'
 import { SharedSnakeState } from 'shared/snake'
 import { mean } from 'shared/util'
 // import ServerTimeManager from './time'
 
-const SERVER_URL = 'ws://localhost:3001'
+const SERVER_URL = 'ws://localhost:3002'
 
-const SERVERTIMEOFFSET_MOVING_AVG_SAMPLES = 10
+const SERVERTIME_MOVING_AVG_SAMPLES = 10
 
 export default class Network {
   private client: Client
@@ -41,7 +40,7 @@ export default class Network {
 
   get smoothedServerTimeOffset() {
     // Return the mean of the last n server time offsets to smooth interpolation
-    this.serverTimeOffsets.splice(SERVERTIMEOFFSET_MOVING_AVG_SAMPLES)
+    this.serverTimeOffsets.splice(SERVERTIME_MOVING_AVG_SAMPLES)
     return mean(this.serverTimeOffsets)
   }
 
