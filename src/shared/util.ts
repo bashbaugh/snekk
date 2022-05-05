@@ -36,4 +36,5 @@ export function hslToHex(h: number, s: number, l: number) {
 export const asyncDelay = (ms: number) =>
   new Promise(resolve => setTimeout(resolve, ms))
 
-export const mean = (arr: number[]) => arr.reduce((a, b) => a + b, 0) / arr.length
+export const mean = (arr: number[]) =>
+  arr.reduce((a, b) => a + b, 0) / arr.length

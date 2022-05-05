@@ -3,6 +3,8 @@ import { PlayerState, SnakeState } from 'shared/serverState'
 import { randomInt } from 'shared/util'
 import { Message, MESSAGETYPE } from 'types/networking'
 import GameController from './GameController'
+import { pointInsidePolygon } from 'shared/geometry'
+import CONFIG from 'config'
 
 export default class Snake extends SnakeBehaviour {
   player: PlayerState
@@ -19,6 +21,18 @@ export default class Snake extends SnakeBehaviour {
   update(delta: number) {
     this.updateHead(delta)
     this.updateTail()
+
+    // Check if snake is inside its territory
+    let inTerritory = false
+    for (const region of this.state.territory) {
+      if (pointInsidePolygon(this.head, region.p)) inTerritory = true
+    }
+
+    if (inTerritory) {
+      const lengthGrown = this.state.length - CONFIG.snake.baseLength
+      this.state.length = CONFIG.snake.baseLength
+      this.state.energy += lengthGrown
+    }
   }
 
   turn(data: Message[MESSAGETYPE.TURN]) {

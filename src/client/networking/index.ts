@@ -8,7 +8,7 @@ import { SharedSnakeState } from 'shared/snake'
 import { mean } from 'shared/util'
 // import ServerTimeManager from './time'
 
-const SERVER_URL = 'ws://localhost:3002'
+const SERVER_URL = 'localhost:3002'
 
 const SERVERTIME_MOVING_AVG_SAMPLES = 10
 
@@ -23,7 +23,7 @@ export default class Network {
   private serverTimeOffsets: number[] = []
 
   constructor() {
-    this.client = new Client(SERVER_URL)
+    this.client = new Client('ws://' + SERVER_URL)
   }
 
   public get lastServerTimeOffset() {

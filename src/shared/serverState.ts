@@ -57,7 +57,8 @@ export class SnakeState extends Schema implements SharedSnakeState {
   @type([SnakePoint]) trail = new ArraySchema<SnakePoint>()
   @type([Region]) territory = new ArraySchema<Region>()
   @type('int8') direction: Direction = 1
-  @type('int16') length: number = CONFIG.snake.startLength
+  @type('int16') length: number = CONFIG.snake.baseLength
+  @type('int16') energy: number = 0
   @type('int16') speed: number = CONFIG.snake.baseSpeed
   @type('int16') hue: number
 
@@ -71,7 +72,7 @@ export class SnakeState extends Schema implements SharedSnakeState {
     )
 
     // Generate initial territory surrounding spawn point
-    const m = CONFIG.snake.startTerritoryMargin
+    const m = CONFIG.snake.territoryStartMargin
     this.territory.push(
       new Region(0, [
         new RegionPoint(spawnP.x - m, spawnP.y - m),

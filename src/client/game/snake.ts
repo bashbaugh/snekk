@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi'
 import CONFIG from 'config'
 import SnakeBehaviour, { SharedSnakeState } from 'shared/snake'
-import { hslToHex, lerpPoint } from 'shared/util'
+import { hslToHex, lerp, lerpPoint } from 'shared/util'
 import Game from './game'
 
 const SNAKE_SATURATION = 1
@@ -15,6 +15,7 @@ class ClientSnakeState implements SharedSnakeState {
   territory: SRegion[]
   direction: Direction
   length: number
+  energy: number
   speed: number
   hue: number
 
@@ -27,6 +28,7 @@ class ClientSnakeState implements SharedSnakeState {
     this.length = state.length
     this.speed = state.speed
     this.hue = state.hue
+    this.energy = state.energy
   }
 
   makeSnakePoint({ x, y, s, d, t }: SPoint): SPoint {
@@ -76,7 +78,7 @@ export default class Snake extends SnakeBehaviour {
   private serverQueue: Array<ServerFrame> = []
 
   onServerState(serverState: SharedSnakeState, isPlayer: boolean) {
-    const { points, trail, territory, direction, length, speed } = serverState
+    const { points, trail, territory, ...snakeProperties } = serverState
 
     // Clone the state
     const _snakePoints = points.map(p => this.state.makeSnakePoint(p))
@@ -91,9 +93,7 @@ export default class Snake extends SnakeBehaviour {
         points: _snakePoints,
         trail: _trailPoints,
         territory: _territory,
-        length,
-        direction,
-        speed,
+        ...snakeProperties,
       },
       head: _snakePoints[0],
       tail: _snakePoints[points.length - 1],
@@ -123,7 +123,7 @@ export default class Snake extends SnakeBehaviour {
   }
 
   /** Interpolate snake points between server frames */
-  interpolatePosition() {
+  interpolateSnake() {
     // This is the timestamp (on the server) that we're hoping to interpolate to
     const interpTarget = this.game.network.serverTime - CONFIG.interpDeltaMs
 
@@ -144,7 +144,7 @@ export default class Snake extends SnakeBehaviour {
       }
       if (!lastF) return // Cancel interpolation if we don't have enough frames
 
-      // we need to find the timestamps of the frame we will interpolate the head from and the start/end points
+      // We need to find the timestamps of the frame we will interpolate the head from and the start/end points
       let headInterpStart = lastF.serverTs
       let headFromPoint = lastF.head
       let headToPoint = nextF.head
@@ -182,17 +182,27 @@ export default class Snake extends SnakeBehaviour {
       }
       this.state.points.splice(targetPoints.length)
 
+      // Find interpolation percent since last frame
+      const frameDelta = nextF.serverTs - lastF.serverTs
+      const totalFrameProgress = interpTarget - lastF.serverTs
+      const framePercent = totalFrameProgress / frameDelta
+
+      // Separate interpolation percent for head
       const headInterpDelta = nextF.serverTs - headInterpStart
       const headInterpProgress = interpTarget - headInterpStart
       const headPercent = headInterpProgress / headInterpDelta
 
-      // Interpolate head using computer points and timestamps
+      // Interpolate head using computed points and timestamps
       Object.assign(
         this.head,
         lerpPoint(headFromPoint, headToPoint, headPercent, true)
       )
 
-      this.state.length = lastF.snake.length
+      // Interpolate length
+      this.state.length = lerp(lastF.snake.length, nextF.snake.length, framePercent)
+
+      // Update energy directly
+      this.state.energy = lastF.snake.energy
 
       // Recalculate tail
       this.updateTail()
@@ -202,7 +212,7 @@ export default class Snake extends SnakeBehaviour {
   }
 
   update(delta: number) {
-    this.interpolatePosition()
+    this.interpolateSnake()
   }
 
   drawSnake(g: PIXI.Graphics) {
@@ -219,12 +229,13 @@ export default class Snake extends SnakeBehaviour {
       g.beginFill(
         hslToHex(this.state.hue, TERRITORY_SATURATION, TERRITORY_LIGHTNESS)
       )
-      g.drawPolygon(
-        r.p.map(p => {
+      const polygonPoints = r.p
+        .map(p => {
           const rp = this.game.getViewRelativePoint(p)
           return [rp.x, rp.y]
-        }).flat()
-      )
+        })
+        .flat()
+      g.drawPolygon(polygonPoints)
       g.endFill()
     }
   }

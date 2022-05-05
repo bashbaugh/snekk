@@ -5,8 +5,11 @@ export interface SharedSnakeState {
   trail: SPoint[] | Array<SnakePoint>
   territory: SRegion[] | Array<Region>
   direction: Direction
+
   length: number
+  energy: number
   speed: number
+
   hue: number
 
   /** Get a point */

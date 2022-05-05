@@ -1,14 +1,9 @@
-import GameState, {
-  Food,
-  PlayerState,
-  SnakePoint,
-  SnakeState,
-} from 'shared/serverState'
+import GameState, { Food, PlayerState } from 'shared/serverState'
 import ArenaRoom from './ArenaRoom'
 import { Message, MESSAGETYPE } from 'types/networking'
 import { Client } from 'colyseus'
 import Snake from './Snake'
-import { linesAreIntersecting } from 'shared/geometry'
+import { linesIntersect } from 'shared/geometry'
 import { DeathReason } from 'types/game'
 import { randomInt } from 'shared/util'
 import CONFIG from 'config'
@@ -30,7 +25,7 @@ export default class GameController {
     this.state = room.state
   }
 
-  getRandomPoint () {
+  getRandomPoint() {
     return {
       x: randomInt(this.state.arenaSize),
       y: randomInt(this.state.arenaSize),
@@ -81,7 +76,10 @@ export default class GameController {
 
       // Check for food collisions:
       this.state.food.forEach((f, i) => {
-        const headDist = Math.hypot(player.snake!.head.x - f.x, player.snake!.head.y - f.y)
+        const headDist = Math.hypot(
+          player.snake!.head.x - f.x,
+          player.snake!.head.y - f.y
+        )
         if (headDist < CONFIG.food.collisionRadius) {
           player.snake!.state.length += CONFIG.food.growAmount
           this.state.food.deleteAt(i)
@@ -97,7 +95,7 @@ export default class GameController {
         // Check player's head against all segments of other player
         for (let i = 0; i < points.length - 1; i++) {
           const [b1, b2] = [points[i], points[i + 1]]
-          if (linesAreIntersecting(a1, a2, b1, b2)) {
+          if (linesIntersect(a1, a2, b1, b2)) {
             // Player collided
             // this.killSnake(id, DeathReason.player_collision, id2)
           }
@@ -116,7 +114,7 @@ export default class GameController {
     this.state.ts = this.room.clock.currentTime
   }
 
-  addFood () {
+  addFood() {
     this.state.food.push(new Food(this.getRandomPoint(), randomInt(360)))
   }
 

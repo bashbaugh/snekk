@@ -5,11 +5,19 @@ import { WebSocketTransport } from '@colyseus/ws-transport'
 import ArenaRoom from './game/ArenaRoom'
 import { monitor } from '@colyseus/monitor'
 import basicAuth from 'express-basic-auth'
+import cors from 'cors'
 
 console.log('Starting...')
 
 const app = express()
 app.use(express.json())
+
+app.use(
+  cors({
+    // TODO FIX CORS
+    origin: ['*'],
+  })
+)
 
 app.get('/', (req, res) =>
   res.redirect('https://www.youtube.com/watch?v=dQw4w9WgXcQ')

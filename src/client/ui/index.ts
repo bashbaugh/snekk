@@ -8,6 +8,10 @@ export interface UIState {
     fps: number
     ping?: number
   }
+  player?: {
+    length: number
+    energy: number
+  }
   showStats: boolean
   loadingText: string
   wsDisconnectCode?: number
@@ -70,10 +74,6 @@ export default class UI {
     const newState = { ...this._state, ...state }
     this._setState?.(newState)
     this._state = newState
-  }
-
-  setStats(stats: UIState['stats']) {
-    this.setState({ stats })
   }
 
   renderUI() {

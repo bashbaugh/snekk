@@ -3,8 +3,8 @@ const CONFIG = Object.freeze({
   version: '0.1.0',
   snake: {
     baseSpeed: 100,
-    startLength: 250,
-    startTerritoryMargin: 100,
+    baseLength: 250,
+    territoryStartMargin: 100,
   },
   maxClientsPerRoom: 50,
   interpDeltaMs: 50,
@@ -14,8 +14,8 @@ const CONFIG = Object.freeze({
   food: {
     foodInterval: 500,
     collisionRadius: 30,
-    growAmount: 10
-  }
+    growAmount: 10,
+  },
 })
 
 export default CONFIG

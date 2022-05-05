@@ -46,14 +46,13 @@ export default class Game {
     // Initialize players and snakes
     this.initializePlayers()
 
-    this.gameObjects.push(
-      new Background(this),
-      new Food(this)
-    )
+    this.gameObjects.push(new Background(this), new Food(this))
   }
 
-  private getPlayerChangeListener (playerId: string) {
-    return (changes: Parameters<Exclude<PlayerState['onChange'], undefined>>[0]) => {
+  private getPlayerChangeListener(playerId: string) {
+    return (
+      changes: Parameters<Exclude<PlayerState['onChange'], undefined>>[0]
+    ) => {
       changes.forEach(c => {
         // If the player's snake changed...
         if (c.field === 'snake') {
@@ -122,7 +121,7 @@ export default class Game {
     })
   }
 
-  private initializePlayers () {
+  private initializePlayers() {
     for (const [id, p] of this.network.state!.players) {
       if (id === this.network.clientId) continue // Skip self
       this.players[id] = {
@@ -158,9 +157,15 @@ export default class Game {
       snake.draw()
     }
 
-    this.ui.setStats({
-      fps: this.app.ticker.FPS,
-      ping: this.network.pinger?.lastPing?.latency,
+    this.ui.setState({
+      stats: {
+        fps: this.app.ticker.FPS,
+        ping: this.network.pinger?.lastPing?.latency,
+      },
+      player: this.playerSnake && {
+        length: this.playerSnake.state.length,
+        energy: this.playerSnake.state.energy,
+      },
     })
   }
 
