@@ -10,7 +10,6 @@ export interface UIState {
   }
   player?: {
     length: number
-    energy: number
   }
   showStats: boolean
   loadingText: string

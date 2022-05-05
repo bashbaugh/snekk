@@ -164,7 +164,6 @@ export default class Game {
       },
       player: this.playerSnake && {
         length: this.playerSnake.state.length,
-        energy: this.playerSnake.state.energy,
       },
     })
   }

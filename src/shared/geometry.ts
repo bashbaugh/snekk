@@ -19,9 +19,8 @@ export function pointInsidePolygon(p: XY, gon: XY[]) {
     const xj = gon[j].x,
       yj = gon[j].y
 
-    const intersect =
-      yi > p.y != yj > p.y && p.x < ((xj - xi) * (p.y - yi)) / (yj - yi) + xi
-    if (intersect) inside = !inside
+    if (yi > p.y != yj > p.y && p.x < ((xj - xi) * (p.y - yi)) / (yj - yi) + xi)
+      inside = !inside
   }
 
   return inside

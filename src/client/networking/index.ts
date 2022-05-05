@@ -6,11 +6,9 @@ import { DeathReason } from 'types/game'
 import ServerPinger from './ping'
 import { SharedSnakeState } from 'shared/snake'
 import { mean } from 'shared/util'
-// import ServerTimeManager from './time'
 
 const SERVER_URL = 'localhost:3002'
-
-const SERVERTIME_MOVING_AVG_SAMPLES = 10
+const SERVERTIME_MOVING_AVG_SAMPLES = 15
 
 export default class Network {
   private client: Client

@@ -1,13 +1,15 @@
+import CONFIG from 'config'
+import { pointInsidePolygon } from './geometry'
 import type { Region, SnakePoint } from './serverState'
 
 export interface SharedSnakeState {
   points: SPoint[] | Array<SnakePoint>
-  trail: SPoint[] | Array<SnakePoint>
+  // trail: SPoint[] | Array<SnakePoint>
   territory: SRegion[] | Array<Region>
   direction: Direction
 
   length: number
-  energy: number
+  // energy: number
   speed: number
 
   hue: number
@@ -110,5 +112,33 @@ export default abstract class SnakeBehaviour {
     this.state.points.unshift(
       this.state.makeSnakePoint({ ...this.head, s: this.head.s + 1 })
     )
+  }
+
+  /** Check if a point is within this snake's territory */
+  protected pointIsInTerritory(point: SPoint) {
+    for (const region of this.state.territory) {
+      if (pointInsidePolygon(point, region.p)) return true
+    }
+    return false
+  }
+
+  public updateTerritory() {
+    if (this.pointIsInTerritory(this.head)) {
+      // Reset the snake's length when we return to the territory
+      this.state.length = CONFIG.snake.baseLength
+
+      // If both head and tail are in territory, we might be able to create new territory
+      if (this.pointIsInTerritory(this.tail)) {
+        // Check if any points are outside
+        let pointsOutside = false
+        for (const point of this.state.points) {
+          if (!this.pointIsInTerritory(point)) pointsOutside = true
+        }
+
+        // If any points are outside we should add new territory
+        if (pointsOutside) {
+        }
+      }
+    }
   }
 }

@@ -54,11 +54,11 @@ export class Region extends Schema implements SRegion {
 export class SnakeState extends Schema implements SharedSnakeState {
   // Sequence number is increased with each new point in snake (lower = closer to tail)
   @type([SnakePoint]) points = new ArraySchema<SnakePoint>()
-  @type([SnakePoint]) trail = new ArraySchema<SnakePoint>()
+  // @type([SnakePoint]) trail = new ArraySchema<SnakePoint>()
   @type([Region]) territory = new ArraySchema<Region>()
   @type('int8') direction: Direction = 1
   @type('int16') length: number = CONFIG.snake.baseLength
-  @type('int16') energy: number = 0
+  // @type('int16') energy: number = 0
   @type('int16') speed: number = CONFIG.snake.baseSpeed
   @type('int16') hue: number
 

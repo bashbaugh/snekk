@@ -11,24 +11,22 @@ const TERRITORY_LIGHTNESS = 0.35
 
 class ClientSnakeState implements SharedSnakeState {
   points: SPoint[]
-  trail: SPoint[]
+  // trail: SPoint[]
   territory: SRegion[]
   direction: Direction
   length: number
-  energy: number
+  // energy: number
   speed: number
   hue: number
 
   constructor(state: SharedSnakeState) {
     const t = Date.now()
     this.points = state.points
-    this.trail = state.trail
     this.territory = state.territory
     this.direction = state.direction
     this.length = state.length
     this.speed = state.speed
     this.hue = state.hue
-    this.energy = state.energy
   }
 
   makeSnakePoint({ x, y, s, d, t }: SPoint): SPoint {
@@ -78,11 +76,11 @@ export default class Snake extends SnakeBehaviour {
   private serverQueue: Array<ServerFrame> = []
 
   onServerState(serverState: SharedSnakeState, isPlayer: boolean) {
-    const { points, trail, territory, ...snakeProperties } = serverState
+    const { points, territory, ...snakeProperties } = serverState
 
     // Clone the state
     const _snakePoints = points.map(p => this.state.makeSnakePoint(p))
-    const _trailPoints = trail.map(p => this.state.makeSnakePoint(p))
+    // const _trailPoints = trail.map(p => this.state.makeSnakePoint(p))
     const _territory = territory.map(r => this.state.makeRegion(r))
 
     this.serverQueue.unshift({
@@ -91,7 +89,7 @@ export default class Snake extends SnakeBehaviour {
       // Clone state
       snake: {
         points: _snakePoints,
-        trail: _trailPoints,
+        // trail: _trailPoints,
         territory: _territory,
         ...snakeProperties,
       },
@@ -199,10 +197,11 @@ export default class Snake extends SnakeBehaviour {
       )
 
       // Interpolate length
-      this.state.length = lerp(lastF.snake.length, nextF.snake.length, framePercent)
-
-      // Update energy directly
-      this.state.energy = lastF.snake.energy
+      this.state.length = lerp(
+        lastF.snake.length,
+        nextF.snake.length,
+        framePercent
+      )
 
       // Recalculate tail
       this.updateTail()
