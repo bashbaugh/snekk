@@ -228,11 +228,11 @@ export default class Snake extends SnakeBehaviour {
   }
 
   drawTerritory(g: PIXI.Graphics) {
-    for (const r of polygonUnion(this.state.territory.map(r => r.p))) {
+    for (const r of this.state.territory) {
       g.beginFill(
         hslToHex(this.state.hue, TERRITORY_SATURATION, TERRITORY_LIGHTNESS)
       )
-      const polygonPoints = r
+      const polygonPoints = r.p
         .map(p => {
           const rp = this.game.getViewRelativePoint(p)
           return [rp.x, rp.y]

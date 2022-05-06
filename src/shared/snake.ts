@@ -183,7 +183,7 @@ export default abstract class SnakeBehaviour {
     const lowerTerritorySeg = Math.min(territoryStartSeg, territoryStopSeg),
       upperTerritorySeg = Math.max(territoryStartSeg, territoryStopSeg)
 
-      console.log(lowerTerritorySeg, upperTerritorySeg)
+    console.log(lowerTerritorySeg, upperTerritorySeg)
 
     const segmentsFromTerritory = tSegments.slice(
       lowerTerritorySeg,
@@ -208,9 +208,9 @@ export default abstract class SnakeBehaviour {
 
     // We may have traversed along the territory AWAY from the snake intersection,
     // Meaning the new polygon could also include old regions so we need to subtract existing regions
-    // const newRegion = polygonDiff([totalNewRegionPolygon], [t])[0]
-    const newRegion = totalNewRegionPolygon
-    return newRegion
+    const newRegion = polygonDiff([totalNewRegionPolygon], [t])
+    // const newRegion = totalNewRegionPolygon
+    return newRegion?.[0]
   }
 
   public updateTerritory() {

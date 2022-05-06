@@ -17,23 +17,19 @@ export function getLineIntersection(
   b1: XY,
   b2: XY
 ): XY | false {
-  // http://paulbourke.net/geometry/pointlineplane/
   // Check if none of the lines are of length 0
-  if ((a1.x === a1.x && a1.y === a2.y) || (b1.x === b2.x && b1.y === b2.y))
-    return false
-  const denom = (b2.y - b1.y) * (a2.x - a1.x) - (b2.x - b1.x) * (a2.y - a1.y)
+	if ((a1.x === a2.x && a1.y === a2.y) || (b1.x === b2.x && b1.y === b2.y)) return false
+	const denom = ((b2.y - b1.y) * (a2.x - a1.x) - (b2.x - b1.x) * (a2.y - a1.y))
   // Lines are parallel
-  if (denom === 0) return false
-  let ua =
-    ((b2.x - b1.x) * (a1.y - b1.y) - (b2.y - b1.y) * (a1.x - b1.x)) / denom
-  let ub =
-    ((a2.x - a1.x) * (a1.y - b1.y) - (a2.y - a1.y) * (a1.x - b1.x)) / denom
-  // Is the intersection along the segments
-  if (ua < 0 || ua > 1 || ub < 0 || ub > 1) return false
-  // Return coordinates of the intersection
-  let x = a1.x + ua * (a2.x - a1.x)
-  let y = a1.y + ua * (a2.y - a1.y)
-  return { x, y }
+	if (denom === 0) return false
+	const ua = ((b2.x - b1.x) * (a1.y - b1.y) - (b2.y - b1.y) * (a1.x - b1.x)) / denom
+	const ub = ((a2.x - a1.x) * (a1.y - b1.y) - (a2.y - a1.y) * (a1.x - b1.x)) / denom
+  // is the intersection along the segments
+	if (ua < 0 || ua > 1 || ub < 0 || ub > 1) return false
+  // Return a object with the x and y coordinates of the intersection
+	const x = a1.x + ua * (a2.x - a1.x)
+	const y = a1.y + ua * (a2.y - a1.y)
+	return {x, y}
 }
 
 function pointOnPolygonEdge(point: XY, gon: XY[]) {
@@ -76,5 +72,5 @@ export function polygonDiff(minuend: XY[][], subtrahend: XY[][]): XY[][] {
   // TODO fix this to include other polygons from union:
   const result = pDiff(minuendIn, subtrahendIn)
   console.log(minuendIn[0], subtrahendIn[0])
-  return result[0].map(p => p.map(q => ({ x: q[0], y: q[1] })))
+  return result[0]?.map(p => p.map(q => ({ x: q[0], y: q[1] })))
 }
