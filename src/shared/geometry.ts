@@ -32,13 +32,6 @@ export function getLineIntersection(
 	return {x, y}
 }
 
-function pointOnPolygonEdge(point: XY, gon: XY[]) {
-  for (let i = 0; i < gon.length - 1; i++) {
-    if (getLineIntersection(gon[i], gon[i + 1], point, point)) return true
-  }
-  return false
-}
-
 /** Check if a point is within a polygon */
 export function pointInsidePolygon(p: XY, gon: XY[]) {
   // https://github.com/substack/point-in-polygon/blob/master/flat.js
@@ -71,6 +64,5 @@ export function polygonDiff(minuend: XY[][], subtrahend: XY[][]): XY[][] {
   const subtrahendIn = subtrahend.map(p => [p.map(q => [q.x, q.y] as Pair)])
   // TODO fix this to include other polygons from union:
   const result = pDiff(minuendIn, subtrahendIn)
-  console.log(minuendIn[0], subtrahendIn[0])
   return result[0]?.map(p => p.map(q => ({ x: q[0], y: q[1] })))
 }

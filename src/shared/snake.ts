@@ -153,25 +153,36 @@ export default abstract class SnakeBehaviour {
 
     if (!startPoint) return // TODO handle
 
-    const segmentsFromSnake: XY[][] = []
     let stopPoint: XY | false = false
     let territoryStopSeg: number = 0
+    let snakeStopSeg: number = 0
+
+    const segmentsFromSnake: XY[][] = []
+
+    // Starting after the first intersection,
+    // we iterate through snake segments to find the segment that intersects back into the territory
+    snakeSegLoop:
     for (let i = snakeStartSeg; i < this.state.points.length - 1; i++) {
-      const snakeSeg = [this.state.points[i], this.state.points[i + 1]]
-      // This segment should be in the new region
-      segmentsFromSnake.push(snakeSeg)
+      const snakeSeg = [this.state.points[i], this.state.points[i + 1]].map(p => ({
+        x: p.x,
+        y: p.y,
+      }))
+      // Add this segment to the start of segments array
+      // Since we will be assembling the polygon from head to tail along the snake
+      segmentsFromSnake.unshift(snakeSeg)
 
       for (const [k, tSeg] of tSegments.entries()) {
-        // Find next point and territory segment where part of snake segment intersects territory
         stopPoint = getLineIntersection(
           snakeSeg[0],
           snakeSeg[1],
           tSeg[0],
           tSeg[1]
         )
-        if (stopPoint) {
+        // Need to make sure it isn't the same point as start
+        if (stopPoint && !(stopPoint.x === startPoint.x && stopPoint.y === startPoint.y)) {
           territoryStopSeg = k
-          break
+          snakeStopSeg = i
+          break snakeSegLoop
         }
       }
     }
@@ -179,30 +190,30 @@ export default abstract class SnakeBehaviour {
     if (!stopPoint) return
 
     // Now we have both points where the snake intersects the territory
-    // so we need to trace the territory to find existing segments of new area
+    // so we need to slice the territory segments to find the segments between both intersections
     const lowerTerritorySeg = Math.min(territoryStartSeg, territoryStopSeg),
       upperTerritorySeg = Math.max(territoryStartSeg, territoryStopSeg)
-
-    console.log(lowerTerritorySeg, upperTerritorySeg)
-
     const segmentsFromTerritory = tSegments.slice(
       lowerTerritorySeg,
-      upperTerritorySeg + 1
+      upperTerritorySeg
     )
 
-    // Adjust segments from territory and snake to start/end at the intersection points
-    segmentsFromTerritory[0][0] = startPoint
-    segmentsFromTerritory[segmentsFromTerritory.length - 1][1] = stopPoint
-    segmentsFromSnake[0][0] = startPoint
-    segmentsFromSnake[segmentsFromSnake.length - 1][1] = stopPoint
-
-    // Now, we combine the segments and start/end points in order to get the new region polygon
+    // Now, we combine the segments and start/end points in order to assemble the new region polygon
+    // Basically, we trace from the intersection at the head along the territory
+    // to the second snake intersection and then up the snake back to the first point
     const totalNewRegionPolygon = [
-      startPoint, // First the first intersection point
-      ...segmentsFromTerritory.map(seg => seg[0]), // Then trace along the territory
-      stopPoint, // Then the second intersection point
-      ...segmentsFromSnake.map(seg => seg[0]), // Finally add points between both points on the snake
+      // The start point in the polygon is the first inersection point
+      startPoint, 
+      // Then, we trace along the territory taking the second point from each segment
+      // Starting with the first intersected segment and ending with the next to last
+      ...segmentsFromTerritory.map(seg => seg[1]),
+      // Then, we reach the second intersection point
+      stopPoint,
+      // Finally, add points from along the snake
+      ...segmentsFromSnake.map(seg => seg[1]),
     ]
+
+    console.log(startPoint, stopPoint, segmentsFromTerritory, segmentsFromSnake)
 
     if (totalNewRegionPolygon.length < 3) return
 
@@ -231,6 +242,7 @@ export default abstract class SnakeBehaviour {
           this.state.territory.push(
             this.state.makeRegion({ p: newRegion, t: Date.now() })
           )
+          console.log(this.state.territory.length)
         }
       }
 
