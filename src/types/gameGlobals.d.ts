@@ -19,8 +19,6 @@ type SPoint = XY & {
 
 /** Represents a 2d region in snake's territory */
 interface SRegion {
-  /** Sequence number to order regions */
-  s: number
   /** Timestamp of region creation */
   t: number
   /** Points defining region. First point is also point at which shape is closed. */

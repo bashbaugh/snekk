@@ -3,10 +3,10 @@ import ArenaRoom from './ArenaRoom'
 import { Message, MESSAGETYPE } from 'types/networking'
 import { Client } from 'colyseus'
 import Snake from './Snake'
-import { linesIntersect } from 'shared/geometry'
 import { DeathReason } from 'types/game'
 import { randomInt } from 'shared/util'
 import CONFIG from 'config'
+import { getLineIntersection } from 'shared/geometry'
 
 export default class GameController {
   room: ArenaRoom
@@ -95,7 +95,7 @@ export default class GameController {
         // Check player's head against all segments of other player
         for (let i = 0; i < points.length - 1; i++) {
           const [b1, b2] = [points[i], points[i + 1]]
-          if (linesIntersect(a1, a2, b1, b2)) {
+          if (getLineIntersection(a1, a2, b1, b2)) {
             // Player collided
             // this.killSnake(id, DeathReason.player_collision, id2)
           }

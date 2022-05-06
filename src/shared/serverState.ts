@@ -36,16 +36,13 @@ export class SnakePoint extends Schema implements SPoint {
 }
 
 export class Region extends Schema implements SRegion {
-  /** Sequence number to order regions */
-  @type('int16') s: number
   /** Timestamp of region creation */
   @type('number') t: number
   /** Points defining region. First point is also point at which shape is closed. */
   @type([RegionPoint]) p: RegionPoint[]
 
-  constructor(s: number, p: RegionPoint[], t?: number) {
+  constructor(p: RegionPoint[], t?: number) {
     super()
-    this.s = s
     this.t = t || Date.now()
     this.p = p
   }
@@ -74,7 +71,7 @@ export class SnakeState extends Schema implements SharedSnakeState {
     // Generate initial territory surrounding spawn point
     const m = CONFIG.snake.territoryStartMargin
     this.territory.push(
-      new Region(0, [
+      new Region([
         new RegionPoint(spawnP.x - m, spawnP.y - m),
         new RegionPoint(spawnP.x + m, spawnP.y - m),
         new RegionPoint(spawnP.x + m, spawnP.y + m),
@@ -94,9 +91,8 @@ export class SnakeState extends Schema implements SharedSnakeState {
     return new SnakePoint(x, y, s, d)
   }
 
-  makeRegion({ s, t, p }: SRegion) {
+  makeRegion({ t, p }: SRegion) {
     return new Region(
-      s,
       p.map(p => new RegionPoint(p.x, p.y)),
       t
     )

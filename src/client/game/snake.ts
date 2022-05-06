@@ -3,6 +3,7 @@ import CONFIG from 'config'
 import SnakeBehaviour, { SharedSnakeState } from 'shared/snake'
 import { hslToHex, lerp, lerpPoint } from 'shared/util'
 import Game from './game'
+import { polygonUnion } from 'shared/geometry'
 
 const SNAKE_SATURATION = 1
 const SNAKE_LIGHTNESS = 0.6
@@ -33,8 +34,8 @@ class ClientSnakeState implements SharedSnakeState {
     return { x, y, s, d, t }
   }
 
-  makeRegion({ s, t, p }: SRegion): SRegion {
-    return { s, t, p: p.map(p => ({ ...p })) }
+  makeRegion({ p, t }: SRegion): SRegion {
+    return { t, p: p.map(p => ({ ...p })) }
   }
 }
 
@@ -205,6 +206,9 @@ export default class Snake extends SnakeBehaviour {
 
       // Recalculate tail
       this.updateTail()
+
+      // Update territory
+      this.state.territory = lastF.snake.territory
     }
     // Can't interpolate; extrapolate instead
     else this.extrapolatePosition()
@@ -224,11 +228,11 @@ export default class Snake extends SnakeBehaviour {
   }
 
   drawTerritory(g: PIXI.Graphics) {
-    for (const r of this.state.territory) {
+    for (const r of polygonUnion(this.state.territory.map(r => r.p))) {
       g.beginFill(
         hslToHex(this.state.hue, TERRITORY_SATURATION, TERRITORY_LIGHTNESS)
       )
-      const polygonPoints = r.p
+      const polygonPoints = r
         .map(p => {
           const rp = this.game.getViewRelativePoint(p)
           return [rp.x, rp.y]

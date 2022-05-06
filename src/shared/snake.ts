@@ -1,5 +1,10 @@
 import CONFIG from 'config'
-import { pointInsidePolygon } from './geometry'
+import {
+  getLineIntersection,
+  pointInsidePolygon,
+  polygonDiff,
+  polygonUnion,
+} from './geometry'
 import type { Region, SnakePoint } from './serverState'
 
 export interface SharedSnakeState {
@@ -18,7 +23,7 @@ export interface SharedSnakeState {
   makeSnakePoint: ({ x, y, s, d, t }: SPoint) => any
 
   /** Get a region */
-  makeRegion: ({ s, t, p }: SRegion) => any
+  makeRegion: ({ t, p }: SRegion) => any
 }
 
 export default abstract class SnakeBehaviour {
@@ -89,7 +94,7 @@ export default abstract class SnakeBehaviour {
         } else if (isHorizontal && points[i].x < points[i - 1].x) {
           points[i].x = points[i - 1].x - remaining
         }
-        points.splice(i + 1) // Splice doesn't work correctly with Colyseus so we have to push
+        points.splice(i + 1)
         // points.push(newTailPoint)
       }
 
@@ -122,23 +127,117 @@ export default abstract class SnakeBehaviour {
     return false
   }
 
+  protected computeNewTerritoryRegion() {
+    // First we need to get the segments of our territory as a single polygon
+    const t = polygonUnion(this.state.territory.map(r => r.p))[0]
+
+    let tSegments: XY[][] = []
+    for (let i = 0; i < t.length - 1; i++) tSegments.push([t[i], t[i + 1]])
+
+    let startPoint: XY | false = false
+    const snakeStartSeg = 0
+    let territoryStartSeg: number = 0
+    for (const [i, seg] of tSegments.entries()) {
+      // Find point and territory segment where head segment intersects territory
+      startPoint = getLineIntersection(
+        this.state.points[0],
+        this.state.points[1],
+        seg[0],
+        seg[1]
+      )
+      if (startPoint) {
+        territoryStartSeg = i
+        break
+      }
+    }
+
+    if (!startPoint) return // TODO handle
+
+    const segmentsFromSnake: XY[][] = []
+    let stopPoint: XY | false = false
+    let territoryStopSeg: number = 0
+    for (let i = snakeStartSeg; i < this.state.points.length - 1; i++) {
+      const snakeSeg = [this.state.points[i], this.state.points[i + 1]]
+      // This segment should be in the new region
+      segmentsFromSnake.push(snakeSeg)
+
+      for (const [k, tSeg] of tSegments.entries()) {
+        // Find next point and territory segment where part of snake segment intersects territory
+        stopPoint = getLineIntersection(
+          snakeSeg[0],
+          snakeSeg[1],
+          tSeg[0],
+          tSeg[1]
+        )
+        if (stopPoint) {
+          territoryStopSeg = k
+          break
+        }
+      }
+    }
+
+    if (!stopPoint) return
+
+    // Now we have both points where the snake intersects the territory
+    // so we need to trace the territory to find existing segments of new area
+    const lowerTerritorySeg = Math.min(territoryStartSeg, territoryStopSeg),
+      upperTerritorySeg = Math.max(territoryStartSeg, territoryStopSeg)
+
+      console.log(lowerTerritorySeg, upperTerritorySeg)
+
+    const segmentsFromTerritory = tSegments.slice(
+      lowerTerritorySeg,
+      upperTerritorySeg + 1
+    )
+
+    // Adjust segments from territory and snake to start/end at the intersection points
+    segmentsFromTerritory[0][0] = startPoint
+    segmentsFromTerritory[segmentsFromTerritory.length - 1][1] = stopPoint
+    segmentsFromSnake[0][0] = startPoint
+    segmentsFromSnake[segmentsFromSnake.length - 1][1] = stopPoint
+
+    // Now, we combine the segments and start/end points in order to get the new region polygon
+    const totalNewRegionPolygon = [
+      startPoint, // First the first intersection point
+      ...segmentsFromTerritory.map(seg => seg[0]), // Then trace along the territory
+      stopPoint, // Then the second intersection point
+      ...segmentsFromSnake.map(seg => seg[0]), // Finally add points between both points on the snake
+    ]
+
+    if (totalNewRegionPolygon.length < 3) return
+
+    // We may have traversed along the territory AWAY from the snake intersection,
+    // Meaning the new polygon could also include old regions so we need to subtract existing regions
+    // const newRegion = polygonDiff([totalNewRegionPolygon], [t])[0]
+    const newRegion = totalNewRegionPolygon
+    return newRegion
+  }
+
   public updateTerritory() {
     if (this.pointIsInTerritory(this.head)) {
       // Reset the snake's length when we return to the territory
-      this.state.length = CONFIG.snake.baseLength
+      // this.state.length = CONFIG.snake.baseLength
 
-      // If both head and tail are in territory, we might be able to create new territory
-      if (this.pointIsInTerritory(this.tail)) {
-        // Check if any points are outside
-        let pointsOutside = false
-        for (const point of this.state.points) {
-          if (!this.pointIsInTerritory(point)) pointsOutside = true
-        }
+      // Check if any points are outside territory
+      let pointsOutside = false
+      for (const point of this.state.points) {
+        if (!this.pointIsInTerritory(point)) pointsOutside = true
+      }
 
-        // If any points are outside we should add new territory
-        if (pointsOutside) {
+      // If any points are outside we should compute new territory
+      if (pointsOutside) {
+        const newRegion = this.computeNewTerritoryRegion()
+        if (newRegion) {
+          this.state.territory.push(
+            this.state.makeRegion({ p: newRegion, t: Date.now() })
+          )
         }
       }
+
+      // // If both head and tail are in territory, we might be able to create new territory
+      // if (this.pointIsInTerritory(this.tail)) {
+
+      // }
     }
   }
 }

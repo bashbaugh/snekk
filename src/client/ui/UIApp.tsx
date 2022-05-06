@@ -28,8 +28,9 @@ const UIApp: preact.FunctionComponent<{
         )}
         {state.ui == 'readyToPlay' && <Home dispatchEvent={dispatchEvent} />}
         {state.ui === 'disconnected' && (
-          <div class="bg-black bg-opacity-50 p-10 rounded-lg flex flex-col gap-3 items-center">
+          <div class="bg-black bg-opacity-60 p-10 rounded-lg flex flex-col gap-3 items-center">
             <h2 class="font-bold text-3xl text-red-500">Disconnected</h2>
+            This could be due to a server restart or poor connection.
             {state.wsDisconnectCode && (
               <p>Error code: {state.wsDisconnectCode}</p>
             )}
