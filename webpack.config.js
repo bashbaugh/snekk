@@ -1,8 +1,6 @@
 const webpack = require('webpack'),
   path = require('path'),
-  fs = require('fs'),
   CleanWebpackPlugin = require('clean-webpack-plugin').CleanWebpackPlugin,
-  CopyWebpackPlugin = require('copy-webpack-plugin'),
   MiniCssExtractPlugin = require('mini-css-extract-plugin'),
   CssMinimizerPlugin = require('css-minimizer-webpack-plugin'),
   HtmlWebpackPlugin = require('html-webpack-plugin')
@@ -10,7 +8,7 @@ const webpack = require('webpack'),
 
 const devMode = process.env.NODE_ENV !== 'production'
 
-const OBFUSCATE = false
+const OBFUSCATE = true
 
 /** Get correct path relative to root dir  */
 const p = (l) => path.join(__dirname, '.', l)
