@@ -1,7 +1,9 @@
 const PATCHRATE = 20
+const dev =  process.env.NODE_ENV === 'development'
 
 const CONFIG = Object.freeze({
-  debug: process.env.NODE_ENV === 'development',
+  debug: dev,
+  serverURL: dev ? 'localhost:3002' : 'server1.snekk.xyz',
   version: '0.1.0',
   fps: {
     min: 40,

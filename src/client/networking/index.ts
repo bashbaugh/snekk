@@ -6,8 +6,8 @@ import { DeathReason } from 'types/game'
 import ServerPinger from './ping'
 import { SharedSnakeState } from "types/state"
 import { mean } from 'shared/util'
+import CONFIG from 'config'
 
-const SERVER_URL = 'localhost:3002'
 const SERVERTIME_MOVING_AVG_SAMPLES = 15
 
 export default class Network {
@@ -21,7 +21,7 @@ export default class Network {
   private serverTimeOffsets: number[] = []
 
   constructor() {
-    this.client = new Client('ws://' + SERVER_URL)
+    this.client = new Client('ws://' + CONFIG.serverURL)
   }
 
   public get lastServerTimeOffset() {
