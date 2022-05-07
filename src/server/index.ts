@@ -16,7 +16,7 @@ app.use(express.json())
 app.use(
   cors({
     // TODO FIX CORS
-    origin: ['*'],
+    origin: ['snekk.xyz'],
   })
 )
 
