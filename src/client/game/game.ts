@@ -4,6 +4,7 @@ import UI from 'client/ui'
 import { debugLog } from 'client/util'
 import * as PIXI from 'pixi'
 import { PlayerState } from 'shared/serverState'
+import { DeathReason } from 'types/game'
 import BaseObject from './baseObject'
 import Background from './objects/background'
 import Food from './objects/food'
@@ -117,7 +118,10 @@ export default class Game {
 
     this.network.onSelfDie((reason, killerId) => {
       this.playerSnake?.die()
-      alert(`Killed by ${killerId} (${reason})`)
+      this.ui.setState({
+        ui: 'readyToPlay',
+        deathReason: DeathReason.self_collision,
+      })
     })
   }
 

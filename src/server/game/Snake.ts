@@ -1,10 +1,10 @@
 import SnakeBehaviour from 'shared/snake'
 import { PlayerState, SnakeState } from 'shared/serverState'
-import { randomInt } from 'shared/util'
 import { Message, MESSAGETYPE } from 'types/networking'
 import GameController from './GameController'
-import { pointInsidePolygon } from 'shared/geometry'
+import { getLineIntersection } from 'shared/geometry'
 import CONFIG from 'config'
+import { DeathReason } from 'types/game'
 
 export default class Snake extends SnakeBehaviour {
   player: PlayerState
@@ -20,8 +20,31 @@ export default class Snake extends SnakeBehaviour {
 
   update(delta: number) {
     this.updateHead(delta)
+    this.checkFoodCollisions()
     this.updateTail()
+    this.checkSelfCollisions()
     this.updateTerritory()
+  }
+
+  checkSelfCollisions() {
+    // Check for collisions of snake's head with other segments
+    const [a1, a2] = [this.state.points[0], this.state.points[1]]
+    for (let i = 2; i < this.state.points.length - 1; i++) {
+      const [b1, b2] = [this.state.points[i], this.state.points[i + 1]]
+      if (getLineIntersection(a1, a2, b1, b2)) {
+        this.game.killSnake(this.player.clientId, DeathReason.self_collision)
+      }
+    }
+  }
+
+  checkFoodCollisions() {
+    this.game.state.food.forEach((f, i) => {
+      const headDist = Math.hypot(this.head.x - f.x, this.head.y - f.y)
+      if (headDist < CONFIG.food.collisionRadius) {
+        this.state.length += CONFIG.food.growAmount
+        this.game.state.food.deleteAt(i)
+      }
+    })
   }
 
   turn(data: Message[MESSAGETYPE.TURN]) {

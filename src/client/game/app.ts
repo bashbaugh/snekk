@@ -60,6 +60,10 @@ export default class App {
       if (!success) await asyncDelay(CONNECTION_RETRY_INTERVAL)
     }
 
+    this.waitForStart()
+  }
+
+  private waitForStart() {
     this.ui.setState({ ui: 'readyToPlay' })
 
     const startListener: UIEventListener = e => {

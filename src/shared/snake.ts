@@ -67,7 +67,6 @@ export default abstract class SnakeBehaviour {
     if (d === 2) h.x += m
     if (d === 3) h.y += m
     if (d === 4) h.x -= m
-    // console.log(h)
     return h
   }
 
@@ -81,7 +80,6 @@ export default abstract class SnakeBehaviour {
         points[i].y - points[i - 1].y
       )
       if (l + segLength > this.state.length) {
-        // console.log(points[i])
         const remaining = Math.round(this.state.length - l)
         const isHorizontal = points[i].d === 2 || points[i].d === 4
         const isVertical = points[i].d === 1 || points[i].d === 3
@@ -128,100 +126,118 @@ export default abstract class SnakeBehaviour {
   }
 
   protected computeNewTerritoryRegion() {
-    // First we need to get the segments of our territory as a single polygon
-    const t = polygonUnion(this.state.territory.map(r => r.p))[0]
+    try {
+      // First we need to get the segments of our territory as a single polygon
+      const t = polygonUnion(this.state.territory.map(r => r.p))[0]
 
-    let tSegments: XY[][] = []
-    for (let i = 0; i < t.length - 1; i++) tSegments.push([t[i], t[i + 1]])
+      let tSegments: XY[][] = []
+      for (let i = 0; i < t.length - 1; i++) tSegments.push([t[i], t[i + 1]])
 
-    let startPoint: XY | false = false
-    const snakeStartSeg = 0
-    let territoryStartSeg: number = 0
-    for (const [i, seg] of tSegments.entries()) {
-      // Find point and territory segment where head segment intersects territory
-      startPoint = getLineIntersection(
-        this.state.points[0],
-        this.state.points[1],
-        seg[0],
-        seg[1]
-      )
-      if (startPoint) {
-        territoryStartSeg = i
-        break
-      }
-    }
-
-    if (!startPoint) return // TODO handle
-
-    let stopPoint: XY | false = false
-    let territoryStopSeg: number = 0
-    let snakeStopSeg: number = 0
-
-    const segmentsFromSnake: XY[][] = []
-
-    // Starting after the first intersection,
-    // we iterate through snake segments to find the segment that intersects back into the territory
-    snakeSegLoop:
-    for (let i = snakeStartSeg; i < this.state.points.length - 1; i++) {
-      const snakeSeg = [this.state.points[i], this.state.points[i + 1]].map(p => ({
-        x: p.x,
-        y: p.y,
-      }))
-      // Add this segment to the start of segments array
-      // Since we will be assembling the polygon from head to tail along the snake
-      segmentsFromSnake.unshift(snakeSeg)
-
-      for (const [k, tSeg] of tSegments.entries()) {
-        stopPoint = getLineIntersection(
-          snakeSeg[0],
-          snakeSeg[1],
-          tSeg[0],
-          tSeg[1]
+      let startPoint: XY | false = false
+      const snakeStartSeg = 0
+      let territoryStartSeg: number = 0
+      for (const [i, seg] of tSegments.entries()) {
+        // Find point and territory segment where head segment intersects territory
+        startPoint = getLineIntersection(
+          this.state.points[0],
+          this.state.points[1],
+          seg[0],
+          seg[1]
         )
-        // Need to make sure it isn't the same point as start
-        if (stopPoint && !(stopPoint.x === startPoint.x && stopPoint.y === startPoint.y)) {
-          territoryStopSeg = k
-          snakeStopSeg = i
-          break snakeSegLoop
+        if (startPoint) {
+          territoryStartSeg = i
+          break
         }
       }
+
+      if (!startPoint) return // TODO handle
+
+      let stopPoint: XY | false = false
+      let territoryStopSeg: number = 0
+      let snakeStopSeg: number = 0
+
+      const segmentsFromSnake: XY[][] = []
+
+      // Starting after the first intersection,
+      // we iterate through snake segments to find the segment that intersects back into the territory
+      snakeSegLoop: for (
+        let i = snakeStartSeg;
+        i < this.state.points.length - 1;
+        i++
+      ) {
+        const snakeSeg = [this.state.points[i], this.state.points[i + 1]].map(
+          p => ({
+            x: p.x,
+            y: p.y,
+          })
+        )
+        // Add this segment to the start of segments array
+        // Since we will be assembling the polygon from head to tail along the snake
+        segmentsFromSnake.unshift(snakeSeg)
+
+        for (const [k, tSeg] of tSegments.entries()) {
+          stopPoint = getLineIntersection(
+            snakeSeg[0],
+            snakeSeg[1],
+            tSeg[0],
+            tSeg[1]
+          )
+          // Need to make sure it isn't the same point as start
+          if (
+            stopPoint &&
+            !(stopPoint.x === startPoint.x && stopPoint.y === startPoint.y)
+          ) {
+            territoryStopSeg = k
+            snakeStopSeg = i
+            break snakeSegLoop
+          } else stopPoint = false
+        }
+      }
+
+      if (!stopPoint) return
+
+      // Now we have both points where the snake intersects the territory
+      // so we need to slice the territory segments to find the segments between both intersections
+      const lowerTerritorySeg = Math.min(territoryStartSeg, territoryStopSeg),
+        upperTerritorySeg = Math.max(territoryStartSeg, territoryStopSeg)
+      const segmentsFromTerritory = tSegments.slice(
+        0
+      )
+
+      // Now, we combine the segments and start/end points in order to assemble the new region polygon
+      // Basically, we trace from the intersection at the head along the territory
+      // to the second snake intersection and then up the snake back to the first point
+      const totalNewRegionPolygon = [
+        // The start point in the polygon is the first inersection point
+        startPoint,
+        // Then, we trace along the territory taking the second point from each segment
+        // Starting with the first intersected segment and ending with the next to last
+        ...segmentsFromTerritory.map(seg => seg[1]),
+        // Then, we reach the second intersection point
+        stopPoint,
+        // Finally, add points from along the snake
+        ...segmentsFromSnake.map(seg => seg[1]),
+      ]
+
+      // console.log(
+      //   startPoint,
+      //   stopPoint,
+      //   segmentsFromTerritory,
+      //   segmentsFromSnake
+      // )
+
+      if (totalNewRegionPolygon.length < 3) return
+
+      // We may have traversed along the territory AWAY from the snake intersection,
+      // Meaning the new polygon could also include old regions so we need to subtract existing regions
+      const newRegion = polygonDiff([totalNewRegionPolygon], [t])
+      // const newRegion = totalNewRegionPolygon
+      return newRegion?.[0]
+    } catch (e) {
+      // TODO fix polygon union so we don't have to do this
+      console.error(e)
+      return false
     }
-
-    if (!stopPoint) return
-
-    // Now we have both points where the snake intersects the territory
-    // so we need to slice the territory segments to find the segments between both intersections
-    const lowerTerritorySeg = Math.min(territoryStartSeg, territoryStopSeg),
-      upperTerritorySeg = Math.max(territoryStartSeg, territoryStopSeg)
-    const segmentsFromTerritory = tSegments.slice(
-      lowerTerritorySeg,
-      upperTerritorySeg
-    )
-
-    // Now, we combine the segments and start/end points in order to assemble the new region polygon
-    // Basically, we trace from the intersection at the head along the territory
-    // to the second snake intersection and then up the snake back to the first point
-    const totalNewRegionPolygon = [
-      // The start point in the polygon is the first inersection point
-      startPoint, 
-      // Then, we trace along the territory taking the second point from each segment
-      // Starting with the first intersected segment and ending with the next to last
-      ...segmentsFromTerritory.map(seg => seg[1]),
-      // Then, we reach the second intersection point
-      stopPoint,
-      // Finally, add points from along the snake
-      ...segmentsFromSnake.map(seg => seg[1]),
-    ]
-
-    console.log(startPoint, stopPoint, segmentsFromTerritory, segmentsFromSnake)
-
-    if (totalNewRegionPolygon.length < 3) return
-
-    // We may have traversed along the territory AWAY from the snake intersection,
-    // Meaning the new polygon could also include old regions so we need to subtract existing regions
-    const newRegion = polygonDiff([totalNewRegionPolygon], [t])
-    // const newRegion = totalNewRegionPolygon
-    return newRegion?.[0]
   }
 
   public updateTerritory() {
@@ -242,14 +258,9 @@ export default abstract class SnakeBehaviour {
           this.state.territory.push(
             this.state.makeRegion({ p: newRegion, t: Date.now() })
           )
-          console.log(this.state.territory.length)
+          // console.log(this.state.territory.length)
         }
       }
-
-      // // If both head and tail are in territory, we might be able to create new territory
-      // if (this.pointIsInTerritory(this.tail)) {
-
-      // }
     }
   }
 }

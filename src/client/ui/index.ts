@@ -1,5 +1,6 @@
 import { createElement, render } from 'preact'
 import type { StateUpdater } from 'preact/hooks'
+import { DeathReason } from 'types/game'
 import UIApp from './UIApp'
 
 export interface UIState {
@@ -14,6 +15,7 @@ export interface UIState {
   showStats: boolean
   loadingText: string
   wsDisconnectCode?: number
+  deathReason?: DeathReason
 }
 
 export type UIEventType = 'startPlaying'

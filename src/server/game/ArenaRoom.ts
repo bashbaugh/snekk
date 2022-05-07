@@ -9,7 +9,7 @@ export default class ArenaRoom extends Room<GameState> {
   game: GameController = undefined as any
 
   onCreate() {
-    console.log('🎮 Initializing classic arena room')
+    console.log('🎮 Initializing classic arena room', this.roomId)
     this.setState(new GameState())
     this.setPatchRate(1000 / CONFIG.server.patchRate)
     this.setSimulationInterval(dt => this.game.loop(dt), 1000 / 60)

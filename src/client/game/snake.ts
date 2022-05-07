@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi'
 import CONFIG from 'config'
 import SnakeBehaviour, { SharedSnakeState } from 'shared/snake'
-import { hslToHex, lerp, lerpPoint } from 'shared/util'
+import { hslToHex, lerp, lerpPoint, randomInt } from 'shared/util'
 import Game from './game'
 import { polygonUnion } from 'shared/geometry'
 
@@ -9,6 +9,9 @@ const SNAKE_SATURATION = 1
 const SNAKE_LIGHTNESS = 0.6
 const TERRITORY_SATURATION = 0.8
 const TERRITORY_LIGHTNESS = 0.35
+
+const TERRITORY_SHAPE_DEBUGGING = true
+const TERRITORY_SHAPE_DEBUG_COLORS: any = {}
 
 class ClientSnakeState implements SharedSnakeState {
   points: SPoint[]
@@ -228,10 +231,17 @@ export default class Snake extends SnakeBehaviour {
   }
 
   drawTerritory(g: PIXI.Graphics) {
+    const doDebugRender = CONFIG.debug && TERRITORY_SHAPE_DEBUGGING
     for (const r of this.state.territory) {
-      g.beginFill(
-        hslToHex(this.state.hue, TERRITORY_SATURATION, TERRITORY_LIGHTNESS)
-      )
+      let rColor = hslToHex(this.state.hue, TERRITORY_SATURATION, TERRITORY_LIGHTNESS)
+
+      if (doDebugRender) {
+        const c = TERRITORY_SHAPE_DEBUG_COLORS
+        if (!c[r.t]) c[r.t] = randomInt(255**3)
+        rColor = c[r.t]
+      }
+
+      g.beginFill(rColor)
       const polygonPoints = r.p
         .map(p => {
           const rp = this.game.getViewRelativePoint(p)
@@ -240,6 +250,18 @@ export default class Snake extends SnakeBehaviour {
         .flat()
       g.drawPolygon(polygonPoints)
       g.endFill()
+    }
+
+    if (doDebugRender) {
+      const tUnion = polygonUnion(this.state.territory.map(r => r.p))
+      g.lineStyle(2, 0xff0000)
+      const polygonPoints = tUnion[0]
+        .map(p => {
+          const rp = this.game.getViewRelativePoint(p)
+          return [rp.x, rp.y]
+        })
+        .flat()
+      g.drawPolygon(polygonPoints)
     }
   }
 
