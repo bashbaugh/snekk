@@ -21,7 +21,7 @@ export default class Network {
   private serverTimeOffsets: number[] = []
 
   constructor() {
-    this.client = new Client('ws://' + CONFIG.serverURL)
+    this.client = new Client(CONFIG.serverURL)
   }
 
   public get lastServerTimeOffset() {
