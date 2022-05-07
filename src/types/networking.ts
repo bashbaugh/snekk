@@ -1,4 +1,4 @@
-import { SharedSnakeState } from "types/state"
+import { SharedSnakeState } from 'types/state'
 import { DeathReason } from './game'
 
 export enum MESSAGETYPE {

@@ -1,6 +1,6 @@
 import { Schema, type, ArraySchema, MapSchema } from '@colyseus/schema'
 import CONFIG from 'config'
-import { SharedPlayerState, SharedSnakeState } from "../types/state"
+import { SharedPlayerState, SharedSnakeState } from '../types/state'
 import { randomInt } from './util'
 
 export class RegionPoint extends Schema implements XY {

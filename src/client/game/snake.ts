@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi'
 import CONFIG from 'config'
 import SnakeBehaviour from 'shared/snake'
-import { SharedSnakeState } from "types/state"
+import { SharedSnakeState } from 'types/state'
 import { hslToHex, lerp, lerpPoint, randomInt } from 'shared/util'
 import Game from './game'
 import { polygonUnion } from 'shared/geometry'
@@ -15,8 +15,17 @@ const TERRITORY_SHAPE_DEBUGGING = false
 
 const _territoryShapeDebugColors: any = {}
 
-const cloneSnakePoint = ({ x, y, s, d, t }: SPoint): SPoint => ({ x, y, s, d, t })
-const cloneSnakeRegion = ({ p, t }: SRegion): SRegion => ({ t, p: p.map(p => ({ ...p })) })
+const cloneSnakePoint = ({ x, y, s, d, t }: SPoint): SPoint => ({
+  x,
+  y,
+  s,
+  d,
+  t,
+})
+const cloneSnakeRegion = ({ p, t }: SRegion): SRegion => ({
+  t,
+  p: p.map(p => ({ ...p })),
+})
 
 class ClientSnakeState implements SharedSnakeState {
   points: SPoint[]
@@ -85,7 +94,9 @@ export default class Snake extends SnakeBehaviour {
 
   private serverQueue: Array<ServerFrame> = []
 
-  static cloneServerFrameSnake(serverState: SharedSnakeState): SharedSnakeState {
+  static cloneServerFrameSnake(
+    serverState: SharedSnakeState
+  ): SharedSnakeState {
     const { points, territory, ...snakeProperties } = serverState
 
     const _snakePoints = points.map(p => cloneSnakePoint(p))

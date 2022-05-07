@@ -1,22 +1,22 @@
-import { Region, SnakePoint } from '../shared/serverState';
+import { Region, SnakePoint } from '../shared/serverState'
 
 export interface SharedSnakeState {
-  points: SPoint[] | Array<SnakePoint>;
+  points: SPoint[] | Array<SnakePoint>
   // trail: SPoint[] | Array<SnakePoint>
-  territory: SRegion[] | Array<Region>;
-  direction: Direction;
+  territory: SRegion[] | Array<Region>
+  direction: Direction
 
-  length: number;
+  length: number
   // energy: number
-  speed: number;
+  speed: number
 
-  hue: number;
+  hue: number
 
   /** Get a point */
-  makeSnakePoint: ({ x, y, s, d, t }: SPoint) => any;
+  makeSnakePoint: ({ x, y, s, d, t }: SPoint) => any
 
   /** Get a region */
-  makeRegion: ({ t, p }: SRegion) => any;
+  makeRegion: ({ t, p }: SRegion) => any
 }
 
 export interface SharedPlayerState {
