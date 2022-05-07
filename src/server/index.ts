@@ -44,7 +44,7 @@ const gameServer = new Server({
 
 gameServer.define('arena', ArenaRoom)
 
-const port = Number(process.env.port) || 3002
+const port = Number(process.env.PORT) || 3002
 
 const start = async () => {
   gameServer.listen(port)
