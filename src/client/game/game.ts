@@ -74,7 +74,7 @@ export default class Game {
     this.network.onPlayerJoin((id, pState) => {
       if (this.players[id] || id === this.network.clientId) return
       this.players[id] = {
-        state: this.clonePlayerState(pState),
+        state: pState,
       }
 
       pState.onChange = this.getPlayerChangeListener(id)
@@ -108,7 +108,6 @@ export default class Game {
 
     this.network.onStateChange(state => {
       // Update snakes when we receive a new state patch
-      console.log(this.players)
       for (const [id, { snake }] of Object.entries(this.players)) {
         if (snake) {
           snake.onServerState(
@@ -128,19 +127,19 @@ export default class Game {
     })
   }
 
-  clonePlayerState(p: SharedPlayerState): SharedPlayerState {
-    const {snake, ...otherProps} = p
-    return {
-      ...otherProps,
-      snake: snake ? Snake.cloneServerFrameSnake(snake) : undefined,
-    }
-  }
+  // clonePlayerState(p: SharedPlayerState): SharedPlayerState {
+  //   const {snake, ...otherProps} = p
+  //   return {
+  //     ...otherProps,
+  //     snake: snake ? Snake.cloneServerFrameSnake(snake) : undefined,
+  //   }
+  // }
 
   private initializePlayers() {
     for (const [id, p] of this.network.state!.players) {
       if (id === this.network.clientId) continue // Skip self
       this.players[id] = {
-        state: this.clonePlayerState(p)
+        state: p
       }
       this.addSnake(id)
       p.onChange = this.getPlayerChangeListener(id)
@@ -155,9 +154,10 @@ export default class Game {
   }
 
   removeSnake(playerId: string) {
+    if (!this.players[playerId].snake) return
     debugLog('[GAME] Removing snake', playerId)
-    this.players[playerId].snake?.cleanup()
-    this.players[playerId].snake = undefined
+    this.players[playerId].snake?.die()
+    delete this.players[playerId].snake
   }
 
   onTick(deltaFPS: number) {

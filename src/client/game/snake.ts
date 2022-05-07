@@ -63,12 +63,12 @@ export default class Snake extends SnakeBehaviour {
   public playerId: string
 
   constructor(game: Game, playerId: string, initialState: SharedSnakeState) {
-    super(new ClientSnakeState(initialState))
+    super(new ClientSnakeState(Snake.cloneServerFrameSnake(initialState)))
     this.game = game
     this.playerId = playerId
 
     this.container = new PIXI.Container()
-    game.app.stage.addChild(this.container)
+    game.gameContainer.addChild(this.container)
     this.snakeGraphics = new PIXI.Graphics()
     this.territoryGraphics = new PIXI.Graphics()
     this.container.addChild(this.territoryGraphics)
@@ -77,8 +77,9 @@ export default class Snake extends SnakeBehaviour {
     // this.territoryGraphics.filters = [new PIXI.filters.OutlineFilter(4, 0xffffff)]
   }
 
-  cleanup() {
+  die() {
     this.snakeGraphics.clear()
+    this.territoryGraphics.clear()
     this.game.gameContainer.removeChild(this.container)
   }
 
@@ -283,6 +284,4 @@ export default class Snake extends SnakeBehaviour {
     this.drawSnake(this.snakeGraphics)
     this.drawTerritory(this.territoryGraphics)
   }
-
-  die() {}
 }
