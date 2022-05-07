@@ -1,5 +1,5 @@
 const PATCHRATE = 20
-const dev =  process.env.NODE_ENV === 'development'
+const dev = process.env.NODE_ENV === 'development'
 
 const CONFIG = Object.freeze({
   debug: dev,
