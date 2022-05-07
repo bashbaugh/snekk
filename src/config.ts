@@ -7,7 +7,7 @@ const CONFIG = Object.freeze({
   version: '0.1.0',
   fps: {
     min: 40,
-    max: 80
+    max: 80,
   },
   snake: {
     baseSpeed: 100,
@@ -18,7 +18,7 @@ const CONFIG = Object.freeze({
   server: {
     maxClientsPerRoom: 50,
     patchRate: PATCHRATE,
-    devLatency: 200
+    devLatency: 200,
   },
   food: {
     foodInterval: 500,

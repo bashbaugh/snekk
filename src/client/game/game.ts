@@ -139,7 +139,7 @@ export default class Game {
     for (const [id, p] of this.network.state!.players) {
       if (id === this.network.clientId) continue // Skip self
       this.players[id] = {
-        state: p
+        state: p,
       }
       this.addSnake(id)
       p.onChange = this.getPlayerChangeListener(id)

@@ -4,7 +4,7 @@ import GameState, { PlayerState } from 'shared/serverState'
 import { debugLog } from '../util'
 import { DeathReason } from 'types/game'
 import ServerPinger from './ping'
-import { SharedSnakeState } from "types/state"
+import { SharedSnakeState } from 'types/state'
 import { mean } from 'shared/util'
 import CONFIG from 'config'
 
@@ -62,12 +62,9 @@ export default class Network {
     })
 
     // Secret admin broadcasts
-    r.onMessage(
-      MESSAGETYPE.GODMSG,
-      (m: Message[MESSAGETYPE.GODMSG]) => {
-        alert(m.m)
-      }
-    )
+    r.onMessage(MESSAGETYPE.GODMSG, (m: Message[MESSAGETYPE.GODMSG]) => {
+      alert(m.m)
+    })
   }
 
   public removeListeners() {
