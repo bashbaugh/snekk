@@ -1,5 +1,6 @@
 import Network from 'client/networking'
 import UI, { UIEventListener } from 'client/ui'
+import CONFIG from 'config'
 import * as PIXI from 'pixi'
 import { asyncDelay } from 'shared/util'
 import { theme } from '../../../tailwind.config'
@@ -31,8 +32,8 @@ export default class App {
     this.ui.renderUI()
 
     this.app.ticker.start()
-    this.app.ticker.minFPS = 40
-    this.app.ticker.maxFPS = 80
+    this.app.ticker.minFPS = CONFIG.fps.min
+    this.app.ticker.maxFPS = CONFIG.fps.max
 
     this.network = new Network()
 

@@ -54,11 +54,12 @@ export function pointInsidePolygon(p: XY, gon: XY[]) {
   return inside
 }
 
-export function polygonUnion(polygons: XY[][]): XY[][] {
+export function polygonUnion(polygons: XY[][]): XY[] {
   const inputs = polygons.map(p => [p.map(q => [q.x, q.y] as Pair)])
   // TODO fix this to include other polygons from union:
   const result = pUnion(inputs[0], ...inputs.slice(1))
-  return result[0].map(p => p.map(q => ({ x: q[0], y: q[1] })))
+  // First polygon, excluding holes"
+  return result[0][0].map(q => ({ x: q[0], y: q[1] }))
 }
 
 // TODO FIX - this is not working?

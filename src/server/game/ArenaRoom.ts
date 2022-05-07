@@ -13,7 +13,7 @@ export default class ArenaRoom extends Room<GameState> {
     this.setState(new GameState())
     this.setPatchRate(1000 / CONFIG.server.patchRate)
     this.setSimulationInterval(dt => this.game.loop(dt), 1000 / 60)
-    this.maxClients = CONFIG.maxClientsPerRoom
+    this.maxClients = CONFIG.server.maxClientsPerRoom
 
     this.game = new GameController(this)
 

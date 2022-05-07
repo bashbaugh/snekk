@@ -38,3 +38,10 @@ export const asyncDelay = (ms: number) =>
 
 export const mean = (arr: number[]) =>
   arr.reduce((a, b) => a + b, 0) / arr.length
+
+/** Format milliseconds as minutes:seconds */
+export const formatTime = (ms: number) => {
+  const minutes = Math.floor(ms / 60000)
+  const seconds = Math.floor((ms % 60000) / 1000)
+  return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`
+}

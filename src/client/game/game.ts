@@ -5,6 +5,7 @@ import { debugLog } from 'client/util'
 import * as PIXI from 'pixi'
 import { PlayerState } from 'shared/serverState'
 import { DeathReason } from 'types/game'
+import { SharedPlayerState } from 'types/state'
 import BaseObject from './baseObject'
 import Background from './objects/background'
 import Food from './objects/food'
@@ -24,7 +25,7 @@ export default class Game {
     string,
     {
       snake?: Snake
-      state: PlayerState
+      state: SharedPlayerState
     }
   >
   private playerSnake?: Snake
@@ -71,8 +72,9 @@ export default class Game {
 
   private addNetworkHandlers() {
     this.network.onPlayerJoin((id, pState) => {
+      if (this.players[id] || id === this.network.clientId) return
       this.players[id] = {
-        state: pState,
+        state: this.clonePlayerState(pState),
       }
 
       pState.onChange = this.getPlayerChangeListener(id)
@@ -106,6 +108,7 @@ export default class Game {
 
     this.network.onStateChange(state => {
       // Update snakes when we receive a new state patch
+      console.log(this.players)
       for (const [id, { snake }] of Object.entries(this.players)) {
         if (snake) {
           snake.onServerState(
@@ -125,11 +128,19 @@ export default class Game {
     })
   }
 
+  clonePlayerState(p: SharedPlayerState): SharedPlayerState {
+    const {snake, ...otherProps} = p
+    return {
+      ...otherProps,
+      snake: snake ? Snake.cloneServerFrameSnake(snake) : undefined,
+    }
+  }
+
   private initializePlayers() {
     for (const [id, p] of this.network.state!.players) {
       if (id === this.network.clientId) continue // Skip self
       this.players[id] = {
-        state: p,
+        state: this.clonePlayerState(p)
       }
       this.addSnake(id)
       p.onChange = this.getPlayerChangeListener(id)
@@ -137,9 +148,9 @@ export default class Game {
   }
 
   addSnake(playerId: string) {
-    debugLog('[GAME] Creating snake', playerId)
     const p = this.players[playerId]
     if (!p.state.snake) return
+    debugLog('[GAME] Creating snake', playerId)
     p.snake = new Snake(this, playerId, p.state.snake)
   }
 
@@ -149,15 +160,15 @@ export default class Game {
     this.players[playerId].snake = undefined
   }
 
-  onTick(delta: number) {
-    const deltaMs = this.app.ticker.deltaMS
+  onTick(deltaFPS: number) {
+    const deltaMS = this.app.ticker.deltaMS
 
-    for (const obj of this.gameObjects) obj.update(deltaMs)
+    for (const obj of this.gameObjects) obj.update(deltaMS)
     for (const obj of this.gameObjects) obj.draw()
 
     for (const [id, { snake }] of Object.entries(this.players)) {
       if (!snake) continue // If this player doesn't have an active snake skip them
-      snake.update(deltaMs)
+      snake.update(deltaMS)
       snake.draw()
     }
 
@@ -180,10 +191,6 @@ export default class Game {
       x: center.x - this.app.view.width / 2,
       y: center.y - this.app.view.height / 2,
     }
-    // return {
-    //   x: -200,
-    //   y: -200,
-    // }
   }
 
   public getViewRelativePoint(p: XY): XY {

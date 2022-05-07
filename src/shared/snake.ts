@@ -5,26 +5,7 @@ import {
   polygonDiff,
   polygonUnion,
 } from './geometry'
-import type { Region, SnakePoint } from './serverState'
-
-export interface SharedSnakeState {
-  points: SPoint[] | Array<SnakePoint>
-  // trail: SPoint[] | Array<SnakePoint>
-  territory: SRegion[] | Array<Region>
-  direction: Direction
-
-  length: number
-  // energy: number
-  speed: number
-
-  hue: number
-
-  /** Get a point */
-  makeSnakePoint: ({ x, y, s, d, t }: SPoint) => any
-
-  /** Get a region */
-  makeRegion: ({ t, p }: SRegion) => any
-}
+import { SharedSnakeState } from '../types/state'
 
 export default abstract class SnakeBehaviour {
   state: SharedSnakeState
@@ -128,7 +109,7 @@ export default abstract class SnakeBehaviour {
   protected computeNewTerritoryRegion() {
     try {
       // First we need to get the segments of our territory as a single polygon
-      const t = polygonUnion(this.state.territory.map(r => r.p))[0]
+      const t = polygonUnion(this.state.territory.map(r => r.p))
 
       let tSegments: XY[][] = []
       for (let i = 0; i < t.length - 1; i++) tSegments.push([t[i], t[i + 1]])
@@ -201,7 +182,8 @@ export default abstract class SnakeBehaviour {
       const lowerTerritorySeg = Math.min(territoryStartSeg, territoryStopSeg),
         upperTerritorySeg = Math.max(territoryStartSeg, territoryStopSeg)
       const segmentsFromTerritory = tSegments.slice(
-        0
+        lowerTerritorySeg,
+        upperTerritorySeg
       )
 
       // Now, we combine the segments and start/end points in order to assemble the new region polygon
@@ -242,9 +224,6 @@ export default abstract class SnakeBehaviour {
 
   public updateTerritory() {
     if (this.pointIsInTerritory(this.head)) {
-      // Reset the snake's length when we return to the territory
-      // this.state.length = CONFIG.snake.baseLength
-
       // Check if any points are outside territory
       let pointsOutside = false
       for (const point of this.state.points) {
@@ -258,6 +237,9 @@ export default abstract class SnakeBehaviour {
           this.state.territory.push(
             this.state.makeRegion({ p: newRegion, t: Date.now() })
           )
+
+          // Reset the snake's length when we return to the territory
+          this.state.length = CONFIG.snake.baseLength
           // console.log(this.state.territory.length)
         }
       }

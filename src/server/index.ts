@@ -6,6 +6,7 @@ import ArenaRoom from './game/ArenaRoom'
 import { monitor } from '@colyseus/monitor'
 import basicAuth from 'express-basic-auth'
 import cors from 'cors'
+import CONFIG from 'config'
 
 console.log('Starting...')
 
@@ -48,7 +49,7 @@ const port = Number(process.env.port) || 3002
 const start = async () => {
   gameServer.listen(port)
   if (process.env.NODE_ENV !== 'production') {
-    gameServer.simulateLatency(200)
+    gameServer.simulateLatency(CONFIG.server.devLatency)
   }
   console.log('👾 Game server listening on port', port)
 }

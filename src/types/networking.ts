@@ -1,4 +1,4 @@
-import { SharedSnakeState } from 'shared/snake'
+import { SharedSnakeState } from "types/state"
 import { DeathReason } from './game'
 
 export enum MESSAGETYPE {
@@ -7,6 +7,8 @@ export enum MESSAGETYPE {
   TIMESYNC,
   DEATH,
   JOIN,
+  /** A special secret message that can be sent to players by game admins */
+  GODMSG = 'godmsg',
 }
 
 export interface Message {
@@ -38,5 +40,8 @@ export interface Message {
   [MESSAGETYPE.JOIN]: {
     /** Name */
     n: string
+  }
+  [MESSAGETYPE.GODMSG]: {
+    m: string
   }
 }

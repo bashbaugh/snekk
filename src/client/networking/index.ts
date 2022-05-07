@@ -4,7 +4,7 @@ import GameState, { PlayerState } from 'shared/serverState'
 import { debugLog } from '../util'
 import { DeathReason } from 'types/game'
 import ServerPinger from './ping'
-import { SharedSnakeState } from 'shared/snake'
+import { SharedSnakeState } from "types/state"
 import { mean } from 'shared/util'
 
 const SERVER_URL = 'localhost:3002'
@@ -60,6 +60,14 @@ export default class Network {
       onDisconnect(code)
       debugLog('[NETWORK] Left session. WS code:', code)
     })
+
+    // Secret admin broadcasts
+    r.onMessage(
+      MESSAGETYPE.GODMSG,
+      (m: Message[MESSAGETYPE.GODMSG]) => {
+        alert(m.m)
+      }
+    )
   }
 
   public removeListeners() {
