@@ -2,7 +2,7 @@ import SnakeBehaviour from 'shared/snake'
 import { PlayerState, SnakeState } from 'shared/serverState'
 import { Message, MESSAGETYPE } from 'types/networking'
 import GameController from './GameController'
-import { getLineIntersection } from 'shared/geometry'
+import { getLineIntersection, polygonArea } from 'shared/geometry'
 import CONFIG from 'config'
 import { DeathReason } from 'types/game'
 
@@ -24,6 +24,7 @@ export default class Snake extends SnakeBehaviour {
     this.updateTail()
     this.checkSelfCollisions()
     this.updateTerritory()
+    this.updateScore()
   }
 
   checkSelfCollisions() {
@@ -45,6 +46,15 @@ export default class Snake extends SnakeBehaviour {
         this.game.state.food.deleteAt(i)
       }
     })
+  }
+
+  updateScore() {
+    this.state.score =
+      (this.state.territory as any[]).reduce<number>(
+        (score: number, region: SRegion) => score + polygonArea(region.p),
+        0
+      ) * CONFIG.snake.scoreMultiplier
+    console.log(this.state.score)
   }
 
   turn(data: Message[MESSAGETYPE.TURN]) {

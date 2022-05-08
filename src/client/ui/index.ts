@@ -11,7 +11,13 @@ export interface UIState {
   }
   player?: {
     length: number
+    score: number
   }
+  players?: Array<{
+    id: string
+    name: string
+    score: number
+  }>
   showStats: boolean
   loadingText: string
   wsDisconnectCode?: number

@@ -12,6 +12,8 @@ export interface SharedSnakeState {
 
   hue: number
 
+  score: number
+
   /** Get a point */
   makeSnakePoint: ({ x, y, s, d, t }: SPoint) => any
 

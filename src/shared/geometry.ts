@@ -17,6 +17,7 @@ export function getLineIntersection(
   b1: XY,
   b2: XY
 ): XY | false {
+  // http://paulbourke.net/geometry/pointlineplane/
   // Check if none of the lines are of length 0
   if ((a1.x === a2.x && a1.y === a2.y) || (b1.x === b2.x && b1.y === b2.y))
     return false
@@ -69,4 +70,19 @@ export function polygonDiff(minuend: XY[][], subtrahend: XY[][]): XY[][] {
   // TODO fix this to include other polygons from union:
   const result = pDiff(minuendIn, subtrahendIn)
   return result[0]?.map(p => p.map(q => ({ x: q[0], y: q[1] })))
+}
+
+/** Get the total area of a polygon */
+export function polygonArea(polygon: XY[]): number {
+  // https://stackoverflow.com/a/33670691/8748307
+  let total = 0
+  for (let i = 0, l = polygon.length; i < l; i++) {
+    var addX = polygon[i].x
+    var addY = polygon[i == polygon.length - 1 ? 0 : i + 1].y
+    var subX = polygon[i == polygon.length - 1 ? 0 : i + 1].x
+    var subY = polygon[i].y
+    total += addX * addY * 0.5
+    total -= subX * subY * 0.5
+  }
+  return Math.abs(total)
 }

@@ -13,6 +13,8 @@ const CONFIG = Object.freeze({
     baseSpeed: 100,
     baseLength: 250,
     territoryStartMargin: 100,
+    scoreMultiplier: 0.01,
+    lengthMultiplier: 0.1,
   },
   interpDeltaMs: (1000 / PATCHRATE) * 1,
   server: {

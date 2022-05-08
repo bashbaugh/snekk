@@ -18,7 +18,7 @@ export class SnakePoint extends Schema implements SPoint {
   @type('int16') x: number
   @type('int16') y: number
   /** Sequence number */
-  @type('int16') s: number
+  @type('uint16') s: number
   /** Direction (for turn points9) */
   @type('int8') d: Direction
   /** Server timestamp */
@@ -54,10 +54,11 @@ export class SnakeState extends Schema implements SharedSnakeState {
   // @type([SnakePoint]) trail = new ArraySchema<SnakePoint>()
   @type([Region]) territory = new ArraySchema<Region>()
   @type('int8') direction: Direction = 1
-  @type('int16') length: number = CONFIG.snake.baseLength
+  @type('uint16') length: number = CONFIG.snake.baseLength
   // @type('int16') energy: number = 0
   @type('int16') speed: number = CONFIG.snake.baseSpeed
   @type('int16') hue: number
+  @type('uint16') score: number = 0
 
   constructor(spawnP: XY) {
     super()

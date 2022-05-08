@@ -1,3 +1,4 @@
+import CONFIG from 'config'
 import preact from 'preact'
 import { useEffect, useState } from 'preact/hooks'
 import { formatTime } from 'shared/util'
@@ -5,6 +6,7 @@ import { formatTime } from 'shared/util'
 const PlayerStats: preact.FunctionComponent<{
   player: {
     length: number
+    score: number
   }
 }> = ({ player: p }) => {
   const [start] = useState(Date.now())
@@ -19,7 +21,8 @@ const PlayerStats: preact.FunctionComponent<{
 
   return (
     <div class="flex flex-col gap-2 p-4 absolute bottom-0 opacity-70">
-      <div>Length: {p.length.toFixed()}</div>
+      <div class="text-lg font-semibold">{p.score.toFixed()}</div>
+      <div>Length: {(p.length * CONFIG.snake.lengthMultiplier).toFixed()}</div>
       <div>{formatTime(time)}</div>
     </div>
   )

@@ -36,6 +36,7 @@ class ClientSnakeState implements SharedSnakeState {
   // energy: number
   speed: number
   hue: number
+  score: number = 0
 
   constructor(state: SharedSnakeState) {
     const t = Date.now()
@@ -230,8 +231,9 @@ export default class Snake extends SnakeBehaviour {
       // Recalculate tail
       this.updateTail()
 
-      // Update territory
+      // Update territory and score
       this.state.territory = lastF.snake.territory
+      this.state.score = lastF.snake.score
     }
     // Can't interpolate; extrapolate instead
     else this.extrapolatePosition()

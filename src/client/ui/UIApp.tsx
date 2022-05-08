@@ -4,6 +4,7 @@ import { UIEventDispatcher, UIState } from '.'
 import Home from './Home'
 import PlayerStats from './components/PlayerStats'
 import StatsDisplay from './components/StatsDisplay'
+import Leaderboard from './components/Leaderboard'
 
 const UIApp: preact.FunctionComponent<{
   dispatchEvent: UIEventDispatcher
@@ -20,7 +21,10 @@ const UIApp: preact.FunctionComponent<{
         {state.showStats && state.stats && <StatsDisplay {...state.stats} />}
       </div>
       {state.ui == 'inGame' && (
-        <div>{state.player && <PlayerStats player={state.player} />}</div>
+        <>
+          {state.player && <PlayerStats player={state.player} />}
+          {state.players && <Leaderboard players={state.players} />}
+        </>
       )}
       <div class="flex items-center justify-center h-full">
         {state.ui === 'loading' && (

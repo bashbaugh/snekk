@@ -1,6 +1,6 @@
 import KeyboardManager from 'client/input/keyboard'
 import Network from 'client/networking'
-import UI from 'client/ui'
+import UI, { UIState } from 'client/ui'
 import { debugLog } from 'client/util'
 import * as PIXI from 'pixi'
 import { PlayerState } from 'shared/serverState'
@@ -166,10 +166,23 @@ export default class Game {
     for (const obj of this.gameObjects) obj.update(deltaMS)
     for (const obj of this.gameObjects) obj.draw()
 
-    for (const [id, { snake }] of Object.entries(this.players)) {
+    const playersArray: UIState['players'] = []
+
+    for (const [
+      id,
+      {
+        snake,
+        state: { name },
+      },
+    ] of Object.entries(this.players)) {
       if (!snake) continue // If this player doesn't have an active snake skip them
       snake.update(deltaMS)
       snake.draw()
+      playersArray.push({
+        id,
+        name: name!,
+        score: snake.state.score!,
+      })
     }
 
     this.ui.setState({
@@ -179,7 +192,9 @@ export default class Game {
       },
       player: this.playerSnake && {
         length: this.playerSnake.state.length,
+        score: this.playerSnake.state.score,
       },
+      players: playersArray,
     })
   }
 
