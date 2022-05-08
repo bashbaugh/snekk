@@ -14,4 +14,10 @@ jobs:
         host: ${{ secrets.HOST }}
         username: ubuntu
         key: ${{ secrets.SSH_KEY }}
-        script: cd ~/snekk/ && git pull && ./scripts/pm2deploy.sh
+        script: |
+          cd ~/snekk/
+          export NVM_DIR=~/.nvm
+          source ~/.nvm/nvm.sh
+          yarn
+          yarn server:build
+          pm2 reload all
