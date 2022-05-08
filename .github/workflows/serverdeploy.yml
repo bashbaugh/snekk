@@ -21,4 +21,4 @@ jobs:
           source ~/.nvm/nvm.sh
           yarn
           yarn server:build
-          pm2 reload all
+          pm2 reload all --update-env

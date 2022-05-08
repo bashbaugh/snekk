@@ -182,6 +182,7 @@ export default class Game {
         id,
         name: name!,
         score: snake.state.score!,
+        isSelf: id === this.network.clientId,
       })
     }
 

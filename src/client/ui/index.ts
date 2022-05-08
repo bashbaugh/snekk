@@ -15,6 +15,7 @@ export interface UIState {
   }
   players?: Array<{
     id: string
+    isSelf: boolean
     name: string
     score: number
   }>
