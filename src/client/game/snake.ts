@@ -221,10 +221,15 @@ export default class Snake extends SnakeBehaviour {
         lerpPoint(headFromPoint, headToPoint, headPercent, true)
       )
 
-      // Interpolate length
+      // Interpolate length and score
       this.state.length = lerp(
         lastF.snake.length,
         nextF.snake.length,
+        framePercent
+      )
+      this.state.score = lerp(
+        lastF.snake.score,
+        nextF.snake.score,
         framePercent
       )
 
@@ -233,7 +238,6 @@ export default class Snake extends SnakeBehaviour {
 
       // Update territory and score
       this.state.territory = lastF.snake.territory
-      this.state.score = lastF.snake.score
     }
     // Can't interpolate; extrapolate instead
     else this.extrapolatePosition()

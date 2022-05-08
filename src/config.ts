@@ -15,6 +15,7 @@ const CONFIG = Object.freeze({
     territoryStartMargin: 100,
     scoreMultiplier: 0.01,
     lengthMultiplier: 0.1,
+    maxNameLength: 20
   },
   interpDeltaMs: (1000 / PATCHRATE) * 1,
   server: {

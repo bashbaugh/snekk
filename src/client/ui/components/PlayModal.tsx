@@ -1,3 +1,4 @@
+import CONFIG from 'config'
 import preact from 'preact'
 import { useEffect, useRef } from 'preact/hooks'
 import { UIEventDispatcher } from '..'
@@ -17,6 +18,7 @@ const PlayModal: preact.FunctionComponent<{
         autofocus
         ref={nameRef}
         placeholder="Enter your name"
+        maxLength={CONFIG.snake.maxNameLength}
         class="w-full p-2 rounded-md outline-none bg-white bg-opacity-20"
       />
       <button
