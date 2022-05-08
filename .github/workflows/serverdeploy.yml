@@ -16,6 +16,7 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         script: |
           cd ~/snekk/
+          git pull
           export NVM_DIR=~/.nvm
           source ~/.nvm/nvm.sh
           yarn
