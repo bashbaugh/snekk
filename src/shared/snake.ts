@@ -179,12 +179,13 @@ export default abstract class SnakeBehaviour {
 
       // Now we have both points where the snake intersects the territory
       // so we need to slice the territory segments to find the segments between both intersections
-      const lowerTerritorySeg = Math.min(territoryStartSeg, territoryStopSeg),
-        upperTerritorySeg = Math.max(territoryStartSeg, territoryStopSeg)
-      const segmentsFromTerritory = tSegments.slice(
-        lowerTerritorySeg,
-        upperTerritorySeg
-      )
+      // We need to wrap around the array if the end segment is before the start segment
+      const segmentsFromTerritory =
+        territoryStopSeg > territoryStartSeg
+          ? tSegments.slice(territoryStartSeg, territoryStopSeg + 1)
+          : tSegments
+              .slice(territoryStartSeg, tSegments.length)
+              .concat(tSegments.slice(0, territoryStopSeg + 1))
 
       // Now, we combine the segments and start/end points in order to assemble the new region polygon
       // Basically, we trace from the intersection at the head along the territory
@@ -238,8 +239,9 @@ export default abstract class SnakeBehaviour {
             this.state.makeRegion({ p: newRegion, t: Date.now() })
           )
 
+          // TODO figure out how to handle length
           // Reset the snake's length when we return to the territory
-          this.state.length = CONFIG.snake.baseLength
+          // this.state.length = CONFIG.snake.baseLength
           // console.log(this.state.territory.length)
         }
       }

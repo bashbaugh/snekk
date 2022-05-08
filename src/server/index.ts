@@ -13,7 +13,7 @@ app.use(express.json())
 
 app.use(
   cors({
-    // TODO FIX CORS
+    // TODO FIX CORS (NGINX?)
     origin: ['snekk.xyz', 's.snekk.xyz', 'localhost:3000'],
   })
 )

@@ -17,7 +17,6 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/server1.snekk.xyz/privkey.pem; # managed by Certbot
     include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
-
 }
 server {
     if ($host = server1.snekk.xyz) {
@@ -28,6 +27,4 @@ server {
     listen 80;
     server_name server1.snekk.xyz;
     return 404; # managed by Certbot
-
-
 }
