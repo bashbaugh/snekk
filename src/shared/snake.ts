@@ -182,10 +182,10 @@ export default abstract class SnakeBehaviour {
       // We need to wrap around the array if the end segment is before the start segment
       const segmentsFromTerritory =
         territoryStopSeg > territoryStartSeg
-          ? tSegments.slice(territoryStartSeg, territoryStopSeg + 1)
+          ? tSegments.slice(territoryStartSeg, territoryStopSeg)
           : tSegments
               .slice(territoryStartSeg, tSegments.length)
-              .concat(tSegments.slice(0, territoryStopSeg + 1))
+              .concat(tSegments.slice(0, territoryStopSeg))
 
       // Now, we combine the segments and start/end points in order to assemble the new region polygon
       // Basically, we trace from the intersection at the head along the territory
@@ -201,13 +201,6 @@ export default abstract class SnakeBehaviour {
         // Finally, add points from along the snake
         ...segmentsFromSnake.map(seg => seg[1]),
       ]
-
-      // console.log(
-      //   startPoint,
-      //   stopPoint,
-      //   segmentsFromTerritory,
-      //   segmentsFromSnake
-      // )
 
       if (totalNewRegionPolygon.length < 3) return
 

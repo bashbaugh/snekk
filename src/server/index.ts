@@ -8,6 +8,8 @@ import basicAuth from 'express-basic-auth'
 import cors from 'cors'
 import CONFIG from 'config'
 
+console.log("Starting...")
+
 const app = express()
 app.use(express.json())
 
