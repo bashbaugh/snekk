@@ -57,6 +57,7 @@ export class SnakeState extends Schema implements SharedSnakeState {
   @type('uint16') length: number = CONFIG.snake.baseLength
   // @type('int16') energy: number = 0
   @type('int16') speed: number = CONFIG.snake.baseSpeed
+  @type('int16') extraSpeed: number = 0
   @type('int16') hue: number
   @type('uint16') score: number = 0
 

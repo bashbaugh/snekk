@@ -7,8 +7,8 @@ export interface SharedSnakeState {
   direction: Direction
 
   length: number
-  // energy: number
   speed: number
+  extraSpeed: number
 
   hue: number
 

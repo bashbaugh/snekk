@@ -22,7 +22,7 @@ const PlayerStats: preact.FunctionComponent<{
   return (
     <div class="flex flex-col gap-2 p-4 absolute bottom-0 opacity-70">
       <div class="text-lg font-semibold">{p.score.toFixed()}</div>
-      <div>Length: {(p.length * CONFIG.snake.lengthMultiplier).toFixed()}</div>
+      <div>Length: {(p.length * CONFIG.snake.lengthValMultiplier).toFixed()}</div>
       <div>{formatTime(time)}</div>
     </div>
   )

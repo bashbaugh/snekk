@@ -32,7 +32,9 @@ export default class Snake extends SnakeBehaviour {
     const [a1, a2] = [this.state.points[0], this.state.points[1]]
     for (let i = 2; i < this.state.points.length - 1; i++) {
       const [b1, b2] = [this.state.points[i], this.state.points[i + 1]]
-      if (getLineIntersection(a1, a2, b1, b2)) {
+      const intersection = getLineIntersection(a1, a2, b1, b2)
+      // If the snake is intersecting in its own territory, we ignore it
+      if (intersection && !this.pointIsInTerritory(intersection)) {
         this.game.killSnake(this.player.clientId, DeathReason.self_collision)
       }
     }
@@ -54,7 +56,6 @@ export default class Snake extends SnakeBehaviour {
         (score: number, region: SRegion) => score + polygonArea(region.p),
         0
       ) * CONFIG.snake.scoreMultiplier
-    console.log(this.state.score)
   }
 
   turn(data: Message[MESSAGETYPE.TURN]) {

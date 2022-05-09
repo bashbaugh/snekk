@@ -16,7 +16,7 @@ const Leaderboard: preact.FunctionComponent<{
           .sort((a, b) => b.score - a.score)
           .slice(0, 11)
           .map(({ id, name, score, isSelf }, i) => (
-            <div key={id} class="flex flex-row gap-2">
+            <div key={id} class="flex flex-row gap-1">
               <div>{i + 1}.</div>
               <div class={clsx("flex-1 whitespace-nowrap overflow-clip", isSelf && 'font-semibold')}>{name}</div>
               <div class="font-bold">{score.toFixed()}</div>

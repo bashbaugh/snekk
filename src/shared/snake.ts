@@ -20,6 +20,9 @@ export default abstract class SnakeBehaviour {
   public get tail() {
     return this.state.points[this.state.points.length - 1]
   }
+  public get speed() {
+    return this.state.speed + this.state.extraSpeed
+  }
 
   abstract update(delta: number): void
   abstract die(): void
@@ -29,7 +32,7 @@ export default abstract class SnakeBehaviour {
       delta,
       this.head,
       this.state.direction,
-      this.state.speed
+      this.speed
     )
     Object.assign(this.head, newHead)
   }
@@ -99,7 +102,7 @@ export default abstract class SnakeBehaviour {
   }
 
   /** Check if a point is within this snake's territory */
-  protected pointIsInTerritory(point: SPoint) {
+  protected pointIsInTerritory(point: XY) {
     for (const region of this.state.territory) {
       if (pointInsidePolygon(point, region.p)) return true
     }
@@ -217,7 +220,12 @@ export default abstract class SnakeBehaviour {
   }
 
   public updateTerritory() {
-    if (this.pointIsInTerritory(this.head)) {
+    const inTerritory = this.pointIsInTerritory(this.head)
+
+    this.state.extraSpeed = inTerritory ? CONFIG.snake.territorySpeedBoost : 0
+
+    if (inTerritory) {
+
       // Check if any points are outside territory
       let pointsOutside = false
       for (const point of this.state.points) {

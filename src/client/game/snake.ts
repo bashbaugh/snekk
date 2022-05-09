@@ -35,6 +35,7 @@ class ClientSnakeState implements SharedSnakeState {
   length: number
   // energy: number
   speed: number
+  extraSpeed: number = 0
   hue: number
   score: number = 0
 
