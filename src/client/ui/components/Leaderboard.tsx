@@ -11,7 +11,7 @@ const Leaderboard: preact.FunctionComponent<{
 }> = ({ players }) => {
   return (
     <div class="absolute right-0 top-0 w-48 m-3 p-2 rounded-md bg-white bg-opacity-80 text-black text-sm">
-      <div class="flex flex-col gap-2">
+      <div class="flex flex-col gap-1">
         {players
           .sort((a, b) => b.score - a.score)
           .slice(0, 11)

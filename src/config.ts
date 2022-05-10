@@ -12,6 +12,9 @@ const CONFIG = Object.freeze({
   snake: {
     baseSpeed: 100,
     baseLength: 250,
+    snakeBoostSpeed: 300,
+    boostCostPerSec: 100,
+    minLength: 200,
     territoryStartMargin: 100,
     territorySpeedBoost: 50,
 
@@ -33,7 +36,7 @@ const CONFIG = Object.freeze({
   /** Graphics */
   g: {
     snakeSaturation: 1,
-    snakeLightness: 0.7,
+    snakeLightness: 0.8,
     territorySaturation: 0.8,
     territoryLightness: 0.55,
 

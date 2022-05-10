@@ -81,7 +81,7 @@ export default class PlayerGraphics {
     g.drawPolygon(polygonPoints)
     g.endFill()
 
-    // TODO FIX 
+    // TODO FIX
     const rect = polygonBoundingRect(this.snake.state.territory)
     const s = this.game.getViewRelativePoint(rect)
 

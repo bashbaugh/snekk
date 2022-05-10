@@ -10,6 +10,7 @@ export interface SharedSnakeState {
   length: number
   speed: number
   extraSpeed: number
+  boosting: boolean
 
   hue: number
 

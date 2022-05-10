@@ -89,6 +89,10 @@ export default class Network {
     this.room?.send(MESSAGETYPE.TURN, payload)
   }
 
+  public sendBoost(boosting: boolean) {
+    this.room?.send(boosting ? MESSAGETYPE.STARTBOOST : MESSAGETYPE.STOPBOOST)
+  }
+
   public onSelfSpawn(
     cb: (state: SharedSnakeState, selfPlayerState: PlayerState) => void
   ) {

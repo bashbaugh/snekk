@@ -59,8 +59,9 @@ export class SnakeState extends Schema implements SharedSnakeState {
   // @type('int16') energy: number = 0
   @type('int16') speed: number = CONFIG.snake.baseSpeed
   @type('int16') extraSpeed: number = 0
+  @type('boolean') boosting: boolean = false
   @type('int16') hue: number
-  @type('uint16') score: number = 0
+  @type('uint32') score: number = 0
 
   constructor(spawnP: XY) {
     super()

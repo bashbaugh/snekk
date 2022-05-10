@@ -109,4 +109,8 @@ export default class GameController {
   onPlayerTurn(client: Client, data: Message[MESSAGETYPE.TURN]) {
     this.players[client.id].snake?.turn(data)
   }
+
+  onPlayerBoost(client: Client, boosting: boolean) {
+    this.players[client.id].snake?.boost(boosting)
+  }
 }

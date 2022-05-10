@@ -2,58 +2,10 @@ import * as PIXI from 'pixi'
 import CONFIG from 'config'
 import SnakeBehaviour from 'shared/snake'
 import { SharedSnakeState } from 'types/state'
-import { hslToHex, lerp, lerpPoint, randomInt } from 'shared/util'
+import { lerp, lerpPoint } from 'shared/util'
 import Game from '../game'
 import PlayerGraphics from './graphics'
-
-const cloneSnakePoint = ({ x, y, s, d, t }: SPoint): SPoint => ({
-  x,
-  y,
-  s,
-  d,
-  t,
-})
-const cloneXY = ({ x, y }: XY): XY => ({ x, y })
-const cloneSnakeRegion = ({ p, t }: SRegion): SRegion => ({
-  t,
-  p: p.map(p => ({ ...p })),
-})
-
-class ClientSnakeState implements SharedSnakeState {
-  points: SPoint[]
-  // trail: SPoint[]
-  tRegions: SRegion[]
-  territory: XY[] = []
-  direction: Direction
-  length: number
-  // energy: number
-  speed: number
-  extraSpeed: number = 0
-  hue: number
-  score: number = 0
-
-  constructor(state: SharedSnakeState) {
-    const t = Date.now()
-    this.points = state.points
-    this.tRegions = state.tRegions
-    this.direction = state.direction
-    this.length = state.length
-    this.speed = state.speed
-    this.hue = state.hue
-  }
-
-  makeSnakePoint(p: SPoint): SPoint {
-    return cloneSnakePoint(p)
-  }
-
-  makeRegion(r: SRegion): SRegion {
-    return cloneSnakeRegion(r)
-  }
-
-  makePoint(p: XY): XY {
-    return cloneXY(p)
-  }
-}
+import ClientSnakeState, { cloneSnakePoint, cloneSnakeRegion } from './state'
 
 interface ServerFrame {
   serverTs: number
@@ -228,9 +180,9 @@ export default class Snake extends SnakeBehaviour {
       // Recalculate tail
       this.updateTail()
 
-      // Update territory
-      // this.state.tRegions = lastF.snake.tRegions
+      // Update other things
       this.state.territory = lastF.snake.territory
+      this.state.boosting = lastF.snake.boosting
     }
     // Can't interpolate; extrapolate instead
     else this.extrapolatePosition()

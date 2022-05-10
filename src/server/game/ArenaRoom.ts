@@ -28,6 +28,13 @@ export default class ArenaRoom extends Room<GameState> {
       (client, data) => this.game.onPlayerTurn(client, data)
     )
 
+    this.onMessage<Message[MESSAGETYPE.STARTBOOST]>(MESSAGETYPE.STARTBOOST, c =>
+      this.game.onPlayerBoost(c, true)
+    )
+    this.onMessage<Message[MESSAGETYPE.STOPBOOST]>(MESSAGETYPE.STOPBOOST, c =>
+      this.game.onPlayerBoost(c, false)
+    )
+
     // Ping handler
     this.onMessage<Message[MESSAGETYPE.TIMESYNC]>(
       MESSAGETYPE.TIMESYNC,

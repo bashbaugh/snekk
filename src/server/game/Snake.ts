@@ -22,6 +22,7 @@ export default class Snake extends SnakeBehaviour {
   update(delta: number) {
     this.updateHead(delta)
     this.checkFoodCollisions()
+    this.updateLength(delta)
     this.updateTail()
     this.checkPlayerCollisions()
     this.updateTerritory()

@@ -21,7 +21,10 @@ export default abstract class SnakeBehaviour {
     return this.state.points[this.state.points.length - 1]
   }
   public get speed() {
-    return this.state.speed + this.state.extraSpeed
+    let speed = this.state.speed
+    speed += this.state.extraSpeed
+    if (this.state.boosting) speed += CONFIG.snake.snakeBoostSpeed
+    return speed
   }
 
   abstract update(delta: number): void
@@ -84,6 +87,15 @@ export default abstract class SnakeBehaviour {
     }
   }
 
+  protected updateLength(delta: number) {
+    if (this.state.length < CONFIG.snake.minLength) {
+      this.state.boosting = false
+    }
+
+    if (this.state.boosting)
+      this.state.length -= CONFIG.snake.boostCostPerSec * (delta / 1000)
+  }
+
   public turnHead(d: Direction) {
     // Prevent reversing
     if (
@@ -99,6 +111,11 @@ export default abstract class SnakeBehaviour {
     this.state.points.unshift(
       this.state.makeSnakePoint({ ...this.head, s: this.head.s + 1 })
     )
+  }
+
+  public boost(boosting: boolean) {
+    if (this.state.length < CONFIG.snake.minLength) return
+    this.state.boosting = boosting
   }
 
   /** Merge regions of territory into one polygon */

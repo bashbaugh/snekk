@@ -1,4 +1,3 @@
-import KeyboardManager from 'client/input/keyboard'
 import Network from 'client/networking'
 import UI, { UIState } from 'client/ui'
 import { debugLog } from 'client/util'
@@ -11,6 +10,7 @@ import Background from './objects/background'
 import Food from './objects/food'
 import Snake from './player/snake'
 import App from './app'
+import KeyboardManager from './keyboard'
 
 export default class Game {
   readonly app: App
@@ -49,10 +49,12 @@ export default class Game {
     this.pixi.stage.addChild(this.bloomLayer)
     this.pixi.stage.addChild(this.gameLayer)
 
-    this.bloomLayer.filters = [new PIXI.filters.AdvancedBloomFilter({
-      brightness: 0.8,
-      quality: 3,
-    })]
+    this.bloomLayer.filters = [
+      new PIXI.filters.AdvancedBloomFilter({
+        brightness: 0.8,
+        quality: 3,
+      }),
+    ]
 
     this.players = {}
 
@@ -60,10 +62,10 @@ export default class Game {
 
     this.addNetworkHandlers()
 
+    this.gameObjects.push(new Background(this), new Food(this, this.bloomLayer))
+
     // Initialize players and snakes
     this.initializePlayers()
-
-    this.gameObjects.push(new Background(this), new Food(this, this.bloomLayer))
   }
 
   private getPlayerChangeListener(playerId: string) {
@@ -103,7 +105,7 @@ export default class Game {
     // This is fired when the player's snake is created
     this.network.onSelfSpawn((state, pState) => {
       this.playerSnake = new Snake(this, this.network.clientId!, state)
-      this.input.addTurnListener(d => {
+      this.input.setTurnListener(d => {
         this.network.sendTurn({
           d,
           x: this.playerSnake!.head.x,
@@ -111,6 +113,9 @@ export default class Game {
           s: this.playerSnake!.head.s,
         })
         // this.playerSnake?.turnHead(d)
+      })
+      this.input.setBoostListener(b => {
+        this.network.sendBoost(b)
       })
       this.players[this.network.clientId!] = {
         snake: this.playerSnake,

@@ -47,4 +47,5 @@ export const formatTime = (ms: number) => {
 }
 
 /** Round to the nearest multiple */
-export const roundToNearest = (num: number, multiple: number) => multiple*Math.round(num/multiple)
+export const roundToNearest = (num: number, multiple: number) =>
+  multiple * Math.round(num / multiple)
