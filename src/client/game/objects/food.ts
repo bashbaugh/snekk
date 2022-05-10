@@ -1,3 +1,4 @@
+import CONFIG from 'config'
 import { hslToHex } from 'shared/util'
 import Game from '../game'
 import BaseObject from './baseObject'
@@ -19,7 +20,15 @@ export default class Food extends BaseObject {
     for (const f of food) {
       g.beginFill(hslToHex(f.hue, FOOD_SATURATION, FOOD_LIGHTNESS))
       const p = this.game.getViewRelativePoint(f)
-      g.drawCircle(p.x, p.y, 10)
+
+      // Sine-animate the food radius
+      const seconds = (this.game.network.serverTime - f.t) / 1000
+      const pulseSize = Math.sin(seconds * CONFIG.food.pulseRate * 2 * Math.PI)
+      g.drawCircle(
+        p.x,
+        p.y,
+        CONFIG.food.radius + (isNaN(pulseSize) ? 0 :pulseSize * CONFIG.food.pulseRadius )
+      )
       g.endFill()
     }
   }

@@ -6,6 +6,7 @@ html, body {
   margin: 0;
   overscroll-behavior: none;
   overflow: hidden;
+  background: #000;
 }
 
 #ui-root {

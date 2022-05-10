@@ -11,6 +11,7 @@ import Food from './objects/food'
 import Snake from './player/snake'
 import App from './app'
 import KeyboardManager from './keyboard'
+import Walls from './objects/walls'
 
 export default class Game {
   readonly app: App
@@ -19,9 +20,10 @@ export default class Game {
   readonly network: Network
   readonly ui: UI
 
-  gameLayer: PIXI.Container
   bgLayer: PIXI.Container
   bloomLayer: PIXI.Container
+  territoryLayer: PIXI.Container
+  snakeLayer: PIXI.Container
 
   private gameObjects: BaseObject[] = []
 
@@ -42,12 +44,14 @@ export default class Game {
     this.ui = app.ui
     this.pixi.ticker.add(t => this.onTick(t))
 
-    this.gameLayer = new PIXI.Container()
+    this.territoryLayer = new PIXI.Container()
+    this.snakeLayer = new PIXI.Container()
     this.bgLayer = new PIXI.Container()
     this.bloomLayer = new PIXI.Container()
     this.pixi.stage.addChild(this.bgLayer)
     this.pixi.stage.addChild(this.bloomLayer)
-    this.pixi.stage.addChild(this.gameLayer)
+    this.pixi.stage.addChild(this.territoryLayer)
+    this.pixi.stage.addChild(this.snakeLayer)
 
     this.bloomLayer.filters = [
       new PIXI.filters.AdvancedBloomFilter({
@@ -62,7 +66,11 @@ export default class Game {
 
     this.addNetworkHandlers()
 
-    this.gameObjects.push(new Background(this), new Food(this, this.bloomLayer))
+    this.gameObjects.push(
+      new Background(this, this.bgLayer),
+      new Walls(this, this.bgLayer),
+      new Food(this, this.bloomLayer)
+    )
 
     // Initialize players and snakes
     this.initializePlayers()
@@ -227,5 +235,9 @@ export default class Game {
       x: p.x - o.x,
       y: p.y - o.y,
     }
+  }
+
+  public pointIsInArena(p: XY): boolean {
+    return Math.abs(p.x) <= this.network.state!.arenaSize && Math.abs(p.y) <= this.network.state!.arenaSize
   }
 }

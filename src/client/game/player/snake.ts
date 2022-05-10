@@ -16,7 +16,6 @@ interface ServerFrame {
 }
 
 export default class Snake extends SnakeBehaviour {
-  private container: PIXI.Container
   private graphics: PlayerGraphics
   private game: Game
   public playerId: string
@@ -26,15 +25,11 @@ export default class Snake extends SnakeBehaviour {
     this.game = game
     this.playerId = playerId
 
-    this.container = new PIXI.Container()
-    game.gameLayer.addChild(this.container)
-
-    this.graphics = new PlayerGraphics(this, this.game, this.container)
+    this.graphics = new PlayerGraphics(this, this.game)
   }
 
   die() {
     this.graphics.cleanup()
-    this.game.gameLayer.removeChild(this.container)
   }
 
   private serverQueue: Array<ServerFrame> = []

@@ -24,13 +24,16 @@ const CONFIG = Object.freeze({
   },
   interpDeltaMs: (1000 / PATCHRATE) * 1,
   server: {
-    maxClientsPerRoom: 50,
+    maxClientsPerRoom: 15,
     patchRate: PATCHRATE,
     devLatency: 200,
   },
   food: {
     foodInterval: 500,
     collisionRadius: 30,
+    radius: 10,
+    pulseRadius: 2,
+    pulseRate: 0.3,
     growAmount: 10,
   },
   /** Graphics */

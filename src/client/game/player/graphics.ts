@@ -8,7 +8,10 @@ import { polygonBoundingRect } from 'shared/geometry'
 export default class PlayerGraphics {
   private snake: Snake
   private game: Game
-  private container: PIXI.Container
+  private tLayer: PIXI.Container
+  private sLayer: PIXI.Container
+  private tContainer: PIXI.Container
+  private sContainer: PIXI.Container
   private snakeGraphics: PIXI.Graphics
   private tGraphics: PIXI.Graphics
   private tSpriteMask: PIXI.Graphics
@@ -16,25 +19,33 @@ export default class PlayerGraphics {
   private tTexture: PIXI.Texture
   private tSprite: PIXI.TilingSprite
 
-  constructor(snake: Snake, game: Game, container: PIXI.Container) {
+  constructor(snake: Snake, game: Game) {
     this.snake = snake
     this.game = game
-    this.container = container
+    this.tLayer = game.territoryLayer
+    this.sLayer = game.snakeLayer
+
+    this.tContainer = new PIXI.Container()
+    this.sContainer = new PIXI.Container()
+    this.tLayer.addChild(this.tContainer)
+    this.sLayer.addChild(this.sContainer)
 
     this.tGraphics = new PIXI.Graphics()
     this.tSpriteMask = new PIXI.Graphics()
-    this.container.addChild(this.tGraphics)
+    this.tContainer.addChild(this.tGraphics)
     this.tTexture = PIXI.Texture.from('pattern_squares')
     this.tSprite = new PIXI.TilingSprite(this.tTexture, 100, 100)
-    this.container.addChild(this.tSprite as any)
+    this.tContainer.addChild(this.tSprite as any)
     this.tSprite.mask = this.tSpriteMask
 
     this.snakeGraphics = new PIXI.Graphics()
-    this.container.addChild(this.snakeGraphics)
+    this.sContainer.addChild(this.snakeGraphics)
   }
 
   cleanup() {
     this.clear()
+    this.tLayer.removeChild(this.tContainer)
+    this.sLayer.removeChild(this.sContainer)
   }
 
   clear() {

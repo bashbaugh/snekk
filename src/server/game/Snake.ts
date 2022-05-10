@@ -11,7 +11,7 @@ export default class Snake extends SnakeBehaviour {
   game: GameController
 
   constructor(gameController: GameController, player: PlayerState) {
-    const snake = new SnakeState(gameController.getRandomPoint())
+    const snake = new SnakeState(gameController.getRandomPoint(CONFIG.snake.territoryStartMargin + 50))
     super(snake)
     this.player = player
     this.game = gameController
@@ -30,14 +30,39 @@ export default class Snake extends SnakeBehaviour {
   }
 
   checkPlayerCollisions() {
-    // Check for collisions of snake's head with other segments
+    // Ensure that player is within bounds
+    if (!this.game.pointIsInArena(this.head)) {
+      this.game.killSnake(this.player.clientId, DeathReason.wall_collision)
+      return
+    }
+
+    // Check for collisions of snake's head with other segments and players
     const [a1, a2] = [this.state.points[0], this.state.points[1]]
-    for (let i = 2; i < this.state.points.length - 1; i++) {
-      const [b1, b2] = [this.state.points[i], this.state.points[i + 1]]
-      const intersection = getLineIntersection(a1, a2, b1, b2)
-      // If the snake is intersecting in its own territory, we ignore it
-      if (intersection && !this.pointIsInTerritory(intersection)) {
-        this.game.killSnake(this.player.clientId, DeathReason.self_collision)
+
+    for (const [id, player] of this.game.state.players) {
+      if (!player.snake) continue
+      const isSelf = id === this.player.clientId
+
+      // Don't check against first two segments if checking self
+      const startIndex = isSelf ? 2 : 0
+
+      for (let i = startIndex; i < player.snake.points.length - 1; i++) {
+        const [b1, b2] = [player.snake.points[i], player.snake.points[i + 1]]
+        if (!b1 || !b2) continue
+        const intersection = getLineIntersection(a1, a2, b1, b2)
+        if (intersection) {
+          // If the snake is intersecting in its own territory, we ignore it
+          if (isSelf && this.pointIsInTerritory(intersection)) continue
+
+          this.game.killSnake(
+            this.player.clientId,
+            isSelf ? DeathReason.self_collision : DeathReason.player_collision,
+            // Include killer ID if it wasn't a self collision
+            !isSelf ? player.clientId : undefined
+          )
+
+          return
+        }
       }
     }
   }
