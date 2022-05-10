@@ -40,7 +40,9 @@ export default class ArenaRoom extends Room<GameState> {
     )
 
     this.onMessage<Message[MESSAGETYPE.JOIN]>(MESSAGETYPE.JOIN, (client, d) => {
-      this.state.players.get(client.sessionId)!.name = d.n.trim().slice(0, CONFIG.snake.maxNameLength + 1)
+      this.state.players.get(client.sessionId)!.name = d.n
+        .trim()
+        .slice(0, CONFIG.snake.maxNameLength + 1)
       this.game.spawnSnake(client.sessionId)
     })
   }

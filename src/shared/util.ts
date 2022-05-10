@@ -45,3 +45,6 @@ export const formatTime = (ms: number) => {
   const seconds = Math.floor((ms % 60000) / 1000)
   return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`
 }
+
+/** Round to the nearest multiple */
+export const roundToNearest = (num: number, multiple: number) => multiple*Math.round(num/multiple)

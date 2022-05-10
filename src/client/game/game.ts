@@ -6,17 +6,22 @@ import * as PIXI from 'pixi'
 import { PlayerState } from 'shared/serverState'
 import { DeathReason } from 'types/game'
 import { SharedPlayerState } from 'types/state'
-import BaseObject from './baseObject'
+import BaseObject from './objects/baseObject'
 import Background from './objects/background'
 import Food from './objects/food'
-import Snake from './snake'
+import Snake from './player/snake'
+import App from './app'
 
 export default class Game {
-  readonly app: PIXI.Application
+  readonly app: App
+  readonly pixi: PIXI.Application
   readonly input: KeyboardManager
   readonly network: Network
   readonly ui: UI
-  gameContainer: PIXI.Container
+
+  gameLayer: PIXI.Container
+  bgLayer: PIXI.Container
+  bloomLayer: PIXI.Container
 
   private gameObjects: BaseObject[] = []
 
@@ -30,14 +35,24 @@ export default class Game {
   >
   private playerSnake?: Snake
 
-  constructor(app: PIXI.Application, network: Network, ui: UI) {
+  constructor(app: App) {
     this.app = app
-    this.network = network
-    this.ui = ui
-    this.app.ticker.add(t => this.onTick(t))
+    this.pixi = app.pixi
+    this.network = app.network
+    this.ui = app.ui
+    this.pixi.ticker.add(t => this.onTick(t))
 
-    this.gameContainer = new PIXI.Container()
-    this.app.stage.addChild(this.gameContainer)
+    this.gameLayer = new PIXI.Container()
+    this.bgLayer = new PIXI.Container()
+    this.bloomLayer = new PIXI.Container()
+    this.pixi.stage.addChild(this.bgLayer)
+    this.pixi.stage.addChild(this.bloomLayer)
+    this.pixi.stage.addChild(this.gameLayer)
+
+    this.bloomLayer.filters = [new PIXI.filters.AdvancedBloomFilter({
+      brightness: 0.8,
+      quality: 3,
+    })]
 
     this.players = {}
 
@@ -48,7 +63,7 @@ export default class Game {
     // Initialize players and snakes
     this.initializePlayers()
 
-    this.gameObjects.push(new Background(this), new Food(this))
+    this.gameObjects.push(new Background(this), new Food(this, this.bloomLayer))
   }
 
   private getPlayerChangeListener(playerId: string) {
@@ -127,14 +142,6 @@ export default class Game {
     })
   }
 
-  // clonePlayerState(p: SharedPlayerState): SharedPlayerState {
-  //   const {snake, ...otherProps} = p
-  //   return {
-  //     ...otherProps,
-  //     snake: snake ? Snake.cloneServerFrameSnake(snake) : undefined,
-  //   }
-  // }
-
   private initializePlayers() {
     for (const [id, p] of this.network.state!.players) {
       if (id === this.network.clientId) continue // Skip self
@@ -161,7 +168,7 @@ export default class Game {
   }
 
   onTick(deltaFPS: number) {
-    const deltaMS = this.app.ticker.deltaMS
+    const deltaMS = this.pixi.ticker.deltaMS
 
     for (const obj of this.gameObjects) obj.update(deltaMS)
     for (const obj of this.gameObjects) obj.draw()
@@ -188,7 +195,7 @@ export default class Game {
 
     this.ui.setState({
       stats: {
-        fps: this.app.ticker.FPS,
+        fps: this.pixi.ticker.FPS,
         ping: this.network.pinger?.lastPing?.latency,
       },
       player: this.playerSnake && {
@@ -204,8 +211,8 @@ export default class Game {
     // Player snake should be centered in view, so the view should be offset according to its head
     const center = this.playerSnake.head
     return {
-      x: center.x - this.app.view.width / 2,
-      y: center.y - this.app.view.height / 2,
+      x: center.x - this.pixi.view.width / 2,
+      y: center.y - this.pixi.view.height / 2,
     }
   }
 

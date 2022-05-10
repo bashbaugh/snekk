@@ -1,9 +1,10 @@
-import { Region, SnakePoint } from '../shared/serverState'
+import { Region, SnakePoint, XYPoint } from '../shared/serverState'
 
 export interface SharedSnakeState {
   points: SPoint[] | Array<SnakePoint>
   // trail: SPoint[] | Array<SnakePoint>
-  territory: SRegion[] | Array<Region>
+  tRegions: SRegion[] | Array<Region>
+  territory: XY[] | XYPoint[]
   direction: Direction
 
   length: number
@@ -19,6 +20,9 @@ export interface SharedSnakeState {
 
   /** Get a region */
   makeRegion: ({ t, p }: SRegion) => any
+
+  /** Get a generic point */
+  makePoint: ({ x, y }: XY) => any
 }
 
 export interface SharedPlayerState {

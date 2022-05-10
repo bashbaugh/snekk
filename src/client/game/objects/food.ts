@@ -1,5 +1,6 @@
 import { hslToHex } from 'shared/util'
-import BaseObject from '../baseObject'
+import Game from '../game'
+import BaseObject from './baseObject'
 
 const FOOD_SATURATION = 0.9
 const FOOD_LIGHTNESS = 0.8

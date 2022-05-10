@@ -158,15 +158,37 @@
   resolved "https://registry.yarnpkg.com/@pixi/display/-/display-6.3.0.tgz#82781587c928ac49ea24dbc675781e885d3c4a08"
   integrity sha512-Uxc1aLTFzV55d3kOlh/g19RlE2okPXsroi5jfYGCNS0VCdFk0sp6jMNEwk12BwC0KcA5SU7217H4jLy38VCVpA==
 
+"@pixi/filter-advanced-bloom@^4.1.5":
+  version "4.1.5"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-advanced-bloom/-/filter-advanced-bloom-4.1.5.tgz#9c8b7d087c896083f3f13541cd40c50add1d6388"
+  integrity sha512-Iun+tOrAvnsIhlrTNxQJoeGMLNuxafgkxqaGLibAvE6/Xx6zquM0LCLNn9twKuVQ+qUP1HUti/Mf/kbyiwAbNw==
+  dependencies:
+    "@pixi/filter-kawase-blur" "4.1.5"
+
+"@pixi/filter-kawase-blur@4.1.5":
+  version "4.1.5"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-kawase-blur/-/filter-kawase-blur-4.1.5.tgz#c84fd3f452bfa44aaba4cba0c43a2b6071e0c6b2"
+  integrity sha512-YVzzfLoUMKYeEMuuj4TfpTJ1p14nBV/+JnWVL5dC63VuCQ1YMxzSmc6ahGNfbex0+nvhyKPWe87aO7jzX0waoA==
+
 "@pixi/filter-outline@^4.1.5":
   version "4.1.5"
   resolved "https://registry.yarnpkg.com/@pixi/filter-outline/-/filter-outline-4.1.5.tgz#d44f63fb40e80ea8719a4f72a8f5453c1244b515"
   integrity sha512-tm0lQR5fGFz0g7GQamRGhf5vkzj4aYLTv0MCK98KaK1L45agzRioJgzicVkuSu6J/SMMvT4O6XSGax0z4fTs9Q==
 
+"@pixi/graphics-extras@^6.3.2":
+  version "6.3.2"
+  resolved "https://registry.yarnpkg.com/@pixi/graphics-extras/-/graphics-extras-6.3.2.tgz#9378afc5d7ee75d0935447253cce8473707eb686"
+  integrity sha512-2AxJG2/2nxdl7ClRt9SG2C4DvBtQ1sU/4arxk1V4a0ld0zkcWPf7aKlaqhfRyoXafHS72zf/eGmG4MV8iC0qvA==
+
 "@pixi/graphics@^6.3.0":
   version "6.3.0"
   resolved "https://registry.yarnpkg.com/@pixi/graphics/-/graphics-6.3.0.tgz#50e758385b7704d0a068db189a20f0244f5fd68d"
   integrity sha512-cnce8ddZSRgVuwK3hdWjEgf9WJljEXlJp+tOIEYvmNYnkvfaRpdeVRpF5yd+A24ZswrVRU9W/W7cXCMw2uq/vQ==
+
+"@pixi/loaders@^6.3.2":
+  version "6.3.2"
+  resolved "https://registry.yarnpkg.com/@pixi/loaders/-/loaders-6.3.2.tgz#03093c0a12f6190ca3c0ff81f10db040210aafcf"
+  integrity sha512-kkm1pynWTslQsh+h+Tw17MdeRMQ37Ht72xiZetyWbxadRAnzj+x1I9juEKEFK62mw8K/bGBcNPhu7edgmQwkvw==
 
 "@pixi/math@^6.3.0":
   version "6.3.0"
@@ -184,6 +206,16 @@
   integrity sha512-UkbZmlexr6NGM6Qz30Et63bpWAmpmkknOOnavrhWPnnbhFIx4kVzU9mvGMHGSGNLJabX9+gFUdjDGSlzF42v4w==
   dependencies:
     ismobilejs "^1.1.0"
+
+"@pixi/sprite-tiling@^6.3.2":
+  version "6.3.2"
+  resolved "https://registry.yarnpkg.com/@pixi/sprite-tiling/-/sprite-tiling-6.3.2.tgz#f24291e78f82fbdb822e44cac096541b6fb14b42"
+  integrity sha512-13zsz0xyxMvobEaSXQghSD44+MpSwpbQJYjPVPb7ItqETqQBaZgHpC5uF6vxFR6Hou8Ca8laxRuwgpn3lA095g==
+
+"@pixi/sprite@^6.3.2":
+  version "6.3.2"
+  resolved "https://registry.yarnpkg.com/@pixi/sprite/-/sprite-6.3.2.tgz#d689626a0f1d6a7baff4a23d2d13dd74a209b42f"
+  integrity sha512-T1KJ8l2f8Otn6Se6h4b2pz2nrUSe59Pnmj2WIzgBisM245h7dGATs05MisMaLV6Lg/3gTBTxsLBmKsbDSQqbNw==
 
 "@pixi/ticker@^6.3.0":
   version "6.3.0"
@@ -2152,6 +2184,11 @@ he@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/he/-/he-1.2.0.tgz#84ae65fa7eafb165fddb61566ae14baf05664f0f"
   integrity sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==
+
+howler@^2.2.3:
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/howler/-/howler-2.2.3.tgz#a2eff9b08b586798e7a2ee17a602a90df28715da"
+  integrity sha512-QM0FFkw0LRX1PR8pNzJVAY25JhIWvbKMBFM4gqk+QdV+kPXOhleWGCB6AiAF/goGjIHK2e/nIElplvjQwhr0jg==
 
 hpack.js@^2.1.6:
   version "2.1.6"

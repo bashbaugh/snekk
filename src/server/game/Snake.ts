@@ -16,18 +16,19 @@ export default class Snake extends SnakeBehaviour {
     this.player = player
     this.game = gameController
     player.snake = snake
+    this.mergeTerritory()
   }
 
   update(delta: number) {
     this.updateHead(delta)
     this.checkFoodCollisions()
     this.updateTail()
-    this.checkSelfCollisions()
+    this.checkPlayerCollisions()
     this.updateTerritory()
     this.updateScore()
   }
 
-  checkSelfCollisions() {
+  checkPlayerCollisions() {
     // Check for collisions of snake's head with other segments
     const [a1, a2] = [this.state.points[0], this.state.points[1]]
     for (let i = 2; i < this.state.points.length - 1; i++) {
@@ -52,7 +53,7 @@ export default class Snake extends SnakeBehaviour {
 
   updateScore() {
     this.state.score =
-      (this.state.territory as any[]).reduce<number>(
+      (this.state.tRegions as any[]).reduce<number>(
         (score: number, region: SRegion) => score + polygonArea(region.p),
         0
       ) * CONFIG.snake.scoreMultiplier

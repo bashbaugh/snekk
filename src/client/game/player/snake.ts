@@ -3,17 +3,8 @@ import CONFIG from 'config'
 import SnakeBehaviour from 'shared/snake'
 import { SharedSnakeState } from 'types/state'
 import { hslToHex, lerp, lerpPoint, randomInt } from 'shared/util'
-import Game from './game'
-import { polygonUnion } from 'shared/geometry'
-
-const SNAKE_SATURATION = 1
-const SNAKE_LIGHTNESS = 0.6
-const TERRITORY_SATURATION = 0.8
-const TERRITORY_LIGHTNESS = 0.35
-
-const TERRITORY_SHAPE_DEBUGGING = false
-
-const _territoryShapeDebugColors: any = {}
+import Game from '../game'
+import PlayerGraphics from './graphics'
 
 const cloneSnakePoint = ({ x, y, s, d, t }: SPoint): SPoint => ({
   x,
@@ -22,6 +13,7 @@ const cloneSnakePoint = ({ x, y, s, d, t }: SPoint): SPoint => ({
   d,
   t,
 })
+const cloneXY = ({ x, y }: XY): XY => ({ x, y })
 const cloneSnakeRegion = ({ p, t }: SRegion): SRegion => ({
   t,
   p: p.map(p => ({ ...p })),
@@ -30,7 +22,8 @@ const cloneSnakeRegion = ({ p, t }: SRegion): SRegion => ({
 class ClientSnakeState implements SharedSnakeState {
   points: SPoint[]
   // trail: SPoint[]
-  territory: SRegion[]
+  tRegions: SRegion[]
+  territory: XY[] = []
   direction: Direction
   length: number
   // energy: number
@@ -42,7 +35,7 @@ class ClientSnakeState implements SharedSnakeState {
   constructor(state: SharedSnakeState) {
     const t = Date.now()
     this.points = state.points
-    this.territory = state.territory
+    this.tRegions = state.tRegions
     this.direction = state.direction
     this.length = state.length
     this.speed = state.speed
@@ -56,6 +49,10 @@ class ClientSnakeState implements SharedSnakeState {
   makeRegion(r: SRegion): SRegion {
     return cloneSnakeRegion(r)
   }
+
+  makePoint(p: XY): XY {
+    return cloneXY(p)
+  }
 }
 
 interface ServerFrame {
@@ -68,8 +65,7 @@ interface ServerFrame {
 
 export default class Snake extends SnakeBehaviour {
   private container: PIXI.Container
-  private snakeGraphics: PIXI.Graphics
-  private territoryGraphics: PIXI.Graphics
+  private graphics: PlayerGraphics
   private game: Game
   public playerId: string
 
@@ -79,19 +75,14 @@ export default class Snake extends SnakeBehaviour {
     this.playerId = playerId
 
     this.container = new PIXI.Container()
-    game.gameContainer.addChild(this.container)
-    this.snakeGraphics = new PIXI.Graphics()
-    this.territoryGraphics = new PIXI.Graphics()
-    this.container.addChild(this.territoryGraphics)
-    this.container.addChild(this.snakeGraphics)
+    game.gameLayer.addChild(this.container)
 
-    // this.territoryGraphics.filters = [new PIXI.filters.OutlineFilter(4, 0xffffff)]
+    this.graphics = new PlayerGraphics(this, this.game, this.container)
   }
 
   die() {
-    this.snakeGraphics.clear()
-    this.territoryGraphics.clear()
-    this.game.gameContainer.removeChild(this.container)
+    this.graphics.cleanup()
+    this.game.gameLayer.removeChild(this.container)
   }
 
   private serverQueue: Array<ServerFrame> = []
@@ -99,7 +90,7 @@ export default class Snake extends SnakeBehaviour {
   static cloneServerFrameSnake(
     serverState: SharedSnakeState
   ): SharedSnakeState {
-    const { points, territory, ...snakeProperties } = serverState
+    const { points, tRegions: territory, ...snakeProperties } = serverState
 
     const _snakePoints = points.map(p => cloneSnakePoint(p))
     const _territory = territory.map(r => cloneSnakeRegion(r))
@@ -107,7 +98,7 @@ export default class Snake extends SnakeBehaviour {
     return {
       ...snakeProperties,
       points: _snakePoints,
-      territory: _territory,
+      tRegions: _territory,
     }
   }
 
@@ -237,7 +228,8 @@ export default class Snake extends SnakeBehaviour {
       // Recalculate tail
       this.updateTail()
 
-      // Update territory and score
+      // Update territory
+      // this.state.tRegions = lastF.snake.tRegions
       this.state.territory = lastF.snake.territory
     }
     // Can't interpolate; extrapolate instead
@@ -248,58 +240,9 @@ export default class Snake extends SnakeBehaviour {
     this.interpolateSnake()
   }
 
-  drawSnake(g: PIXI.Graphics) {
-    const points = this.state.points.map(p => this.game.getViewRelativePoint(p))
-    g.lineStyle(6, hslToHex(this.state.hue, SNAKE_SATURATION, SNAKE_LIGHTNESS))
-    g.moveTo(points[0].x, points[0].y)
-    for (let i = 1; i < points.length; i++) {
-      g.lineTo(points[i].x, points[i].y)
-    }
-  }
-
-  drawTerritory(g: PIXI.Graphics) {
-    const doDebugRender = CONFIG.debug && TERRITORY_SHAPE_DEBUGGING
-    for (const r of this.state.territory) {
-      let rColor = hslToHex(
-        this.state.hue,
-        TERRITORY_SATURATION,
-        TERRITORY_LIGHTNESS
-      )
-
-      if (doDebugRender) {
-        const c = _territoryShapeDebugColors
-        if (!c[r.t]) c[r.t] = randomInt(255 ** 3)
-        rColor = c[r.t]
-      }
-
-      g.beginFill(rColor)
-      const polygonPoints = r.p
-        .map(p => {
-          const rp = this.game.getViewRelativePoint(p)
-          return [rp.x, rp.y]
-        })
-        .flat()
-      g.drawPolygon(polygonPoints)
-      g.endFill()
-    }
-
-    if (doDebugRender) {
-      const tUnion = polygonUnion(this.state.territory.map(r => r.p))
-      g.lineStyle(2, 0xff0000)
-      const polygonPoints = tUnion
-        .map(p => {
-          const rp = this.game.getViewRelativePoint(p)
-          return [rp.x, rp.y]
-        })
-        .flat()
-      g.drawPolygon(polygonPoints)
-    }
-  }
-
   draw() {
-    this.snakeGraphics.clear()
-    this.territoryGraphics.clear()
-    this.drawSnake(this.snakeGraphics)
-    this.drawTerritory(this.territoryGraphics)
+    this.graphics.clear()
+    this.graphics.drawSnake()
+    this.graphics.drawTerritory()
   }
 }

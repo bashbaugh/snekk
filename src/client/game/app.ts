@@ -3,41 +3,56 @@ import UI, { UIEventListener } from 'client/ui'
 import CONFIG from 'config'
 import * as PIXI from 'pixi'
 import { asyncDelay } from 'shared/util'
-import { theme } from '../../../tailwind.config'
 import Game from './game'
 
 const CONNECTION_RETRY_INTERVAL = 5000
 
 export default class App {
-  readonly app: PIXI.Application
+  readonly pixi: PIXI.Application
   readonly network: Network
   readonly ui: UI
 
   game?: Game
 
   constructor() {
-    this.app = new PIXI.Application({
+    this.pixi = new PIXI.Application({
       width: window.innerWidth,
       height: window.innerHeight,
-      backgroundColor: 0x000000,
+      backgroundColor: CONFIG.g.backgroundColor,
       antialias: true,
     })
-    document.body.appendChild(this.app.view)
-
-    window.addEventListener('resize', () => {
-      this.app.renderer.resize(window.innerWidth, window.innerHeight)
-    })
+    document.body.appendChild(this.pixi.view)
 
     this.ui = new UI()
-    this.ui.renderUI()
-
-    this.app.ticker.start()
-    this.app.ticker.minFPS = CONFIG.fps.min
-    this.app.ticker.maxFPS = CONFIG.fps.max
-
     this.network = new Network()
 
+    this.initialize()
+  }
+
+  private async initialize() {
+    window.addEventListener('resize', () => {
+      this.pixi.renderer.resize(window.innerWidth, window.innerHeight)
+    })
+
+    this.ui.renderUI()
+
+    this.pixi.ticker.start()
+    this.pixi.ticker.minFPS = CONFIG.fps.min
+    this.pixi.ticker.maxFPS = CONFIG.fps.max
+
+    await this.loadAssets()
+
     this.findGame()
+  }
+
+  private loadAssets() {
+    return new Promise<void>(resolve => {
+      const loader = PIXI.Loader.shared
+      loader.add('pattern_dots', 'assets/pattern/dots.png')
+      loader.add('pattern_squares', 'assets/pattern/squares.png')
+      loader.load()
+      loader.onComplete.add(() => resolve())
+    })
   }
 
   private async findGame() {
@@ -71,7 +86,7 @@ export default class App {
       this.ui.setState({ ui: 'loading', loadingText: 'Loading...' })
       this.ui.removeEventListener('startPlaying', startListener)
       this.network.joinGame(e.data.name)
-      this.game = new Game(this.app, this.network, this.ui)
+      this.game = new Game(this)
     }
 
     this.ui.addEventListener('startPlaying', startListener)

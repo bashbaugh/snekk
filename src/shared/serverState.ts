@@ -3,7 +3,7 @@ import CONFIG from 'config'
 import { SharedPlayerState, SharedSnakeState } from '../types/state'
 import { randomInt } from './util'
 
-export class RegionPoint extends Schema implements XY {
+export class XYPoint extends Schema implements XY {
   @type('int16') x: number
   @type('int16') y: number
 
@@ -39,9 +39,9 @@ export class Region extends Schema implements SRegion {
   /** Timestamp of region creation */
   @type('number') t: number
   /** Points defining region. First point is also point at which shape is closed. */
-  @type([RegionPoint]) p: RegionPoint[]
+  @type([XYPoint]) p: XYPoint[]
 
-  constructor(p: RegionPoint[], t?: number) {
+  constructor(p: XYPoint[], t?: number) {
     super()
     this.t = t || Date.now()
     this.p = p
@@ -52,7 +52,8 @@ export class SnakeState extends Schema implements SharedSnakeState {
   // Sequence number is increased with each new point in snake (lower = closer to tail)
   @type([SnakePoint]) points = new ArraySchema<SnakePoint>()
   // @type([SnakePoint]) trail = new ArraySchema<SnakePoint>()
-  @type([Region]) territory = new ArraySchema<Region>()
+  @type([Region]) tRegions = new ArraySchema<Region>()
+  @type([XYPoint]) territory = new ArraySchema<XYPoint>()
   @type('int8') direction: Direction = 1
   @type('uint16') length: number = CONFIG.snake.baseLength
   // @type('int16') energy: number = 0
@@ -72,12 +73,12 @@ export class SnakeState extends Schema implements SharedSnakeState {
 
     // Generate initial territory surrounding spawn point
     const m = CONFIG.snake.territoryStartMargin
-    this.territory.push(
+    this.tRegions.push(
       new Region([
-        new RegionPoint(spawnP.x - m, spawnP.y - m),
-        new RegionPoint(spawnP.x + m, spawnP.y - m),
-        new RegionPoint(spawnP.x + m, spawnP.y + m),
-        new RegionPoint(spawnP.x - m, spawnP.y + m),
+        new XYPoint(spawnP.x - m, spawnP.y - m),
+        new XYPoint(spawnP.x + m, spawnP.y - m),
+        new XYPoint(spawnP.x + m, spawnP.y + m),
+        new XYPoint(spawnP.x - m, spawnP.y + m),
       ])
     )
 
@@ -93,9 +94,13 @@ export class SnakeState extends Schema implements SharedSnakeState {
     return new SnakePoint(x, y, s, d)
   }
 
+  makePoint({ x, y }: XY) {
+    return new XYPoint(x, y)
+  }
+
   makeRegion({ t, p }: SRegion) {
     return new Region(
-      p.map(p => new RegionPoint(p.x, p.y)),
+      p.map(p => new XYPoint(p.x, p.y)),
       t
     )
   }

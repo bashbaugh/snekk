@@ -101,18 +101,21 @@ export default abstract class SnakeBehaviour {
     )
   }
 
+  /** Merge regions of territory into one polygon */
+  protected mergeTerritory() {
+    this.state.territory = polygonUnion(this.state.tRegions.map(r => r.p)).map(
+      this.state.makePoint
+    )
+  }
+
   /** Check if a point is within this snake's territory */
   protected pointIsInTerritory(point: XY) {
-    for (const region of this.state.territory) {
-      if (pointInsidePolygon(point, region.p)) return true
-    }
-    return false
+    return pointInsidePolygon(point, this.state.territory)
   }
 
   protected computeNewTerritoryRegion() {
     try {
-      // First we need to get the segments of our territory as a single polygon
-      const t = polygonUnion(this.state.territory.map(r => r.p))
+      const t = this.state.territory
 
       let tSegments: XY[][] = []
       for (let i = 0; i < t.length - 1; i++) tSegments.push([t[i], t[i + 1]])
@@ -121,7 +124,7 @@ export default abstract class SnakeBehaviour {
       const snakeStartSeg = 0
       let territoryStartSeg: number = 0
       for (const [i, seg] of tSegments.entries()) {
-        // Find point and territory segment where head segment intersects territory
+        // Find first point and territory segment where head segment intersects territory
         startPoint = getLineIntersection(
           this.state.points[0],
           this.state.points[1],
@@ -138,10 +141,7 @@ export default abstract class SnakeBehaviour {
 
       let stopPoint: XY | false = false
       let territoryStopSeg: number = 0
-      let snakeStopSeg: number = 0
-
       const segmentsFromSnake: XY[][] = []
-
       // Starting after the first intersection,
       // we iterate through snake segments to find the segment that intersects back into the territory
       snakeSegLoop: for (
@@ -172,7 +172,6 @@ export default abstract class SnakeBehaviour {
             !(stopPoint.x === startPoint.x && stopPoint.y === startPoint.y)
           ) {
             territoryStopSeg = k
-            snakeStopSeg = i
             break snakeSegLoop
           } else stopPoint = false
         }
@@ -184,7 +183,7 @@ export default abstract class SnakeBehaviour {
       // so we need to slice the territory segments to find the segments between both intersections
       // We need to wrap around the array if the end segment is before the start segment
       const segmentsFromTerritory =
-        territoryStopSeg > territoryStartSeg
+        territoryStopSeg >= territoryStartSeg
           ? tSegments.slice(territoryStartSeg, territoryStopSeg)
           : tSegments
               .slice(territoryStartSeg, tSegments.length)
@@ -208,14 +207,13 @@ export default abstract class SnakeBehaviour {
       if (totalNewRegionPolygon.length < 3) return
 
       // We may have traversed along the territory AWAY from the snake intersection,
-      // Meaning the new polygon could also include old regions so we need to subtract existing regions
+      // Meaning the new polygon could also include other territory so we need to subtract existing regions
       const newRegion = polygonDiff([totalNewRegionPolygon], [t])
-      // const newRegion = totalNewRegionPolygon
       return newRegion?.[0]
     } catch (e) {
-      // TODO fix polygon union so we don't have to do this
+      // TODO fix polygon union so we don't get errors
       console.error(e)
-      return false
+      return
     }
   }
 
@@ -225,7 +223,6 @@ export default abstract class SnakeBehaviour {
     this.state.extraSpeed = inTerritory ? CONFIG.snake.territorySpeedBoost : 0
 
     if (inTerritory) {
-
       // Check if any points are outside territory
       let pointsOutside = false
       for (const point of this.state.points) {
@@ -236,14 +233,11 @@ export default abstract class SnakeBehaviour {
       if (pointsOutside) {
         const newRegion = this.computeNewTerritoryRegion()
         if (newRegion) {
-          this.state.territory.push(
+          this.state.tRegions.push(
             this.state.makeRegion({ p: newRegion, t: Date.now() })
           )
-
-          // TODO figure out how to handle length
-          // Reset the snake's length when we return to the territory
-          // this.state.length = CONFIG.snake.baseLength
-          // console.log(this.state.territory.length)
+          this.mergeTerritory()
+          // TODO Reduce snake length here
         }
       }
     }

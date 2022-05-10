@@ -4,7 +4,8 @@ const webpack = require('webpack'),
   MiniCssExtractPlugin = require('mini-css-extract-plugin'),
   CssMinimizerPlugin = require('css-minimizer-webpack-plugin'),
   HtmlWebpackPlugin = require('html-webpack-plugin')
-  WebpackObfuscator = require('webpack-obfuscator')
+  WebpackObfuscator = require('webpack-obfuscator'),
+  CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const devMode = process.env.NODE_ENV !== 'production'
 
@@ -79,13 +80,13 @@ const config = {
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'development' // default
     }),
-    // new CopyWebpackPlugin({
-    //   patterns: [
-    //     {
-    //       from: p('public'),
-    //     }
-    //   ]
-    // }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: p('static'),
+        }
+      ]
+    }),
     new MiniCssExtractPlugin({
       filename: '[name].[contenthash].css',
     }),

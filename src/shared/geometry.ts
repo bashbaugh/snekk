@@ -86,3 +86,21 @@ export function polygonArea(polygon: XY[]): number {
   }
   return Math.abs(total)
 }
+
+/** Get the bounding rect of a polygon */
+export function polygonBoundingRect(polygon: XY[]): XY & {
+  width: number
+  height: number
+} {
+  let minX = 0
+  let minY = 0
+  let maxX = 0
+  let maxY = 0
+  for (let i = 0, l = polygon.length; i < l; i++) {
+    minX = Math.min(minX, polygon[i].x)
+    minY = Math.min(minY, polygon[i].y)
+    maxX = Math.max(maxX, polygon[i].x)
+    maxY = Math.max(maxY, polygon[i].y)
+  }
+  return { x: minX, y: minY, width: maxX - minX, height: maxY - minY }
+}

@@ -11,11 +11,17 @@ export * from '@pixi/display'
 export * from '@pixi/core'
 export * from '@pixi/app'
 export * from '@pixi/graphics'
+export * from '@pixi/loaders'
+import '@pixi/graphics-extras'
+export * from '@pixi/sprite'
+export * from '@pixi/sprite-tiling'
 
 // Renderer plugins
 import { Renderer } from '@pixi/core'
 import { BatchRenderer } from '@pixi/core'
 Renderer.registerPlugin('batch', BatchRenderer)
+import { TilingSpriteRenderer } from '@pixi/sprite-tiling'
+Renderer.registerPlugin('tilingSprite', TilingSpriteRenderer)
 
 // Application plugins
 import { Application } from '@pixi/app'
@@ -23,7 +29,7 @@ import { TickerPlugin } from '@pixi/ticker'
 Application.registerPlugin(TickerPlugin)
 
 // Filters
-// import { OutlineFilter } from '@pixi/filter-outline'
+import { AdvancedBloomFilter } from '@pixi/filter-advanced-bloom'
 export const filters = {
-  // OutlineFilter
+  AdvancedBloomFilter,
 }

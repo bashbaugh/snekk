@@ -7,6 +7,8 @@ export enum MESSAGETYPE {
   TIMESYNC,
   DEATH,
   JOIN,
+  STARTBOOST,
+  STOPBOOST,
   /** A special secret message that can be sent to players by game admins */
   GODMSG = 'godmsg',
 }
@@ -43,5 +45,13 @@ export interface Message {
   }
   [MESSAGETYPE.GODMSG]: {
     m: string
+  }
+  [MESSAGETYPE.STARTBOOST]: {
+    x: number
+    y: number
+  }
+  [MESSAGETYPE.STOPBOOST]: {
+    x: number
+    y: number
   }
 }

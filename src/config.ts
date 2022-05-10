@@ -17,7 +17,7 @@ const CONFIG = Object.freeze({
 
     scoreMultiplier: 0.01,
     lengthValMultiplier: 0.1,
-    maxNameLength: 20
+    maxNameLength: 20,
   },
   interpDeltaMs: (1000 / PATCHRATE) * 1,
   server: {
@@ -29,6 +29,16 @@ const CONFIG = Object.freeze({
     foodInterval: 500,
     collisionRadius: 30,
     growAmount: 10,
+  },
+  /** Graphics */
+  g: {
+    snakeSaturation: 1,
+    snakeLightness: 0.7,
+    territorySaturation: 0.8,
+    territoryLightness: 0.55,
+
+    backgroundColor: 0x05041c,
+    backgroundPatternColor: 0xd90000,
   },
 })
 
