@@ -182,11 +182,21 @@ export default class Snake extends SnakeBehaviour {
       // Recalculate tail
       this.updateTail()
 
-      // Update other things
+      // Update other properties
       this.state.territory = lastF.snake.territory
       this.state.boosting = lastF.snake.boosting
+      this.state.direction = lastF.snake.direction
 
       this.graphics.emitBoostParticles = this.state.boosting
+
+      // Check for new teritory regions and trigger particles if new region is created
+      for (
+        let i = nextF.snake.tRegions.length - 1;
+        i > lastF.snake.tRegions.length - 1;
+        i--
+      ) {
+        this.graphics.emitRegionParticles(nextF.snake.tRegions[i].p)
+      }
     }
     // Can't interpolate; extrapolate instead
     else this.extrapolatePosition()
@@ -197,7 +207,8 @@ export default class Snake extends SnakeBehaviour {
 
     const name = this.game.network.state?.players.get(this.playerId)?.name
     // Only set name for other players
-    if (name && this.game.network.clientId !== this.playerId) this.graphics.labelText = name
+    if (name && this.game.network.clientId !== this.playerId)
+      this.graphics.labelText = name
   }
 
   draw() {

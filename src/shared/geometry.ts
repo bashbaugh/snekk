@@ -10,6 +10,9 @@ import { Pair, union as pUnion, difference as pDiff } from 'polygon-clipping'
 //   )
 // }
 
+/** Get distance between two points */
+const distanceBetween = (p1: XY, p2: XY) => Math.hypot(p1.x - p2.x, p1.y - p2.y)
+
 /** Get the intersection point of two line segments */
 export function getLineIntersection(
   a1: XY,
@@ -103,4 +106,16 @@ export function polygonBoundingRect(polygon: XY[]): XY & {
     maxY = Math.max(maxY, polygon[i].y)
   }
   return { x: minX, y: minY, width: maxX - minX, height: maxY - minY }
+}
+
+/** Get the perimeter of a polygon */
+export function polygonPerimeter(polygon: XY[]): number {
+  let total = 0
+  for (let i = 0, l = polygon.length; i < l; i++) {
+    total += distanceBetween(
+      polygon[i],
+      polygon[i == polygon.length - 1 ? 0 : i + 1]
+    )
+  }
+  return total
 }

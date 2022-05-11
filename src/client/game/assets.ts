@@ -6,6 +6,9 @@ const assets = {
   pattern_bg: 'assets/pattern/bg.png',
 
   particle_100px: 'assets/particle/100px.png',
+  // particle_flame: 'assets/particle/flame.png',
+  // particle_octagon: 'assets/particle/octagon.png',
+  particle_hexagon: 'assets/particle/hexagon.png',
 
   sound_food: 'assets/sound/food.wav',
   sound_death: 'assets/sound/death.wav',
@@ -26,7 +29,7 @@ export function loadAssets() {
     loader.onComplete.add(() => {
       resolve()
 
-      resources.sound_turn.sound!.volume = 0.1
+      // resources.sound_turn.sound!.volume = 0.1
     })
   })
 }

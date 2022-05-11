@@ -3,7 +3,7 @@ import * as PIXI from 'pixi'
 import { hslToHex } from 'shared/util'
 import CONFIG from 'config'
 import Game from '../game'
-import { polygonBoundingRect } from 'shared/geometry'
+import { polygonBoundingRect, polygonPerimeter } from 'shared/geometry'
 
 export default class PlayerGraphics {
   private snake: Snake
@@ -21,6 +21,9 @@ export default class PlayerGraphics {
 
   private boostParticlesContainer: PIXI.Container
   private boostEmitter: PIXI.particles.Emitter
+
+  private territoryParticlesContainer: PIXI.Container
+  private regionEmitters: PIXI.particles.Emitter[] = []
 
   private label: PIXI.Text
 
@@ -44,6 +47,8 @@ export default class PlayerGraphics {
     this.tSprite = new PIXI.TilingSprite(this.tTexture, 100, 100)
     this.tContainer.addChild(this.tSprite as any)
     this.tSprite.mask = this.tSpriteMask
+    this.territoryParticlesContainer = new PIXI.Container()
+    this.tLayer.addChild(this.territoryParticlesContainer)
 
     // Snake
     this.snakeGraphics = new PIXI.Graphics()
@@ -233,15 +238,138 @@ export default class PlayerGraphics {
     g.endFill()
 
     // TODO FIX
-    const rect = polygonBoundingRect(this.snake.state.territory)
-    const s = this.game.getViewRelativePoint(rect)
+    const o = this.game.getViewOffset()
 
-    this.tSprite.x = s.x
-    this.tSprite.y = s.y
-    this.tSprite.width = rect.width + this.tTexture.width
-    this.tSprite.height = rect.height + this.tTexture.height
+    this.tSprite.width = this.game.pixi.screen.width
+    this.tSprite.height = this.game.pixi.screen.height
+    this.tSprite.tilePosition.x = -o.x
+    this.tSprite.tilePosition.y = -o.y
     this.tSpriteMask.beginFill()
     this.tSpriteMask.drawPolygon(polygonPoints)
     this.tSpriteMask.endFill()
+
+    // Region particles container
+    this.territoryParticlesContainer.position.set(-o.x, -o.y)
+    // this.boostEmitter.update(this.game.pixi.ticker.deltaMS / 1000)
+  }
+
+  emitRegionParticles(spawnPolygon: XY[]) {
+    const regionEmitterConf: PIXI.particles.EmitterConfigV3 = {
+      emit: false,
+      particlesPerWave: 0.01 * polygonPerimeter(spawnPolygon),
+      emitterLifetime: 0.1,
+      lifetime: {
+        min: 1,
+        max: 1.5,
+      },
+      frequency: 0.05,
+      pos: {
+        x: 0,
+        y: 0,
+      },
+      maxParticles: 200,
+      behaviors: [
+        {
+          type: 'textureSingle',
+          config: {
+            texture: PIXI.Texture.from('particle_hexagon'),
+          },
+        },
+        {
+          type: 'color',
+          config: {
+            color: {
+              list: [
+                {
+                  value: hslToHex(this.snake.state.hue, 0.8, 0.6, true),
+                  time: 0,
+                },
+                {
+                  value: hslToHex(this.snake.state.hue, 0.4, 0.5, true),
+                  time: 1,
+                },
+              ],
+            },
+          },
+        },
+        {
+          type: 'alpha',
+          config: {
+            alpha: {
+              list: [
+                {
+                  value: 1,
+                  time: 0,
+                },
+                {
+                  value: 1,
+                  time: 0.8,
+                },
+                {
+                  value: 0,
+                  time: 1,
+                },
+              ],
+            },
+          },
+        },
+        {
+          type: 'rotationStatic',
+          config: {
+            min: 0,
+            max: 360,
+          },
+        },
+        {
+          type: 'scale',
+          config: {
+            scale: {
+              list: [
+                {
+                  value: 1,
+                  time: 0,
+                },
+                {
+                  value: 0.9,
+                  time: 1,
+                },
+              ],
+            },
+          },
+        },
+        {
+          type: 'moveSpeed',
+          config: {
+            speed: {
+              list: [
+                {
+                  value: 50,
+                  time: 0,
+                },
+                {
+                  value: 20,
+                  time: 1,
+                },
+              ],
+              isStepped: false,
+            },
+          },
+        },
+        {
+          type: 'spawnShape',
+          config: {
+            type: 'polygonalChain',
+            data: [spawnPolygon],
+          },
+        },
+      ],
+    }
+
+    const e = new PIXI.particles.Emitter(
+      this.territoryParticlesContainer,
+      regionEmitterConf
+    )
+    // e.updateOwnerPos(spawnPolygon[0].x, spawnPolygon[0].y)
+    e.playOnceAndDestroy()
   }
 }

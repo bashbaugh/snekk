@@ -14,6 +14,8 @@ export default class KeyboardManager {
   private upListener: any
   private downListener: any
 
+  private lastTurn: number = 0
+
   boostState: boolean = false
 
   constructor() {
@@ -30,11 +32,19 @@ export default class KeyboardManager {
 
   private onKeydown(e: KeyboardEvent) {
     if (e.key in directions) {
-      this.turnCb?.(directions[e.key as keyof typeof directions] as any)
+      const d = directions[e.key as keyof typeof directions]
+      if (this.lastTurn !== d) this.turnCb?.(d as any)
+      this.lastTurn = d
     }
 
     if (e.key === ' ' && !this.boostState)
       this.boostCb?.((this.boostState = true))
+
+    if (e.key === 'f') {
+      if (!document.fullscreenElement && document.body.requestFullscreen)
+        document.body.requestFullscreen()
+      else document.exitFullscreen()
+    }
   }
 
   private onKeyup(e: KeyboardEvent) {
