@@ -25,15 +25,24 @@ export default class GameController {
     this.state = room.state
   }
 
-  getRandomPoint(offset: number =0) {
+  getRandomPoint(offset: number = 0) {
     return {
-      x: randomInt(-this.state.arenaSize + offset, this.state.arenaSize - offset),
-      y: randomInt(-this.state.arenaSize + offset, this.state.arenaSize - offset),
+      x: randomInt(
+        -this.state.arenaSize + offset,
+        this.state.arenaSize - offset
+      ),
+      y: randomInt(
+        -this.state.arenaSize + offset,
+        this.state.arenaSize - offset
+      ),
     }
   }
 
   public pointIsInArena(p: XY): boolean {
-    return Math.abs(p.x) <= this.state.arenaSize && Math.abs(p.y) <= this.state.arenaSize
+    return (
+      Math.abs(p.x) <= this.state.arenaSize &&
+      Math.abs(p.y) <= this.state.arenaSize
+    )
   }
 
   addPlayer(client: Client) {

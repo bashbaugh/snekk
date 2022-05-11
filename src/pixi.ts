@@ -15,6 +15,7 @@ export * from '@pixi/loaders'
 import '@pixi/graphics-extras'
 export * from '@pixi/sprite'
 export * from '@pixi/sprite-tiling'
+export * as sound from '@pixi/sound'
 
 // Renderer plugins
 import { Renderer } from '@pixi/core'

@@ -3,6 +3,7 @@ import UI, { UIEventListener } from 'client/ui'
 import CONFIG from 'config'
 import * as PIXI from 'pixi'
 import { asyncDelay } from 'shared/util'
+import { loadAssets } from './assets'
 import Game from './game'
 
 const CONNECTION_RETRY_INTERVAL = 5000
@@ -40,19 +41,9 @@ export default class App {
     this.pixi.ticker.minFPS = CONFIG.fps.min
     this.pixi.ticker.maxFPS = CONFIG.fps.max
 
-    await this.loadAssets()
+    await loadAssets()
 
     this.findGame()
-  }
-
-  private loadAssets() {
-    return new Promise<void>(resolve => {
-      const loader = PIXI.Loader.shared
-      loader.add('pattern_dots', 'assets/pattern/dots.png')
-      loader.add('pattern_squares', 'assets/pattern/squares.png')
-      loader.load()
-      loader.onComplete.add(() => resolve())
-    })
   }
 
   private async findGame() {

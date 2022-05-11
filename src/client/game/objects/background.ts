@@ -1,27 +1,33 @@
-import CONFIG from 'config'
+import Game from '../game'
 import BaseObject from './baseObject'
-
-const GRID_LINE_SPACING = 70
+import * as PIXI from 'pixi'
 
 export default class Background extends BaseObject {
+  sprite: PIXI.TilingSprite
+
+  constructor(game: Game) {
+    super(game, game.bgLayer)
+
+    const t = PIXI.Texture.from('pattern_bg')
+    this.sprite = new PIXI.TilingSprite(t)
+    this.sprite.mask = this.graphics
+
+    this.container.addChild(this.sprite)
+  }
+
   update() {}
 
   draw() {
-    const g = this.graphics
-    g.clear()
-    const offset = this.game.getViewOffset()
-    const [w, h] = [this.game.pixi.view.width, this.game.pixi.view.height]
+    const o = this.game.getViewOffset()
+    this.sprite.width = this.game.pixi.screen.width
+    this.sprite.height = this.game.pixi.screen.height
+    this.sprite.tilePosition.x = -o.x
+    this.sprite.tilePosition.y = -o.y
 
-    g.lineStyle(2, CONFIG.g.backgroundPatternColor, 0.3)
-    for (let i = 0; i < w / GRID_LINE_SPACING + 1; i++) {
-      const viewX = i * GRID_LINE_SPACING - (offset.x % GRID_LINE_SPACING)
-      g.moveTo(viewX, 0)
-      g.lineTo(viewX, h)
-    }
-    for (let i = 0; i < h / GRID_LINE_SPACING + 1; i++) {
-      const viewY = i * GRID_LINE_SPACING - (offset.y % GRID_LINE_SPACING)
-      g.moveTo(0, viewY)
-      g.lineTo(w, viewY)
-    }
+    const clipGraphics = this.graphics
+    clipGraphics.clear()
+    const c = this.game.getArenaBounds()
+    if (!c) return
+    clipGraphics.drawRect(c.xl, c.yt, c.w, c.h)
   }
 }

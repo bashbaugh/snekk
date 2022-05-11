@@ -67,7 +67,7 @@ export default class Game {
     this.addNetworkHandlers()
 
     this.gameObjects.push(
-      new Background(this, this.bgLayer),
+      new Background(this),
       new Walls(this, this.bgLayer),
       new Food(this, this.bloomLayer)
     )
@@ -237,7 +237,34 @@ export default class Game {
     }
   }
 
+  public getArenaBounds(
+    clipAtScreen: boolean = true
+  ): Record<'xl' | 'xr' | 'yt' | 'yb' | 'w' | 'h', number> | undefined {
+    if (!this.network.state) return
+    const s = this.network.state.arenaSize
+    const o = this.getViewOffset()
+    const xl = -s - o.x
+    const xr = s - o.x
+    const yt = -s - o.y
+    const yb = s - o.y
+
+    return clipAtScreen
+      ? {
+          xl: Math.max(xl, 0),
+          xr: Math.min(xr, this.pixi.screen.width),
+          yt: Math.max(yt, 0),
+          yb: Math.min(yb, this.pixi.screen.height),
+          w: Math.min(xr, this.pixi.screen.width) - Math.max(xl, 0),
+          h: Math.min(yb, this.pixi.screen.height) - Math.max(yt, 0),
+        }
+      : { xl, xr, yt, yb, w: s * 2, h: s * 2 }
+  }
+
   public pointIsInArena(p: XY): boolean {
-    return Math.abs(p.x) <= this.network.state!.arenaSize && Math.abs(p.y) <= this.network.state!.arenaSize
+    if (!this.network.state) return false
+    return (
+      Math.abs(p.x) <= this.network.state.arenaSize &&
+      Math.abs(p.y) <= this.network.state.arenaSize
+    )
   }
 }

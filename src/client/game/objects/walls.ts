@@ -11,7 +11,7 @@ export default class Walls extends BaseObject {
 
     const s = this.game.network.state?.arenaSize
     if (!s) return
-    
+
     const o = this.game.getViewOffset()
     const xLeft = -s - o.x
     const xRight = s - o.x
@@ -21,7 +21,7 @@ export default class Walls extends BaseObject {
     g.lineStyle({
       width: 8,
       color: 0x6b0a17,
-      join: PIXI.LINE_JOIN.MITER
+      join: PIXI.LINE_JOIN.MITER,
     })
     g.moveTo(xLeft, yTop)
     g.lineTo(xRight, yTop)

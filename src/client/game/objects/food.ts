@@ -27,7 +27,8 @@ export default class Food extends BaseObject {
       g.drawCircle(
         p.x,
         p.y,
-        CONFIG.food.radius + (isNaN(pulseSize) ? 0 :pulseSize * CONFIG.food.pulseRadius )
+        CONFIG.food.radius +
+          (isNaN(pulseSize) ? 0 : pulseSize * CONFIG.food.pulseRadius)
       )
       g.endFill()
     }

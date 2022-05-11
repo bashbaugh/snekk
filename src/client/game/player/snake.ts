@@ -6,6 +6,7 @@ import { lerp, lerpPoint } from 'shared/util'
 import Game from '../game'
 import PlayerGraphics from './graphics'
 import ClientSnakeState, { cloneSnakePoint, cloneSnakeRegion } from './state'
+import { resources } from '../assets'
 
 interface ServerFrame {
   serverTs: number
@@ -30,6 +31,10 @@ export default class Snake extends SnakeBehaviour {
 
   die() {
     this.graphics.cleanup()
+
+    if (this.playerId === this.game.network.clientId) {
+      resources.sound_death.sound?.play()
+    }
   }
 
   private serverQueue: Array<ServerFrame> = []
