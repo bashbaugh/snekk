@@ -20,7 +20,10 @@ export function calcStandardDev(array: number[]) {
 }
 
 /** Convert HSL (0-360, 0-1, 0-1) to RGB */
-export function hslToHex(h: number, s: number, l: number) {
+export const hslToHex: {
+  (h: number, s: number, l: number): number
+  (h: number, s: number, l: number, str: true): string
+} = (h, s, l, str = false) => {
   let a = s * Math.min(l, 1 - l)
   let f = (n: number, k = (n + h / 30) % 12) =>
     l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1)
@@ -29,8 +32,7 @@ export function hslToHex(h: number, s: number, l: number) {
     (a, b) => a + Math.floor(b * 255).toString(16),
     ''
   )
-  const hex = parseInt(hexString, 16)
-  return hex
+  return str ? hexString : (parseInt(hexString, 16) as any)
 }
 
 export const asyncDelay = (ms: number) =>
@@ -45,7 +47,3 @@ export const formatTime = (ms: number) => {
   const seconds = Math.floor((ms % 60000) / 1000)
   return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`
 }
-
-/** Round to the nearest multiple */
-export const roundToNearest = (num: number, multiple: number) =>
-  multiple * Math.round(num / multiple)

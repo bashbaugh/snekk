@@ -30,7 +30,7 @@ const config = {
       p('node_modules')
     ],
     alias: {
-      // pixi: p('src/client/pixi.ts')
+      'pixi.js': p('src/pixi.ts')
     }
   },
   module: {

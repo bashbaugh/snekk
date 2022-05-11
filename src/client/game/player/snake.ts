@@ -26,6 +26,8 @@ export default class Snake extends SnakeBehaviour {
     this.game = game
     this.playerId = playerId
 
+    const snakeName = this.game.network.state!.players.get(playerId)
+    console.log(snakeName)
     this.graphics = new PlayerGraphics(this, this.game)
   }
 
@@ -183,6 +185,8 @@ export default class Snake extends SnakeBehaviour {
       // Update other things
       this.state.territory = lastF.snake.territory
       this.state.boosting = lastF.snake.boosting
+
+      this.graphics.emitBoostParticles = this.state.boosting
     }
     // Can't interpolate; extrapolate instead
     else this.extrapolatePosition()
@@ -190,6 +194,10 @@ export default class Snake extends SnakeBehaviour {
 
   update(delta: number) {
     this.interpolateSnake()
+
+    const name = this.game.network.state?.players.get(this.playerId)?.name
+    // Only set name for other players
+    if (name && this.game.network.clientId !== this.playerId) this.graphics.labelText = name
   }
 
   draw() {

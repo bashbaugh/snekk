@@ -5,8 +5,11 @@ const assets = {
   pattern_squares: 'assets/pattern/squares.png',
   pattern_bg: 'assets/pattern/bg.png',
 
+  particle_100px: 'assets/particle/100px.png',
+
   sound_food: 'assets/sound/food.wav',
   sound_death: 'assets/sound/death.wav',
+  sound_turn: 'assets/sound/turn.wav',
 }
 
 export type AssetID = keyof typeof assets
@@ -20,6 +23,10 @@ export function loadAssets() {
       loader.add(id, assets[id as AssetID])
     }
     loader.load()
-    loader.onComplete.add(() => resolve())
+    loader.onComplete.add(() => {
+      resolve()
+
+      resources.sound_turn.sound!.volume = 0.1
+    })
   })
 }

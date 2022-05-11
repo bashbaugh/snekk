@@ -12,6 +12,7 @@ import Snake from './player/snake'
 import App from './app'
 import KeyboardManager from './keyboard'
 import Walls from './objects/walls'
+import { resources } from './assets'
 
 export default class Game {
   readonly app: App
@@ -120,6 +121,7 @@ export default class Game {
           y: this.playerSnake!.head.y,
           s: this.playerSnake!.head.s,
         })
+        resources.sound_turn.sound?.play()
         // this.playerSnake?.turnHead(d)
       })
       this.input.setBoostListener(b => {
@@ -224,8 +226,8 @@ export default class Game {
     // Player snake should be centered in view, so the view should be offset according to its head
     const center = this.playerSnake.head
     return {
-      x: center.x - this.pixi.view.width / 2,
-      y: center.y - this.pixi.view.height / 2,
+      x: center.x - this.pixi.screen.width / 2,
+      y: center.y - this.pixi.screen.height / 2,
     }
   }
 

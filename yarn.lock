@@ -170,11 +170,6 @@
   resolved "https://registry.yarnpkg.com/@pixi/filter-kawase-blur/-/filter-kawase-blur-4.1.5.tgz#c84fd3f452bfa44aaba4cba0c43a2b6071e0c6b2"
   integrity sha512-YVzzfLoUMKYeEMuuj4TfpTJ1p14nBV/+JnWVL5dC63VuCQ1YMxzSmc6ahGNfbex0+nvhyKPWe87aO7jzX0waoA==
 
-"@pixi/filter-outline@^4.1.5":
-  version "4.1.5"
-  resolved "https://registry.yarnpkg.com/@pixi/filter-outline/-/filter-outline-4.1.5.tgz#d44f63fb40e80ea8719a4f72a8f5453c1244b515"
-  integrity sha512-tm0lQR5fGFz0g7GQamRGhf5vkzj4aYLTv0MCK98KaK1L45agzRioJgzicVkuSu6J/SMMvT4O6XSGax0z4fTs9Q==
-
 "@pixi/graphics-extras@^6.3.2":
   version "6.3.2"
   resolved "https://registry.yarnpkg.com/@pixi/graphics-extras/-/graphics-extras-6.3.2.tgz#9378afc5d7ee75d0935447253cce8473707eb686"
@@ -194,6 +189,11 @@
   version "6.3.0"
   resolved "https://registry.yarnpkg.com/@pixi/math/-/math-6.3.0.tgz#2df6a27a8a73e1976ebbe90b01dfeab999b17bdb"
   integrity sha512-QkF9wl3/kXvthwWhrDAVgWQWl3T9dbyicHsoWfx0s9b3E0rx+PZcpz5ftaAVxGd7EvecIxV9nEUnna9TIjvwJQ==
+
+"@pixi/particle-emitter@^5.0.5":
+  version "5.0.5"
+  resolved "https://registry.yarnpkg.com/@pixi/particle-emitter/-/particle-emitter-5.0.5.tgz#b38ab952db41865af11ca56b1b2f1be08ab8957c"
+  integrity sha512-eBHkKVnYKxFgCMR9v+42RoeWOhENo8UNIV0nbakkKRI3MJCFgBO73UjmdlSd22niGrkd4bTynwJ9jOZTIjJSAQ==
 
 "@pixi/runner@^6.3.0":
   version "6.3.0"
@@ -221,6 +221,11 @@
   version "6.3.2"
   resolved "https://registry.yarnpkg.com/@pixi/sprite/-/sprite-6.3.2.tgz#d689626a0f1d6a7baff4a23d2d13dd74a209b42f"
   integrity sha512-T1KJ8l2f8Otn6Se6h4b2pz2nrUSe59Pnmj2WIzgBisM245h7dGATs05MisMaLV6Lg/3gTBTxsLBmKsbDSQqbNw==
+
+"@pixi/text@^6.3.2":
+  version "6.3.2"
+  resolved "https://registry.yarnpkg.com/@pixi/text/-/text-6.3.2.tgz#e0eb0eeda4354fe88c3e466a00b8335e4e5569b1"
+  integrity sha512-YiPnUBmgZ0WzF0+XMm07iRg0jOyPbIjGmXJ+1srU5L9c3cCzvtg5QuYL0lPHS0Z6gyxhj/6ncePhBGO87RIKnA==
 
 "@pixi/ticker@^6.3.0":
   version "6.3.0"

@@ -15,7 +15,9 @@ export * from '@pixi/loaders'
 import '@pixi/graphics-extras'
 export * from '@pixi/sprite'
 export * from '@pixi/sprite-tiling'
+export * from '@pixi/text'
 export * as sound from '@pixi/sound'
+export * as particles from '@pixi/particle-emitter'
 
 // Renderer plugins
 import { Renderer } from '@pixi/core'
@@ -34,3 +36,6 @@ import { AdvancedBloomFilter } from '@pixi/filter-advanced-bloom'
 export const filters = {
   AdvancedBloomFilter,
 }
+
+// TODO keep VERSION up to date
+export const VERSION = '6.3.0'
