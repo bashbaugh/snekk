@@ -30,7 +30,11 @@ const config = {
       p('node_modules')
     ],
     alias: {
-      'pixi.js': p('src/pixi.ts')
+      'pixi.js': p('src/pixi.ts'),
+      "react": "preact/compat",
+      "react-dom/test-utils": "preact/test-utils",
+      "react-dom": "preact/compat",     // Must be below test-utils
+      "react/jsx-runtime": "preact/jsx-runtime"
     }
   },
   module: {
@@ -72,6 +76,10 @@ const config = {
         ),
         use: 'file-loader?name=[name].[ext]',
         exclude: /node_modules/,
+      },
+      {
+        test: /\.svg$/,
+        loader: 'svg-inline-loader'
       },
     ]
   },

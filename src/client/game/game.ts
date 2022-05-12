@@ -13,6 +13,7 @@ import App from './app'
 import KeyboardManager from './keyboard'
 import Walls from './objects/walls'
 import { resources } from './assets'
+import Minimap from './objects/minimap'
 
 export default class Game {
   readonly app: App
@@ -21,22 +22,23 @@ export default class Game {
   readonly network: Network
   readonly ui: UI
 
+  private gameObjects: BaseObject[] = []
+
   bgLayer: PIXI.Container
   bloomLayer: PIXI.Container
   territoryLayer: PIXI.Container
   snakeLayer: PIXI.Container
-
-  private gameObjects: BaseObject[] = []
+  hudLayer: PIXI.Container
 
   // ID:player map
-  private players: Record<
+  players: Record<
     string,
     {
       snake?: Snake
       state: SharedPlayerState
     }
   >
-  private playerSnake?: Snake
+  playerSnake?: Snake
 
   constructor(app: App) {
     this.app = app
@@ -49,10 +51,12 @@ export default class Game {
     this.snakeLayer = new PIXI.Container()
     this.bgLayer = new PIXI.Container()
     this.bloomLayer = new PIXI.Container()
+    this.hudLayer = new PIXI.Container()
     this.pixi.stage.addChild(this.bgLayer)
     this.pixi.stage.addChild(this.bloomLayer)
     this.pixi.stage.addChild(this.territoryLayer)
     this.pixi.stage.addChild(this.snakeLayer)
+    this.pixi.stage.addChild(this.hudLayer)
 
     this.bloomLayer.filters = [
       new PIXI.filters.AdvancedBloomFilter({
@@ -70,7 +74,8 @@ export default class Game {
     this.gameObjects.push(
       new Background(this),
       new Walls(this, this.bgLayer),
-      new Food(this, this.bloomLayer)
+      new Food(this, this.bloomLayer),
+      new Minimap(this, this.hudLayer)
     )
 
     // Initialize players and snakes
@@ -168,21 +173,21 @@ export default class Game {
     }
   }
 
-  addSnake(playerId: string) {
+  private addSnake(playerId: string) {
     const p = this.players[playerId]
     if (!p.state.snake) return
     debugLog('[GAME] Creating snake', playerId)
     p.snake = new Snake(this, playerId, p.state.snake)
   }
 
-  removeSnake(playerId: string) {
+  private removeSnake(playerId: string) {
     if (!this.players[playerId].snake) return
     debugLog('[GAME] Removing snake', playerId)
     this.players[playerId].snake?.die()
     delete this.players[playerId].snake
   }
 
-  onTick(deltaFPS: number) {
+  private onTick(deltaFPS: number) {
     const deltaMS = this.pixi.ticker.deltaMS
 
     for (const obj of this.gameObjects) obj.update(deltaMS)
@@ -262,11 +267,11 @@ export default class Game {
       : { xl, xr, yt, yb, w: s * 2, h: s * 2 }
   }
 
-  public pointIsInArena(p: XY): boolean {
-    if (!this.network.state) return false
-    return (
-      Math.abs(p.x) <= this.network.state.arenaSize &&
-      Math.abs(p.y) <= this.network.state.arenaSize
-    )
-  }
+  // public pointIsInArena(p: XY): boolean {
+  //   if (!this.network.state) return false
+  //   return (
+  //     Math.abs(p.x) <= this.network.state.arenaSize &&
+  //     Math.abs(p.y) <= this.network.state.arenaSize
+  //   )
+  // }
 }

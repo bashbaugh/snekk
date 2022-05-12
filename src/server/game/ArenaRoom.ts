@@ -4,6 +4,13 @@ import { RoomClientOptions } from 'types/room'
 import GameState, { PlayerState, SnakePoint } from 'shared/serverState'
 import GameController from './GameController'
 import { Message, MESSAGETYPE } from 'types/networking'
+import {
+  uniqueNamesGenerator,
+  adjectives,
+  colors,
+  animals,
+} from 'unique-names-generator'
+import { defaultTerritorySkin } from 'shared/skins'
 
 export default class ArenaRoom extends Room<GameState> {
   game: GameController = undefined as any
@@ -47,9 +54,17 @@ export default class ArenaRoom extends Room<GameState> {
     )
 
     this.onMessage<Message[MESSAGETYPE.JOIN]>(MESSAGETYPE.JOIN, (client, d) => {
-      this.state.players.get(client.sessionId)!.name = d.n
-        .trim()
-        .slice(0, CONFIG.snake.maxNameLength + 1)
+      const p = this.state.players.get(client.sessionId)!
+
+      const name =
+        d.n ||
+        uniqueNamesGenerator({
+          dictionaries: [colors, animals],
+          length: 2,
+          separator: ' ',
+        })
+      p.name = name.trim().slice(0, CONFIG.snake.maxNameLength + 1)
+      p.territorySkin = d.tskin || defaultTerritorySkin
       this.game.spawnSnake(client.sessionId)
     })
   }

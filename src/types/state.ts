@@ -1,3 +1,4 @@
+import { TSkinName } from 'shared/skins'
 import { Region, SnakePoint, XYPoint } from '../shared/serverState'
 
 export interface SharedSnakeState {
@@ -11,7 +12,6 @@ export interface SharedSnakeState {
   speed: number
   extraSpeed: number
   boosting: boolean
-
   hue: number
 
   score: number
@@ -29,5 +29,8 @@ export interface SharedSnakeState {
 export interface SharedPlayerState {
   clientId: string
   snake?: SharedSnakeState
+
   name?: string
+  /** Territory skin pattern */
+  territorySkin?: TSkinName
 }

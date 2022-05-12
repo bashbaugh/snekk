@@ -43,7 +43,9 @@
     "express": "^4.18.0",
     "express-basic-auth": "^1.2.1",
     "polygon-clipping": "^0.15.3",
-    "preact": "^10.7.1"
+    "preact": "^10.7.1",
+    "react-icons": "^4.3.1",
+    "unique-names-generator": "^4.7.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.12",

@@ -7,6 +7,7 @@ import ServerPinger from './ping'
 import { SharedSnakeState } from 'types/state'
 import { mean } from 'shared/util'
 import CONFIG from 'config'
+import { defaultTerritorySkin, TSkinName } from 'shared/skins'
 
 const SERVERTIME_MOVING_AVG_SAMPLES = 15
 
@@ -79,10 +80,15 @@ export default class Network {
     })
   }
 
-  public joinGame(name: string) {
-    this.room?.send(MESSAGETYPE.JOIN, {
-      n: name,
-    })
+  public joinGame(joinGameConfig: {
+    name: string
+    territorySkin: TSkinName
+  }) {
+    const d: Message[MESSAGETYPE.JOIN] = {
+      n: joinGameConfig.name,
+      tskin: joinGameConfig.territorySkin,
+    }
+    this.room?.send(MESSAGETYPE.JOIN, d)
   }
 
   public sendTurn(payload: Message[MESSAGETYPE.TURN]) {

@@ -47,3 +47,23 @@ export const formatTime = (ms: number) => {
   const seconds = Math.floor((ms % 60000) / 1000)
   return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`
 }
+
+/** Map a number from one range to another */
+export const mapNumRange = (
+  value: number,
+  fromMin: number,
+  fromMax: number,
+  toMin: number,
+  toMax: number
+) => ((value - fromMin) / (fromMax - fromMin)) * (toMax - toMin) + toMin
+
+export const mapPointRange = (
+  point: XY,
+  fromMin: number,
+  fromMax: number,
+  toMin: XY,
+  toMax: XY
+) => ({
+  x: mapNumRange(point.x, fromMin, fromMax, toMin.x, toMax.x),
+  y: mapNumRange(point.y, fromMin, fromMax, toMin.y, toMax.y),
+})

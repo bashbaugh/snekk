@@ -1,3 +1,4 @@
+import { TSkinName } from 'shared/skins'
 import { SharedSnakeState } from 'types/state'
 import { DeathReason } from './game'
 
@@ -42,6 +43,7 @@ export interface Message {
   [MESSAGETYPE.JOIN]: {
     /** Name */
     n: string
+    tskin: TSkinName
   }
   [MESSAGETYPE.GODMSG]: {
     m: string

@@ -7,6 +7,7 @@ import Game from '../game'
 import PlayerGraphics from './graphics'
 import ClientSnakeState, { cloneSnakePoint, cloneSnakeRegion } from './state'
 import { resources } from '../assets'
+import { defaultTerritorySkin } from 'shared/skins'
 
 interface ServerFrame {
   serverTs: number
@@ -26,8 +27,6 @@ export default class Snake extends SnakeBehaviour {
     this.game = game
     this.playerId = playerId
 
-    const snakeName = this.game.network.state!.players.get(playerId)
-    console.log(snakeName)
     this.graphics = new PlayerGraphics(this, this.game)
   }
 
@@ -205,10 +204,14 @@ export default class Snake extends SnakeBehaviour {
   update(delta: number) {
     this.interpolateSnake()
 
-    const name = this.game.network.state?.players.get(this.playerId)?.name
+    const player = this.game.network.state?.players.get(this.playerId)
+    if (!player) return
+
+    this.graphics.tSkin = player.territorySkin || defaultTerritorySkin
+
     // Only set name for other players
-    if (name && this.game.network.clientId !== this.playerId)
-      this.graphics.labelText = name
+    if (this.game.network.clientId !== this.playerId)
+      this.graphics.labelText = player.name!
   }
 
   draw() {

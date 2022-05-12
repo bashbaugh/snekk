@@ -5,6 +5,7 @@ import * as PIXI from 'pixi'
 import { asyncDelay } from 'shared/util'
 import { loadAssets } from './assets'
 import Game from './game'
+import HomeBackground from './objects/homeBackground'
 
 const CONNECTION_RETRY_INTERVAL = 5000
 
@@ -14,6 +15,8 @@ export default class App {
   readonly ui: UI
 
   game?: Game
+
+  homeBG?: HomeBackground
 
   constructor() {
     this.pixi = new PIXI.Application({
@@ -42,6 +45,8 @@ export default class App {
     this.pixi.ticker.maxFPS = CONFIG.fps.max
 
     await loadAssets()
+
+    this.homeBG = new HomeBackground(this)
 
     this.findGame()
   }
@@ -73,10 +78,16 @@ export default class App {
   private waitForStart() {
     this.ui.setState({ ui: 'readyToPlay' })
 
+    const homeUpdate = this.homeBG!.updateAndDraw.bind(this.homeBG)
+    this.homeBG!.enabled = true
+    this.pixi.ticker.add(homeUpdate)
+
     const startListener: UIEventListener = e => {
+      this.pixi.ticker.remove(homeUpdate)
+      this.homeBG!.enabled = false
       this.ui.setState({ ui: 'loading', loadingText: 'Loading...' })
       this.ui.removeEventListener('startPlaying', startListener)
-      this.network.joinGame(e.data.name)
+      this.network.joinGame(e.data)
       this.game = new Game(this)
     }
 

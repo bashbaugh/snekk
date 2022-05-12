@@ -1,6 +1,7 @@
 import { Schema, type, ArraySchema, MapSchema } from '@colyseus/schema'
 import CONFIG from 'config'
 import { SharedPlayerState, SharedSnakeState } from '../types/state'
+import { territorySkins } from './skins'
 import { randomInt } from './util'
 
 export class XYPoint extends Schema implements XY {
@@ -110,7 +111,9 @@ export class SnakeState extends Schema implements SharedSnakeState {
 export class PlayerState extends Schema implements SharedPlayerState {
   @type('string') clientId: string
   @type(SnakeState) snake?: SnakeState
+
   @type('string') name?: string
+  @type('string') territorySkin?: keyof typeof territorySkins
 
   constructor(clientId: string) {
     super()

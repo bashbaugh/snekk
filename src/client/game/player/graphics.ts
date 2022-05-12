@@ -3,7 +3,8 @@ import * as PIXI from 'pixi'
 import { hslToHex } from 'shared/util'
 import CONFIG from 'config'
 import Game from '../game'
-import { polygonBoundingRect, polygonPerimeter } from 'shared/geometry'
+import { polygonPerimeter } from 'shared/geometry'
+import { defaultTerritorySkin, territorySkins, TSkinName } from 'shared/skins'
 
 export default class PlayerGraphics {
   private snake: Snake
@@ -15,15 +16,13 @@ export default class PlayerGraphics {
   private snakeGraphics: PIXI.Graphics
   private tGraphics: PIXI.Graphics
   private tSpriteMask: PIXI.Graphics
-
-  private tTexture: PIXI.Texture
-  private tSprite: PIXI.TilingSprite
+  private _tSkin?: TSkinName
+  private tSprite!: PIXI.TilingSprite
 
   private boostParticlesContainer: PIXI.Container
   private boostEmitter: PIXI.particles.Emitter
 
   private territoryParticlesContainer: PIXI.Container
-  private regionEmitters: PIXI.particles.Emitter[] = []
 
   private label: PIXI.Text
 
@@ -43,8 +42,7 @@ export default class PlayerGraphics {
     this.tGraphics = new PIXI.Graphics()
     this.tSpriteMask = new PIXI.Graphics()
     this.tContainer.addChild(this.tGraphics)
-    this.tTexture = PIXI.Texture.from('pattern_squares')
-    this.tSprite = new PIXI.TilingSprite(this.tTexture, 100, 100)
+    this.tSkin = defaultTerritorySkin
     this.tContainer.addChild(this.tSprite as any)
     this.tSprite.mask = this.tSpriteMask
     this.territoryParticlesContainer = new PIXI.Container()
@@ -159,9 +157,6 @@ export default class PlayerGraphics {
             },
           },
         },
-        // {
-        //   type: 'em'
-        // }
       ],
     }
     this.boostEmitter = new PIXI.particles.Emitter(
@@ -218,6 +213,15 @@ export default class PlayerGraphics {
     this.boostParticlesContainer.position.set(-o.x, -o.y)
     this.boostEmitter.updateOwnerPos(this.snake.head.x, this.snake.head.y)
     this.boostEmitter.update(this.game.pixi.ticker.deltaMS / 1000)
+  }
+
+  set tSkin(skin: TSkinName) {
+    if (skin === this._tSkin) return
+    if (this.tSprite) this.tContainer.removeChild(this.tSprite)
+    this._tSkin = skin
+    this.tSprite = new PIXI.TilingSprite(PIXI.Texture.from(skin), 100, 100)
+    this.tSprite.alpha = 0.2
+    this.tContainer.addChild(this.tSprite)
   }
 
   drawTerritory() {
@@ -343,11 +347,15 @@ export default class PlayerGraphics {
             speed: {
               list: [
                 {
-                  value: 50,
+                  value: 80,
                   time: 0,
                 },
                 {
-                  value: 20,
+                  value: 10,
+                  time: 0.5,
+                },
+                {
+                  value: 0,
                   time: 1,
                 },
               ],

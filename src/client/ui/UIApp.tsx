@@ -31,7 +31,11 @@ const UIApp: preact.FunctionComponent<{
           <div class="font-bold text-3xl">{state.loadingText}</div>
         )}
         {state.ui == 'readyToPlay' && (
-          <Home death={state.deathReason} dispatchEvent={dispatchEvent} />
+          <Home
+            death={state.deathReason}
+            dispatchEvent={dispatchEvent}
+            tSkin={state.playerTSkin}
+          />
         )}
         {state.ui === 'disconnected' && (
           <div class="bg-black bg-opacity-60 p-10 rounded-lg flex flex-col gap-3 items-center">

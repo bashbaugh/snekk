@@ -1,5 +1,6 @@
 import { createElement, render } from 'preact'
 import type { StateUpdater } from 'preact/hooks'
+import { defaultTerritorySkin, TSkinName } from 'shared/skins'
 import { DeathReason } from 'types/game'
 import UIApp from './UIApp'
 
@@ -23,12 +24,15 @@ export interface UIState {
   loadingText: string
   wsDisconnectCode?: number
   deathReason?: DeathReason
+
+  playerTSkin: TSkinName
 }
 
 export type UIEventType = 'startPlaying'
 export interface UIEventData {
   startPlaying: {
     name: string
+    territorySkin: TSkinName
   }
 }
 export class UIEvent<T extends UIEventType> extends Event {
@@ -53,6 +57,7 @@ export default class UI {
       ui: 'loading',
       showStats: true,
       loadingText: 'Loading...',
+      playerTSkin: defaultTerritorySkin,
     }
   }
 
