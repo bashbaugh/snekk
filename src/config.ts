@@ -13,7 +13,7 @@ const CONFIG = Object.freeze({
   },
   snake: {
     baseSpeed: 100,
-    baseLength: 5000,
+    baseLength: 250,
     snakeBoostSpeed: 300,
     boostCostPerSec: 100,
     minLength: 200,

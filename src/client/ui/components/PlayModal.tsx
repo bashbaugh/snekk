@@ -3,7 +3,7 @@ import preact from 'preact'
 import { useEffect, useRef, useState } from 'preact/hooks'
 import { defaultTerritorySkin, territorySkins, TSkinName } from 'shared/skins'
 import { UIEventDispatcher } from '..'
-import { FiArrowLeft, FiArrowRight } from 'react-icons/fi'
+import { FiArrowLeft, FiArrowRight } from 'react-icons/fi/index'
 
 const skins = Object.keys(territorySkins)
 

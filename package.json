@@ -9,7 +9,7 @@
     "client:dev": "webpack serve --config ./webpack.config.js",
     "client:build": "webpack --progress --config ./webpack.config.js",
     "client:build-prod": "NODE_ENV=production yarn client:build",
-    "client:analyze-bundle": "NODE_ENV=production webpack --profile --json > bundlestats.json && webpack-bundle-analyzer bundlestats.json ./build",
+    "client:analyze-bundle": "NODE_ENV=production webpack --profile --json --config ./webpack.config.js > bundlestats.json && webpack-bundle-analyzer bundlestats.json ./build",
     "server:dev": "tsnd --respawn --exit-child --clear --project ./tsconfig.server.json -r tsconfig-paths/register src/server/index.ts",
     "server:build": "rm -rf serverbuild && NODE_ENV=production/ tsc --project ./tsconfig.server.json",
     "server:start": "NODE_PATH=serverbuild/ node serverbuild/server/index.js",
