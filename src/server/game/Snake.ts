@@ -13,7 +13,7 @@ export default class Snake extends SnakeBehaviour {
   constructor(gameController: GameController, player: PlayerState) {
     const snake = new SnakeState(
       gameController.getRandomPoint(
-        CONFIG.snake.territoryStartMargin + 1000,
+        CONFIG.snake.territoryStartMargin + CONFIG.snake.spawnMargin,
         true
       )
     )

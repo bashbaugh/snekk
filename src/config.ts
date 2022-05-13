@@ -1,5 +1,5 @@
 const PATCHRATE = 20
-const dev = process.env.NODE_ENV === 'development'
+const dev = process.env.NODE_ENV !== 'production'
 
 const CONFIG = Object.freeze({
   gameName: 'Snekk.io',
@@ -13,12 +13,13 @@ const CONFIG = Object.freeze({
   },
   snake: {
     baseSpeed: 100,
-    baseLength: 250,
+    baseLength: dev ? 2000 : 250,
     snakeBoostSpeed: 300,
     boostCostPerSec: 100,
     minLength: 200,
     territoryStartMargin: 100,
     territorySpeedBoost: 50,
+    spawnMargin: dev ? 1000 : 50,
 
     scoreMultiplier: 0.01,
     lengthValMultiplier: 0.1,
