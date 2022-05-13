@@ -4,3 +4,4 @@ serverbuild
 yarn-error.log
 bundlestats.json
 temp
+.DS_Store
