@@ -14,7 +14,6 @@ import KeyboardManager from './keyboard'
 import Walls from './objects/walls'
 import { resources } from './assets'
 import Minimap from './objects/minimap'
-import snake from '../../../serverbuild/shared/snake'
 
 export default class Game {
   readonly app: App
