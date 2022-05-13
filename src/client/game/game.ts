@@ -2,7 +2,7 @@ import Network from 'client/networking'
 import UI, { UIState } from 'client/ui'
 import { debugLog } from 'client/util'
 import * as PIXI from 'pixi'
-import { PlayerState } from 'shared/serverState'
+import { PlayerState, SnakeState } from 'shared/serverState'
 import { DeathReason } from 'types/game'
 import { SharedPlayerState } from 'types/state'
 import BaseObject from './objects/baseObject'
@@ -14,6 +14,7 @@ import KeyboardManager from './keyboard'
 import Walls from './objects/walls'
 import { resources } from './assets'
 import Minimap from './objects/minimap'
+import snake from '../../../serverbuild/shared/snake'
 
 export default class Game {
   readonly app: App
@@ -82,8 +83,8 @@ export default class Game {
     this.initializePlayers()
   }
 
-  private getPlayerChangeListener(playerId: string) {
-    return (
+  private addPlayerStateListeners(playerId: string, state: PlayerState) {
+    state.onChange = (
       changes: Parameters<Exclude<PlayerState['onChange'], undefined>>[0]
     ) => {
       changes.forEach(c => {
@@ -94,7 +95,6 @@ export default class Game {
             // the player now has a snake, add the new snake to the game
             this.addSnake(playerId)
           } else {
-            // Otherwise remove their snake
             this.removeSnake(playerId)
           }
         }
@@ -109,8 +109,7 @@ export default class Game {
         state: pState,
       }
 
-      pState.snake?.onChange = (c) => 
-      pState.snake?.onRemove
+      this.addPlayerStateListeners(id, pState)
     })
 
     this.network.onPlayerLeave(id => {
@@ -171,7 +170,7 @@ export default class Game {
         state: p,
       }
       this.addSnake(id)
-      p.onChange = this.getPlayerChangeListener(id)
+      this.addPlayerStateListeners(id, p)
     }
   }
 

@@ -88,7 +88,7 @@ export default class GameController {
     delete player.snake
     const pState = this.state.players.get(id)
     if (!pState?.snake) return
-    delete pState.snake
+    pState.snake = undefined
 
     const deathMsg: Message[MESSAGETYPE.DEATH] = {
       c: cause,
