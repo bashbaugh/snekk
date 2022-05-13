@@ -16,7 +16,7 @@ import {
 // }
 
 /** Get distance between two points */
-const distanceBetween = (p1: XY, p2: XY) => Math.hypot(p1.x - p2.x, p1.y - p2.y)
+const distBetween = (p1: XY, p2: XY) => Math.hypot(p1.x - p2.x, p1.y - p2.y)
 
 /** Get the intersection point of two line segments */
 export function getLineIntersection(
@@ -44,8 +44,23 @@ export function getLineIntersection(
   return { x, y }
 }
 
+/** Check if a point is on a line */
+export function pointOnLine(p: XY, a: XY, b: XY) {
+  return distBetween(a, p) + distBetween(b, p) - distBetween(a, b) < 0.01
+}
+
+/** Check if a point is on the edge of a polygon */
+export function pointOnPolygonEdge(p: XY, polygon: XY[]) {
+  for (let i = 0; i < polygon.length; i++) {
+    const a = polygon[i]
+    const b = polygon[(i + 1) % polygon.length]
+    if (pointOnLine(p, a, b)) return true
+  }
+  return false
+}
+
 /** Check if a point is within a polygon */
-export function pointInsidePolygon(p: XY, gon: XY[]) {
+export function pointInsidePolygon(p: XY, gon: XY[], includeEdges = false) {
   // https://github.com/substack/point-in-polygon/blob/master/flat.js
 
   let inside = false
@@ -59,8 +74,7 @@ export function pointInsidePolygon(p: XY, gon: XY[]) {
       inside = !inside
   }
 
-  // return carefulEdgeCheck ? inside || pointOnPolygonEdge(p, gon) : inside
-  return inside
+  return includeEdges ? inside || pointOnPolygonEdge(p, gon) : inside
 }
 
 export function polygonUnion(polygons: XY[][]): XY[] {
@@ -125,7 +139,7 @@ export function polygonBoundingRect(polygon: XY[]): XY & {
 export function polygonPerimeter(polygon: XY[]): number {
   let total = 0
   for (let i = 0, l = polygon.length; i < l; i++) {
-    total += distanceBetween(
+    total += distBetween(
       polygon[i],
       polygon[i == polygon.length - 1 ? 0 : i + 1]
     )

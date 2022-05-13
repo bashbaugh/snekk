@@ -2,7 +2,7 @@ import SnakeBehaviour from 'shared/snake'
 import { PlayerState, SnakeState } from 'shared/serverState'
 import { Message, MESSAGETYPE } from 'types/networking'
 import GameController from './GameController'
-import { getLineIntersection, polygonArea } from 'shared/geometry'
+import { getLineIntersection, polygonArea, polygonUnion } from 'shared/geometry'
 import CONFIG from 'config'
 import { DeathReason } from 'types/game'
 
@@ -21,7 +21,7 @@ export default class Snake extends SnakeBehaviour {
     this.player = player
     this.game = gameController
     player.snake = snake
-    this.state.territory = this.state.tRegions[0].p
+    this.state.territory = polygonUnion(this.state.tRegions.map(r => r.p)).map(r => this.state.makePoint(r))
   }
 
   update(delta: number) {
@@ -85,6 +85,7 @@ export default class Snake extends SnakeBehaviour {
 
   checkTerritoryCollisions() {
     // CHeck if this snake is within any other snake's territory
+    this.state.headTerritory = undefined
     for (const [id, player] of Object.entries(this.game.players)) {
       if (!player.snake || id === this.player.clientId) continue
 
@@ -92,8 +93,9 @@ export default class Snake extends SnakeBehaviour {
         this.state.headTerritory = id
         break
       }
-      this.state.headTerritory = undefined
     }
+
+    console.log(this.state.headTerritory)
   }
 
   updateScore() {

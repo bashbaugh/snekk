@@ -71,7 +71,6 @@ export default class GameController {
     // Create a new snake instance and spawn it
     const p = this.players[playerId]
     p.snake = new Snake(this, this.state.players.get(playerId)!)
-    const { x, y } = p.snake.state.points[0]
     p.client.send(MESSAGETYPE.SPAWN, {
       s: p.snake.state,
     })
@@ -86,9 +85,10 @@ export default class GameController {
     const player = this.players[id]
     if (!player) return
     player.snake?.die()
+    delete player.snake
     const pState = this.state.players.get(id)
     if (!pState?.snake) return
-    pState.snake = undefined
+    delete pState.snake
 
     const deathMsg: Message[MESSAGETYPE.DEATH] = {
       c: cause,

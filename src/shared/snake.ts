@@ -120,7 +120,7 @@ export default abstract class SnakeBehaviour {
 
   /** Check if a point is within this snake's territory */
   public pointIsInTerritory(point: XY) {
-    return pointInsidePolygon(point, this.state.territory)
+    return pointInsidePolygon(point, this.state.territory, true)
   }
 
   protected computeNewTerritoryRegion() {

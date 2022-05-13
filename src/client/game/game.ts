@@ -89,6 +89,7 @@ export default class Game {
       changes.forEach(c => {
         // If the player's snake changed...
         if (c.field === 'snake') {
+          console.log("SNEKKK CHANGEEE", c.value)
           if (c.value) {
             // the player now has a snake, add the new snake to the game
             this.addSnake(playerId)
@@ -108,7 +109,8 @@ export default class Game {
         state: pState,
       }
 
-      pState.onChange = this.getPlayerChangeListener(id)
+      pState.snake?.onChange = (c) => 
+      pState.snake?.onRemove
     })
 
     this.network.onPlayerLeave(id => {
