@@ -26,6 +26,7 @@ export default class ClientSnakeState implements SharedSnakeState {
   boosting: boolean = false
   hue: number
   score: number = 0
+  headTerritory?: string
 
   constructor(state: SharedSnakeState) {
     const t = Date.now()

@@ -16,6 +16,9 @@ export interface SharedSnakeState {
 
   score: number
 
+  /** ID, if any, of player whose territory snake is within */
+  headTerritory?: string
+
   /** Get a point */
   makeSnakePoint: ({ x, y, s, d, t }: SPoint) => any
 

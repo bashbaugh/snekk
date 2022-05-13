@@ -1,4 +1,9 @@
-import { Pair, union as pUnion, difference as pDiff } from 'polygon-clipping'
+import {
+  Pair,
+  union as pUnion,
+  difference as pDiff,
+  intersection as pIntersect,
+} from 'polygon-clipping'
 
 // const CCW = (p1: XY, p2: XY, p3: XY) =>
 //   (p3.y - p1.y) * (p2.x - p1.x) > (p2.y - p1.y) * (p3.x - p1.x)
@@ -73,6 +78,14 @@ export function polygonDiff(minuend: XY[][], subtrahend: XY[][]): XY[][] {
   // TODO fix this to include other polygons from union:
   const result = pDiff(minuendIn, subtrahendIn)
   return result[0]?.map(p => p.map(q => ({ x: q[0], y: q[1] })))
+}
+
+export function polygonIntersection(polygons: XY[][]): XY[] | undefined {
+  const inputs = polygons.map(p => [p.map(q => [q.x, q.y] as Pair)])
+  // TODO fix this to include other polygons from union:
+  const result = pIntersect(inputs[0], ...inputs.slice(1))
+  // First polygon, excluding holes"
+  return result[0]?.[0].map(q => ({ x: q[0], y: q[1] }))
 }
 
 /** Get the total area of a polygon */

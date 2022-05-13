@@ -19,7 +19,11 @@ const PlayModal: preact.FunctionComponent<{
 
   useEffect(() => {
     nameRef.current!.value = window.localStorage.getItem('playername') || ''
-    setSelectedSkin(skins.indexOf(window.localStorage.getItem('tskin') || defaultTerritorySkin))
+    setSelectedSkin(
+      skins.indexOf(
+        window.localStorage.getItem('tskin') || defaultTerritorySkin
+      )
+    )
   }, [])
 
   return (
@@ -43,7 +47,7 @@ const PlayModal: preact.FunctionComponent<{
 
             dispatchEvent('startPlaying', {
               name,
-              territorySkin: skins[selectedSkin] as TSkinName
+              territorySkin: skins[selectedSkin] as TSkinName,
             })
           }}
         >
@@ -55,31 +59,50 @@ const PlayModal: preact.FunctionComponent<{
           class="p-2 bg-territory rounded-md"
           onClick={() => setSkinMenuOpen(o => !o)}
         >
-          <img src={territorySkins[skins[selectedSkin] as TSkinName]} alt={tSkin} class="w-7 h-7" />
+          <img
+            src={territorySkins[skins[selectedSkin] as TSkinName]}
+            alt={tSkin}
+            class="w-7 h-7"
+          />
           {/* <img class='brightness-0' src={territorySkins[tSkin]} alt={tSkin} /> */}
         </button>
       </div>
 
-      {skinMenuOpen && <div class='flex items-center gap-4'>
-        <button type='button' onClick={() => {
-          setSelectedSkin(selectedSkin === 0 ? skins.length - 1 : selectedSkin - 1)
-        }}>
-        <FiArrowLeft />
-
-        </button>
-        <div class='bg-territory grid flex-grow rounded-md'>
-          <div style={{
-            opacity: 0.4,
-            backgroundImage: `url(${territorySkins[skins[selectedSkin] as TSkinName]})`,
-          }} class='w-full h-28' />
+      {skinMenuOpen && (
+        <div class="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedSkin(
+                selectedSkin === 0 ? skins.length - 1 : selectedSkin - 1
+              )
+            }}
+          >
+            <FiArrowLeft />
+          </button>
+          <div class="bg-territory grid flex-grow rounded-md">
+            <div
+              style={{
+                opacity: 0.4,
+                backgroundImage: `url(${
+                  territorySkins[skins[selectedSkin] as TSkinName]
+                })`,
+              }}
+              class="w-full h-28"
+            />
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedSkin(
+                selectedSkin === skins.length - 1 ? 0 : selectedSkin + 1
+              )
+            }}
+          >
+            <FiArrowRight />
+          </button>
         </div>
-        <button type='button' onClick={() => {
-          setSelectedSkin(selectedSkin === skins.length - 1 ? 0 : selectedSkin + 1)
-        }}>
-        <FiArrowRight />
-
-        </button>
-      </div>}
+      )}
     </form>
   )
 }

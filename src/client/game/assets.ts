@@ -4,7 +4,8 @@ import { territorySkins } from 'shared/skins'
 const assets: Record<string, string> = {
   pattern_bg: 'assets/pattern/bg.png',
 
-  particle_100px: 'assets/particle/100px.png',
+  particle_square: 'assets/particle/100px.png',
+  particle_circle: 'assets/particle/100pxcircle.png',
   // particle_flame: 'assets/particle/flame.png',
   particle_hexagon: 'assets/particle/hexagon.png',
 
@@ -13,7 +14,7 @@ const assets: Record<string, string> = {
   sound_turn: 'assets/sound/turn.wav',
 
   hexagon: 'assets/hexagon_white.png',
-  
+
   ...territorySkins,
 }
 

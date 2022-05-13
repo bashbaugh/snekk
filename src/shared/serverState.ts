@@ -63,6 +63,7 @@ export class SnakeState extends Schema implements SharedSnakeState {
   @type('boolean') boosting: boolean = false
   @type('int16') hue: number
   @type('uint32') score: number = 0
+  @type('string') headTerritory?: string
 
   constructor(spawnP: XY) {
     super()
@@ -139,7 +140,7 @@ export class Food extends Schema {
 export default class GameState extends Schema {
   /** Timestamp to track server time in updates */
   @type('number') ts: number = 0
-  @type('int16') arenaSize: number = 1000
+  @type('int16') arenaSize: number = 2000
   @type({ map: PlayerState }) players = new MapSchema<PlayerState>()
   @type([Food]) food = new ArraySchema<Food>()
 }

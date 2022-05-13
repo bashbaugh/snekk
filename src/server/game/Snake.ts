@@ -12,13 +12,16 @@ export default class Snake extends SnakeBehaviour {
 
   constructor(gameController: GameController, player: PlayerState) {
     const snake = new SnakeState(
-      gameController.getRandomPoint(CONFIG.snake.territoryStartMargin + 50)
+      gameController.getRandomPoint(
+        CONFIG.snake.territoryStartMargin + 1000,
+        true
+      )
     )
     super(snake)
     this.player = player
     this.game = gameController
     player.snake = snake
-    this.mergeTerritory()
+    this.state.territory = this.state.tRegions[0].p
   }
 
   update(delta: number) {
@@ -27,7 +30,8 @@ export default class Snake extends SnakeBehaviour {
     this.updateLength(delta)
     this.updateTail()
     this.checkPlayerCollisions()
-    this.updateTerritory()
+    this.updateTerritory() && this.game.clipTerritories(this.player.clientId)
+    this.checkTerritoryCollisions()
     this.updateScore()
   }
 
@@ -77,6 +81,19 @@ export default class Snake extends SnakeBehaviour {
         this.game.state.food.deleteAt(i)
       }
     })
+  }
+
+  checkTerritoryCollisions() {
+    // CHeck if this snake is within any other snake's territory
+    for (const [id, player] of Object.entries(this.game.players)) {
+      if (!player.snake || id === this.player.clientId) continue
+
+      if (player.snake.pointIsInTerritory(this.head)) {
+        this.state.headTerritory = id
+        break
+      }
+      this.state.headTerritory = undefined
+    }
   }
 
   updateScore() {

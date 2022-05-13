@@ -4,7 +4,12 @@ import { hslToHex } from 'shared/util'
 import CONFIG from 'config'
 import Game from '../game'
 import { polygonPerimeter } from 'shared/geometry'
-import { defaultTerritorySkin, territorySkins, TSkinName } from 'shared/skins'
+import { defaultTerritorySkin, TSkinName } from 'shared/skins'
+import {
+  getBoostEmitterConf,
+  getRegionEmitterConf,
+  getTerritoryCutEmitterConf,
+} from './particles'
 
 export default class PlayerGraphics {
   private snake: Snake
@@ -19,8 +24,9 @@ export default class PlayerGraphics {
   private _tSkin?: TSkinName
   private tSprite!: PIXI.TilingSprite
 
-  private boostParticlesContainer: PIXI.Container
+  private headParticlesContainer: PIXI.Container
   private boostEmitter: PIXI.particles.Emitter
+  private tCuttingEmitter: PIXI.particles.Emitter
 
   private territoryParticlesContainer: PIXI.Container
 
@@ -60,108 +66,16 @@ export default class PlayerGraphics {
     this.sContainer.addChild(this.label)
 
     // Boost particles
-    this.boostParticlesContainer = new PIXI.Container()
-    this.sContainer.addChild(this.boostParticlesContainer)
-    const boostpEmitterConf: PIXI.particles.EmitterConfigV3 = {
-      emit: false,
-      lifetime: {
-        min: 0.5,
-        max: 1.5,
-      },
-      frequency: 0.05,
-      pos: {
-        x: 0,
-        y: 0,
-      },
-      maxParticles: 200,
-      behaviors: [
-        {
-          type: 'textureSingle',
-          config: {
-            texture: PIXI.Texture.from('particle_100px'),
-          },
-        },
-        {
-          type: 'color',
-          config: {
-            color: {
-              list: [
-                {
-                  value: hslToHex(this.snake.state.hue, 0.9, 0.6, true),
-                  time: 0,
-                },
-                {
-                  value: hslToHex(this.snake.state.hue, 0.9, 0.4, true),
-                  time: 1,
-                },
-              ],
-            },
-          },
-        },
-        {
-          type: 'alpha',
-          config: {
-            alpha: {
-              list: [
-                {
-                  value: 0.8,
-                  time: 0,
-                },
-                {
-                  value: 0.1,
-                  time: 1,
-                },
-              ],
-            },
-          },
-        },
-        {
-          type: 'rotationStatic',
-          config: {
-            min: 0,
-            max: 360,
-          },
-        },
-        {
-          type: 'scale',
-          config: {
-            scale: {
-              list: [
-                {
-                  value: 0.1,
-                  time: 0,
-                },
-                {
-                  value: 0.01,
-                  time: 1,
-                },
-              ],
-            },
-          },
-        },
-        {
-          type: 'moveSpeed',
-          config: {
-            speed: {
-              list: [
-                {
-                  value: 100,
-                  time: 0,
-                },
-                {
-                  value: 50,
-                  time: 1,
-                },
-              ],
-              isStepped: false,
-            },
-          },
-        },
-      ],
-    }
+    this.headParticlesContainer = new PIXI.Container()
+    this.sContainer.addChild(this.headParticlesContainer)
     this.boostEmitter = new PIXI.particles.Emitter(
-      this.boostParticlesContainer,
-      boostpEmitterConf
+      this.headParticlesContainer,
+      getBoostEmitterConf(this.snake.state.hue)
+    )
+
+    this.tCuttingEmitter = new PIXI.particles.Emitter(
+      this.territoryParticlesContainer,
+      getTerritoryCutEmitterConf()
     )
   }
 
@@ -183,6 +97,10 @@ export default class PlayerGraphics {
 
   set emitBoostParticles(emit: boolean) {
     this.boostEmitter.emit = emit
+  }
+
+  set emitTerritoryCutParticles(emit: boolean) {
+    this.tCuttingEmitter.emit = emit
   }
 
   drawSnake() {
@@ -210,9 +128,11 @@ export default class PlayerGraphics {
 
     // Offset the container so that particles are rendered at the correct point
     const o = this.game.getViewOffset()
-    this.boostParticlesContainer.position.set(-o.x, -o.y)
+    this.headParticlesContainer.position.set(-o.x, -o.y)
     this.boostEmitter.updateOwnerPos(this.snake.head.x, this.snake.head.y)
     this.boostEmitter.update(this.game.pixi.ticker.deltaMS / 1000)
+    this.tCuttingEmitter.updateOwnerPos(this.snake.head.x, this.snake.head.y)
+    this.tCuttingEmitter.update(this.game.pixi.ticker.deltaMS / 1000)
   }
 
   set tSkin(skin: TSkinName) {
@@ -254,130 +174,12 @@ export default class PlayerGraphics {
 
     // Region particles container
     this.territoryParticlesContainer.position.set(-o.x, -o.y)
-    // this.boostEmitter.update(this.game.pixi.ticker.deltaMS / 1000)
   }
 
   emitRegionParticles(spawnPolygon: XY[]) {
-    const regionEmitterConf: PIXI.particles.EmitterConfigV3 = {
-      emit: false,
-      particlesPerWave: 0.01 * polygonPerimeter(spawnPolygon),
-      emitterLifetime: 0.1,
-      lifetime: {
-        min: 1,
-        max: 1.5,
-      },
-      frequency: 0.05,
-      pos: {
-        x: 0,
-        y: 0,
-      },
-      maxParticles: 200,
-      behaviors: [
-        {
-          type: 'textureSingle',
-          config: {
-            texture: PIXI.Texture.from('particle_hexagon'),
-          },
-        },
-        {
-          type: 'color',
-          config: {
-            color: {
-              list: [
-                {
-                  value: hslToHex(this.snake.state.hue, 0.8, 0.6, true),
-                  time: 0,
-                },
-                {
-                  value: hslToHex(this.snake.state.hue, 0.4, 0.5, true),
-                  time: 1,
-                },
-              ],
-            },
-          },
-        },
-        {
-          type: 'alpha',
-          config: {
-            alpha: {
-              list: [
-                {
-                  value: 1,
-                  time: 0,
-                },
-                {
-                  value: 1,
-                  time: 0.8,
-                },
-                {
-                  value: 0,
-                  time: 1,
-                },
-              ],
-            },
-          },
-        },
-        {
-          type: 'rotationStatic',
-          config: {
-            min: 0,
-            max: 360,
-          },
-        },
-        {
-          type: 'scale',
-          config: {
-            scale: {
-              list: [
-                {
-                  value: 1,
-                  time: 0,
-                },
-                {
-                  value: 0.9,
-                  time: 1,
-                },
-              ],
-            },
-          },
-        },
-        {
-          type: 'moveSpeed',
-          config: {
-            speed: {
-              list: [
-                {
-                  value: 80,
-                  time: 0,
-                },
-                {
-                  value: 10,
-                  time: 0.5,
-                },
-                {
-                  value: 0,
-                  time: 1,
-                },
-              ],
-              isStepped: false,
-            },
-          },
-        },
-        {
-          type: 'spawnShape',
-          config: {
-            type: 'polygonalChain',
-            data: [spawnPolygon],
-          },
-        },
-      ],
-    }
-
-    const e = new PIXI.particles.Emitter(
+    new PIXI.particles.Emitter(
       this.territoryParticlesContainer,
-      regionEmitterConf
-    )
-    // e.updateOwnerPos(spawnPolygon[0].x, spawnPolygon[0].y)
-    e.playOnceAndDestroy()
+      getRegionEmitterConf(spawnPolygon, this.snake.state.hue)
+    ).playOnceAndDestroy()
   }
 }

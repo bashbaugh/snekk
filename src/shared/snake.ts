@@ -118,15 +118,8 @@ export default abstract class SnakeBehaviour {
     this.state.boosting = boosting
   }
 
-  /** Merge regions of territory into one polygon */
-  protected mergeTerritory() {
-    this.state.territory = polygonUnion(this.state.tRegions.map(r => r.p)).map(
-      this.state.makePoint
-    )
-  }
-
   /** Check if a point is within this snake's territory */
-  protected pointIsInTerritory(point: XY) {
+  public pointIsInTerritory(point: XY) {
     return pointInsidePolygon(point, this.state.territory)
   }
 
@@ -234,7 +227,8 @@ export default abstract class SnakeBehaviour {
     }
   }
 
-  public updateTerritory() {
+  /** Updates territory and returns true if territory was changed */
+  public updateTerritory(): boolean | undefined {
     const inTerritory = this.pointIsInTerritory(this.head)
 
     this.state.extraSpeed = inTerritory ? CONFIG.snake.territorySpeedBoost : 0
@@ -253,7 +247,13 @@ export default abstract class SnakeBehaviour {
           this.state.tRegions.push(
             this.state.makeRegion({ p: newRegion, t: Date.now() })
           )
-          this.mergeTerritory()
+
+          this.state.territory = polygonUnion([
+            this.state.territory,
+            newRegion,
+          ]).map(this.state.makePoint)
+
+          return true
           // TODO Reduce snake length here
         }
       }

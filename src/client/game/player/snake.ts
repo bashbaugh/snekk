@@ -45,8 +45,8 @@ export default class Snake extends SnakeBehaviour {
   ): SharedSnakeState {
     const { points, tRegions: territory, ...snakeProperties } = serverState
 
-    const _snakePoints = points.map(p => cloneSnakePoint(p))
-    const _territory = territory.map(r => cloneSnakeRegion(r))
+    const _snakePoints = points.map(cloneSnakePoint)
+    const _territory = territory.map(cloneSnakeRegion)
 
     return {
       ...snakeProperties,
@@ -185,8 +185,10 @@ export default class Snake extends SnakeBehaviour {
       this.state.territory = lastF.snake.territory
       this.state.boosting = lastF.snake.boosting
       this.state.direction = lastF.snake.direction
+      this.state.headTerritory = lastF.snake.headTerritory
 
       this.graphics.emitBoostParticles = this.state.boosting
+      this.graphics.emitTerritoryCutParticles = !!this.state.headTerritory
 
       // Check for new teritory regions and trigger particles if new region is created
       for (
@@ -194,7 +196,9 @@ export default class Snake extends SnakeBehaviour {
         i > lastF.snake.tRegions.length - 1;
         i--
       ) {
-        this.graphics.emitRegionParticles(nextF.snake.tRegions[i].p)
+        // Ignore subtractive regions
+        const r = nextF.snake.tRegions[i]
+        this.graphics.emitRegionParticles(r.p)
       }
     }
     // Can't interpolate; extrapolate instead

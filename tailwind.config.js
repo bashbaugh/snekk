@@ -7,7 +7,7 @@ module.exports = {
           // DEFAULT: '#04004a'
         },
         territory: {
-          DEFAULT: '#30E8E4'
+          DEFAULT: '#30E8E4' // 3055E8
         }
       }
     },

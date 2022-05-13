@@ -17,10 +17,17 @@ type SPoint = XY & {
   t: number
 }
 
+declare enum SRegionType {
+  ADD,
+  SUBTRACT,
+}
+
 /** Represents a 2d region in snake's territory */
 interface SRegion {
   /** Timestamp of region creation */
   t: number
+  // /** Type of region: true is subtract from, false is add to territory */
+  // s?: boolean
   /** Points defining region. First point is also point at which shape is closed. */
   p: XY[]
 }

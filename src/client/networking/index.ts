@@ -80,10 +80,7 @@ export default class Network {
     })
   }
 
-  public joinGame(joinGameConfig: {
-    name: string
-    territorySkin: TSkinName
-  }) {
+  public joinGame(joinGameConfig: { name: string; territorySkin: TSkinName }) {
     const d: Message[MESSAGETYPE.JOIN] = {
       n: joinGameConfig.name,
       tskin: joinGameConfig.territorySkin,

@@ -6,7 +6,11 @@ import Snake from './Snake'
 import { DeathReason } from 'types/game'
 import { randomInt } from 'shared/util'
 import CONFIG from 'config'
-import { getLineIntersection } from 'shared/geometry'
+import {
+  getLineIntersection,
+  polygonDiff,
+  polygonIntersection,
+} from 'shared/geometry'
 
 export default class GameController {
   room: ArenaRoom
@@ -25,16 +29,26 @@ export default class GameController {
     this.state = room.state
   }
 
-  getRandomPoint(offset: number = 0) {
-    return {
-      x: randomInt(
-        -this.state.arenaSize + offset,
-        this.state.arenaSize - offset
-      ),
-      y: randomInt(
-        -this.state.arenaSize + offset,
-        this.state.arenaSize - offset
-      ),
+  getRandomPoint(offset: number = 0, inEmptySpace?: boolean): XY {
+    pointLoop: while (true) {
+      const p = {
+        x: randomInt(
+          -this.state.arenaSize + offset,
+          this.state.arenaSize - offset
+        ),
+        y: randomInt(
+          -this.state.arenaSize + offset,
+          this.state.arenaSize - offset
+        ),
+      }
+      if (!inEmptySpace) return p
+
+      // check that the point is not in any territory
+      for (const [id, player] of Object.entries(this.players)) {
+        if (player.snake?.pointIsInTerritory(p)) continue pointLoop
+      }
+
+      return p
     }
   }
 
@@ -84,29 +98,6 @@ export default class GameController {
     player.client.send(MESSAGETYPE.DEATH, deathMsg)
   }
 
-  // checkCollisions() {
-  //   // Check for collisions against other snakes
-  //   for (const [id, player] of Object.entries(this.players)) {
-  //     if (!player.snake) continue
-
-  //     // Check collisions against other players:
-  //     // First segment to check is player's head
-  //     const [a1, a2] = player.snake.state.points
-  //     for (const [id2, player2] of Object.entries(this.players)) {
-  //       if (id === id2 || !player2.snake) continue // Skip self
-  //       const points = player2.snake.state.points
-  //       // Check player's head against all segments of other player
-  //       for (let i = 0; i < points.length - 1; i++) {
-  //         const [b1, b2] = [points[i], points[i + 1]]
-  //         if (getLineIntersection(a1, a2, b1, b2)) {
-  //           // Player collided
-  //           this.killSnake(id, DeathReason.player_collision, id2)
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
-
   loop(delta: number) {
     for (const [id, player] of Object.entries(this.players)) {
       player.snake?.update(delta)
@@ -125,5 +116,26 @@ export default class GameController {
 
   onPlayerBoost(client: Client, boosting: boolean) {
     this.players[client.id].snake?.boost(boosting)
+  }
+
+  clipTerritories(playerId: string) {
+    const playerA = this.players[playerId]
+    for (const [id, playerB] of Object.entries(this.players)) {
+      if (!playerB.snake) continue
+      if (id === playerId) continue
+
+      // Calculate the intersection of territories and subtract it from the other players
+      const intersection = polygonIntersection([
+        playerA.snake!.state.territory,
+        playerB.snake.state.territory,
+      ])
+
+      if (!intersection?.length) continue
+
+      playerB.snake.state.territory = polygonDiff(
+        [playerB.snake.state.territory],
+        [intersection]
+      )[0].map(playerB.snake.state.makePoint)
+    }
   }
 }
