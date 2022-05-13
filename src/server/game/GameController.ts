@@ -88,7 +88,7 @@ export default class GameController {
     delete player.snake
     const pState = this.state.players.get(id)
     if (!pState?.snake) return
-    pState.snake = undefined
+    pState.snake = undefined // NOT DELETE
 
     const deathMsg: Message[MESSAGETYPE.DEATH] = {
       c: cause,
