@@ -1,0 +1,38 @@
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":8090,"time":"2022-05-14T19:09:10.536Z","msg":"Using New Relic for Node.js. Agent version: 8.11.1; Node version: v14.17.2."}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":8090,"time":"2022-05-14T19:09:10.592Z","msg":"Using LegacyContextManager"}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":8090,"time":"2022-05-14T19:09:10.616Z","msg":"Agent state changed from stopped to starting."}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":8090,"time":"2022-05-14T19:09:10.803Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":8090,"time":"2022-05-14T19:09:10.803Z","msg":"Agent state changed from starting to connecting."}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":8122,"time":"2022-05-14T19:09:12.110Z","msg":"Using New Relic for Node.js. Agent version: 8.11.1; Node version: v14.17.2."}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":8122,"time":"2022-05-14T19:09:12.154Z","msg":"Using LegacyContextManager"}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":8122,"time":"2022-05-14T19:09:12.174Z","msg":"Agent state changed from stopped to starting."}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":8122,"time":"2022-05-14T19:09:12.177Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":8122,"time":"2022-05-14T19:09:12.177Z","msg":"Agent state changed from starting to connecting."}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":8122,"time":"2022-05-14T19:09:14.743Z","msg":"Agent state changed from connecting to connected."}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":8122,"time":"2022-05-14T19:09:14.743Z","msg":"Connected to collector-004.newrelic.com:443 with agent run ID BSnDDTnEsRcyADVTHz2VrhFif_7EAAgBAAAnIQEAAB-6AgQ9laxbAwAGOC4xMS4xAA9iLW1hY2Jvb2subG9jYWwADHNuZWtrLXNlcnZlcg.","component":"collector_api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":8122,"time":"2022-05-14T19:09:14.743Z","msg":"Reporting to: https://rpm.newrelic.com/accounts/3494687/applications/1033219163","component":"collector_api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":8122,"time":"2022-05-14T19:09:14.744Z","msg":"Valid event_harvest_config received. Updating harvest cycles. {\"report_period_ms\":5000,\"harvest_limits\":{\"error_event_data\":8,\"log_event_data\":833,\"analytic_event_data\":833,\"custom_event_data\":83}}"}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":8122,"time":"2022-05-14T19:09:14.745Z","msg":"Agent state changed from connected to started."}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":8122,"time":"2022-05-14T19:09:15.747Z","msg":"Starting initial 1000ms harvest."}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":8939,"time":"2022-05-14T19:10:36.506Z","msg":"Using New Relic for Node.js. Agent version: 8.11.1; Node version: v14.17.2."}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":8939,"time":"2022-05-14T19:10:36.557Z","msg":"Using LegacyContextManager"}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":8939,"time":"2022-05-14T19:10:36.581Z","msg":"Agent state changed from stopped to starting."}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":8939,"time":"2022-05-14T19:10:36.584Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":8939,"time":"2022-05-14T19:10:36.584Z","msg":"Agent state changed from starting to connecting."}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":8939,"time":"2022-05-14T19:10:39.365Z","msg":"Agent state changed from connecting to connected."}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":8939,"time":"2022-05-14T19:10:39.366Z","msg":"Connected to collector-004.newrelic.com:443 with agent run ID BYOovb2guZgZADVTHz2VrhFif_8AAAgBAAAnIQEAACLrAgQ9laxbAwAGOC4xMS4xAA9iLW1hY2Jvb2subG9jYWwADHNuZWtrLXNlcnZlcg.","component":"collector_api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":8939,"time":"2022-05-14T19:10:39.366Z","msg":"Reporting to: https://rpm.newrelic.com/accounts/3494687/applications/1033219163","component":"collector_api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":8939,"time":"2022-05-14T19:10:39.368Z","msg":"Valid event_harvest_config received. Updating harvest cycles. {\"report_period_ms\":5000,\"harvest_limits\":{\"error_event_data\":8,\"log_event_data\":833,\"analytic_event_data\":833,\"custom_event_data\":83}}"}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":8939,"time":"2022-05-14T19:10:39.373Z","msg":"Agent state changed from connected to started."}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":8939,"time":"2022-05-14T19:10:40.374Z","msg":"Starting initial 1000ms harvest."}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":9021,"time":"2022-05-14T19:10:51.939Z","msg":"Using New Relic for Node.js. Agent version: 8.11.1; Node version: v14.17.2."}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":9021,"time":"2022-05-14T19:10:51.992Z","msg":"Using LegacyContextManager"}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":9021,"time":"2022-05-14T19:10:52.016Z","msg":"Agent state changed from stopped to starting."}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":9021,"time":"2022-05-14T19:10:52.019Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":9021,"time":"2022-05-14T19:10:52.019Z","msg":"Agent state changed from starting to connecting."}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":9021,"time":"2022-05-14T19:10:54.184Z","msg":"Agent state changed from connecting to connected."}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":9021,"time":"2022-05-14T19:10:54.185Z","msg":"Connected to collector-004.newrelic.com:443 with agent run ID Ba2i8RHM72RUADVTHz2VrhFif_8AAAgBAAAnIQEAACM9AgQ9laxbAwAGOC4xMS4xAA9iLW1hY2Jvb2subG9jYWwADHNuZWtrLXNlcnZlcg.","component":"collector_api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":9021,"time":"2022-05-14T19:10:54.185Z","msg":"Reporting to: https://rpm.newrelic.com/accounts/3494687/applications/1033219163","component":"collector_api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":9021,"time":"2022-05-14T19:10:54.185Z","msg":"Valid event_harvest_config received. Updating harvest cycles. {\"report_period_ms\":5000,\"harvest_limits\":{\"error_event_data\":8,\"log_event_data\":833,\"analytic_event_data\":833,\"custom_event_data\":83}}"}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":9021,"time":"2022-05-14T19:10:54.186Z","msg":"Agent state changed from connected to started."}
+{"v":0,"level":30,"name":"newrelic","hostname":"b-macbook.local","pid":9021,"time":"2022-05-14T19:10:55.187Z","msg":"Starting initial 1000ms harvest."}
