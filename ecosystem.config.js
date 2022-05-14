@@ -8,6 +8,8 @@ module.exports = {
       env: {
         PORT: 3001,
         NODE_ENV: 'production',
+
+        DD_ENV: "prod-1"
       },
     },
   ],

@@ -12,7 +12,7 @@
     "client:analyze-bundle": "NODE_ENV=production webpack --profile --json --config ./webpack.config.js > bundlestats.json && webpack-bundle-analyzer bundlestats.json ./build",
     "server:dev": "tsnd --respawn --exit-child --clear --project ./tsconfig.server.json -r tsconfig-paths/register src/server/index.ts",
     "server:build": "rm -rf serverbuild && NODE_ENV=production tsc --project ./tsconfig.server.json",
-    "server:start": "NODE_ENV=production NODE_PATH=serverbuild/ node serverbuild/server/index.js",
+    "server:start": "NODE_PATH=serverbuild/ node serverbuild/server/index.js",
     "format": "prettier --write \"src/**/*.{js,ts,tsx}\" --config ./prettier.config.js",
     "merge-to-prod": "git switch prod && git merge main && git push && git switch main"
   },
@@ -42,6 +42,7 @@
     "colyseus": "^0.14.23",
     "colyseus.js": "^0.14.13",
     "cors": "^2.8.5",
+    "dd-trace": "^2.7.1",
     "express": "^4.18.0",
     "express-basic-auth": "^1.2.1",
     "newrelic": "^8.11.1",
