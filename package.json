@@ -42,7 +42,6 @@
     "colyseus": "^0.14.23",
     "colyseus.js": "^0.14.13",
     "cors": "^2.8.5",
-    "dd-trace": "^2.7.1",
     "express": "^4.18.0",
     "express-basic-auth": "^1.2.1",
     "newrelic": "^8.11.1",
