@@ -9,7 +9,7 @@ exports.config = {
   /**
    * Array of application names.
    */
-  app_name: ['snekk-server'],
+  app_name: ['snekk'],
   /**
    * Your New Relic license key.
    */
