@@ -90,8 +90,8 @@ export default class Snake extends SnakeBehaviour {
     this.updateTail()
   }
 
-  /** Interpolate snake points between server frames */
-  interpolateSnake() {
+  /** Interpolate snake points and other values between server frames */
+  interpolateState() {
     // This is the timestamp (on the server) that we're hoping to interpolate to
     const interpTarget = this.game.network.serverTime - CONFIG.interpDeltaMs
 
@@ -186,6 +186,7 @@ export default class Snake extends SnakeBehaviour {
       this.state.boosting = lastF.snake.boosting
       this.state.direction = lastF.snake.direction
       this.state.headTerritory = lastF.snake.headTerritory
+      this.state.kills = lastF.snake.kills
 
       this.graphics.emitBoostParticles = this.state.boosting
       this.graphics.emitTerritoryCutParticles = !!this.state.headTerritory
@@ -206,7 +207,7 @@ export default class Snake extends SnakeBehaviour {
   }
 
   update(delta: number) {
-    this.interpolateSnake()
+    this.interpolateState()
 
     const player = this.game.network.state?.players.get(this.playerId)
     if (!player) return

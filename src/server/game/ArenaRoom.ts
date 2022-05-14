@@ -58,6 +58,7 @@ export default class ArenaRoom extends Room<GameState> {
 
       const name =
         d.n ||
+        p.name || // If player already has a name set
         uniqueNamesGenerator({
           dictionaries: [colors, animals],
           length: 2,

@@ -84,17 +84,24 @@ export default class GameController {
   killSnake(id: string, cause: DeathReason, killer?: string) {
     const player = this.players[id]
     if (!player) return
+
+    const deathMsg: Message[MESSAGETYPE.DEATH] = {
+      c: cause,
+      p: id,
+      k: killer,
+      s: {
+        kills: player.snake!.state.kills,
+        score: Math.ceil(player.snake!.state.score),
+        time: Date.now() - player.snake!.state.spawnTs
+      }
+    }
+
     player.snake?.die()
     delete player.snake
     const pState = this.state.players.get(id)
     if (!pState?.snake) return
     pState.snake = undefined // NOT DELETE
 
-    const deathMsg: Message[MESSAGETYPE.DEATH] = {
-      c: cause,
-      p: id,
-      k: killer,
-    }
     player.client.send(MESSAGETYPE.DEATH, deathMsg)
   }
 

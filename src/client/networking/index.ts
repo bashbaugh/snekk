@@ -66,6 +66,9 @@ export default class Network {
     r.onMessage(MESSAGETYPE.GODMSG, (m: Message[MESSAGETYPE.GODMSG]) => {
       alert(m.m)
     })
+    r.onMessage(MESSAGETYPE.GODDISCON, (m: Message[MESSAGETYPE.GODDISCON]) => {
+      r.leave(false)
+    })
   }
 
   public removeListeners() {
@@ -107,11 +110,11 @@ export default class Network {
     )
   }
 
-  public onSelfDie(cb: (reason: DeathReason, killer?: string) => void) {
+  public onSelfDie(cb: (data: Message[MESSAGETYPE.DEATH]) => void) {
     this.room?.onMessage<Message[MESSAGETYPE.DEATH]>(
       MESSAGETYPE.DEATH,
       data => {
-        if (data.p === this.clientId) cb(data.c, data.k)
+        if (data.p === this.clientId) cb(data)
       }
     )
   }

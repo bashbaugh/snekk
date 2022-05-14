@@ -15,6 +15,10 @@ export default class Background extends BaseObject {
     this.container.addChild(this.sprite)
   }
 
+  public disableClipping() {
+    this.sprite.mask = null
+  }
+
   update() {}
 
   draw() {

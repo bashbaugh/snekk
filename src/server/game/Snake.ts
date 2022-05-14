@@ -21,7 +21,9 @@ export default class Snake extends SnakeBehaviour {
     this.player = player
     this.game = gameController
     player.snake = snake
-    this.state.territory = polygonUnion(this.state.tRegions.map(r => r.p)).map(r => this.state.makePoint(r))
+    this.state.territory = polygonUnion(this.state.tRegions.map(r => r.p)).map(
+      r => this.state.makePoint(r)
+    )
   }
 
   update(delta: number) {
@@ -66,6 +68,8 @@ export default class Snake extends SnakeBehaviour {
             // Include killer ID if it wasn't a self collision
             !isSelf ? player.clientId : undefined
           )
+
+          if (!isSelf) player.snake.kills++
 
           return
         }

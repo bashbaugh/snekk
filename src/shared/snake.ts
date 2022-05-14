@@ -128,7 +128,8 @@ export default abstract class SnakeBehaviour {
       const t = this.state.territory
 
       let tSegments: XY[][] = []
-      for (let i = 0; i < t.length - 1; i++) tSegments.push([t[i], t[i + 1]])
+      for (let i = 0; i < t.length; i++)
+        tSegments.push([t[i], t[(i + 1) % t.length]])
 
       let startPoint: XY | false = false
       const snakeStartSeg = 0
@@ -253,8 +254,9 @@ export default abstract class SnakeBehaviour {
             newRegion,
           ]).map(this.state.makePoint)
 
-          return true
           // TODO Reduce snake length here
+
+          return true
         }
       }
     }

@@ -1,7 +1,6 @@
 import CONFIG from 'config'
 import preact from 'preact'
 import { TSkinName } from 'shared/skins'
-import { DeathReason } from 'types/game'
 import { UIEventDispatcher } from '.'
 import PlayModal from './components/PlayModal'
 
@@ -18,14 +17,12 @@ const FooterLink: preact.FunctionComponent<{ href: string }> = ({
 
 const Home: preact.FunctionComponent<{
   dispatchEvent: UIEventDispatcher
-  death?: DeathReason
   tSkin: TSkinName
-}> = ({ dispatchEvent, death, tSkin }) => {
+}> = ({ dispatchEvent, tSkin }) => {
   return (
     <div>
       <div class="flex flex-col gap-16 items-center">
-        <h1 class="text-7xl shadow-xl">{CONFIG.gameName}</h1>
-        {death && <p>Oops! You died.</p>}
+        <h1 class="text-7xl">{CONFIG.gameName}</h1>
         <PlayModal
           dispatchEvent={dispatchEvent}
           tSkin={tSkin}

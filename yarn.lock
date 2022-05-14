@@ -170,6 +170,11 @@
   resolved "https://registry.yarnpkg.com/@pixi/filter-kawase-blur/-/filter-kawase-blur-4.1.5.tgz#c84fd3f452bfa44aaba4cba0c43a2b6071e0c6b2"
   integrity sha512-YVzzfLoUMKYeEMuuj4TfpTJ1p14nBV/+JnWVL5dC63VuCQ1YMxzSmc6ahGNfbex0+nvhyKPWe87aO7jzX0waoA==
 
+"@pixi/filter-twist@^4.1.5":
+  version "4.1.5"
+  resolved "https://registry.yarnpkg.com/@pixi/filter-twist/-/filter-twist-4.1.5.tgz#1baaa591ad50b85fcacc1a201150470f6a8dd2ca"
+  integrity sha512-O5GNcAm3cxFZe+s6tpN40MAl/NEpRbqlgTx2YAw6ZhJP2/pZ0eTu68qLNloAmOIwp0FksfOupt/WVrW4zzZBYA==
+
 "@pixi/graphics-extras@^6.3.2":
   version "6.3.2"
   resolved "https://registry.yarnpkg.com/@pixi/graphics-extras/-/graphics-extras-6.3.2.tgz#9378afc5d7ee75d0935447253cce8473707eb686"

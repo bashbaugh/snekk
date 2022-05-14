@@ -10,7 +10,9 @@ export enum MESSAGETYPE {
   JOIN,
   STARTBOOST,
   STOPBOOST,
-  /** A special secret message that can be sent to players by game admins */
+
+  GODDISCON = 'disconnect',
+  /** Special message be sent to players by game admins */
   GODMSG = 'godmsg',
 }
 
@@ -39,14 +41,17 @@ export interface Message {
     c: DeathReason
     /** Killer */
     k?: string
+    /** Game stats */
+    s: {
+      kills: number
+      score: number
+      time: number
+    }
   }
   [MESSAGETYPE.JOIN]: {
     /** Name */
     n: string
     tskin: TSkinName
-  }
-  [MESSAGETYPE.GODMSG]: {
-    m: string
   }
   [MESSAGETYPE.STARTBOOST]: {
     x: number
@@ -56,4 +61,9 @@ export interface Message {
     x: number
     y: number
   }
+
+  [MESSAGETYPE.GODMSG]: {
+    m: string
+  }
+  [MESSAGETYPE.GODDISCON]: null
 }

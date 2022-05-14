@@ -1,5 +1,5 @@
 import Network from 'client/networking'
-import UI, { UIEventListener } from 'client/ui'
+import UI, { UIEvent, UIEventListener } from 'client/ui'
 import CONFIG from 'config'
 import * as PIXI from 'pixi'
 import { asyncDelay } from 'shared/util'
@@ -19,6 +19,7 @@ export default class App {
   homeBG?: HomeBackground
 
   constructor() {
+    // Set up PIXI
     this.pixi = new PIXI.Application({
       width: window.innerWidth,
       height: window.innerHeight,
@@ -27,6 +28,15 @@ export default class App {
     })
     document.body.appendChild(this.pixi.view)
 
+    this.pixi.ticker.start()
+    this.pixi.ticker.minFPS = CONFIG.fps.min
+    this.pixi.ticker.maxFPS = CONFIG.fps.max
+
+    window.addEventListener('resize', () => {
+      this.pixi.renderer.resize(window.innerWidth, window.innerHeight)
+    })
+
+    // Instantiate base components
     this.ui = new UI()
     this.network = new Network()
 
@@ -34,21 +44,20 @@ export default class App {
   }
 
   private async initialize() {
-    window.addEventListener('resize', () => {
-      this.pixi.renderer.resize(window.innerWidth, window.innerHeight)
-    })
-
     this.ui.renderUI()
-
-    this.pixi.ticker.start()
-    this.pixi.ticker.minFPS = CONFIG.fps.min
-    this.pixi.ticker.maxFPS = CONFIG.fps.max
 
     await loadAssets()
 
     this.homeBG = new HomeBackground(this)
 
     this.findGame()
+
+    this.ui.addEventListener('destroyGame', () => {
+      this.game?.cleanup()
+      delete this.game
+      this.waitForStart()
+      console.log(this.pixi.stage.children)
+    })
   }
 
   private async findGame() {
@@ -82,7 +91,7 @@ export default class App {
     this.homeBG!.enabled = true
     this.pixi.ticker.add(homeUpdate)
 
-    const startListener: UIEventListener = e => {
+    const startListener = (e: UIEvent<'startPlaying'>) => {
       this.pixi.ticker.remove(homeUpdate)
       this.homeBG!.enabled = false
       this.ui.setState({ ui: 'loading', loadingText: 'Loading...' })

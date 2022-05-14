@@ -5,6 +5,7 @@ import Home from './Home'
 import PlayerStats from './components/PlayerStats'
 import StatsDisplay from './components/StatsDisplay'
 import Leaderboard from './components/Leaderboard'
+import PostGameInfo from './components/PostGameInfo'
 
 const UIApp: preact.FunctionComponent<{
   dispatchEvent: UIEventDispatcher
@@ -31,10 +32,14 @@ const UIApp: preact.FunctionComponent<{
           <div class="font-bold text-3xl">{state.loadingText}</div>
         )}
         {state.ui == 'readyToPlay' && (
-          <Home
-            death={state.deathReason}
-            dispatchEvent={dispatchEvent}
-            tSkin={state.playerTSkin}
+          <Home dispatchEvent={dispatchEvent} tSkin={state.playerTSkin} />
+        )}
+        {state.ui === 'postGame' && (
+          <PostGameInfo
+            postGame={state.postGame!}
+            onContinue={() => {
+              dispatchEvent('destroyGame', {})
+            }}
           />
         )}
         {state.ui === 'disconnected' && (

@@ -14,21 +14,29 @@ import KeyboardManager from './keyboard'
 import Walls from './objects/walls'
 import { resources } from './assets'
 import Minimap from './objects/minimap'
+import { TwistFilter } from '@pixi/filter-twist'
+import { distBetween } from 'shared/geometry'
+import { Message, MESSAGETYPE } from 'types/networking'
 
 export default class Game {
   readonly app: App
   readonly pixi: PIXI.Application
-  readonly input: KeyboardManager
+  readonly input: KeyboardManager = new KeyboardManager()
   readonly network: Network
   readonly ui: UI
 
   private gameObjects: BaseObject[] = []
 
-  bgLayer: PIXI.Container
-  bloomLayer: PIXI.Container
-  territoryLayer: PIXI.Container
-  snakeLayer: PIXI.Container
-  hudLayer: PIXI.Container
+  private rootContainer: PIXI.Container = new PIXI.Container()
+  private gameLayer: PIXI.Container = new PIXI.Container()
+  bgLayer: PIXI.Container = new PIXI.Container()
+  bloomLayer: PIXI.Container = new PIXI.Container()
+  territoryLayer: PIXI.Container = new PIXI.Container()
+  snakeLayer: PIXI.Container = new PIXI.Container()
+  hudLayer: PIXI.Container = new PIXI.Container()
+
+  private twistEffect: TwistFilter
+  private deathTime?: number
 
   // ID:player map
   players: Record<
@@ -37,7 +45,7 @@ export default class Game {
       snake?: Snake
       state: SharedPlayerState
     }
-  >
+  > = {}
   playerSnake?: Snake
 
   constructor(app: App) {
@@ -47,30 +55,42 @@ export default class Game {
     this.ui = app.ui
     this.pixi.ticker.add(t => this.onTick(t))
 
-    this.territoryLayer = new PIXI.Container()
-    this.snakeLayer = new PIXI.Container()
-    this.bgLayer = new PIXI.Container()
-    this.bloomLayer = new PIXI.Container()
-    this.hudLayer = new PIXI.Container()
-    this.pixi.stage.addChild(this.bgLayer)
-    this.pixi.stage.addChild(this.bloomLayer)
-    this.pixi.stage.addChild(this.territoryLayer)
-    this.pixi.stage.addChild(this.snakeLayer)
-    this.pixi.stage.addChild(this.hudLayer)
+    // Layers and containers
+    this.gameLayer.addChild(this.bgLayer)
+    this.gameLayer.addChild(this.bloomLayer)
+    this.gameLayer.addChild(this.territoryLayer)
+    this.gameLayer.addChild(this.snakeLayer)
 
+    this.rootContainer.addChild(this.gameLayer)
+    this.rootContainer.addChild(this.hudLayer)
+
+    this.pixi.stage.addChild(this.rootContainer)
+
+    // Filters
     this.bloomLayer.filters = [
       new PIXI.filters.AdvancedBloomFilter({
         brightness: 0.8,
         quality: 3,
       }),
     ]
+    this.twistEffect = new PIXI.filters.TwistFilter({
+      angle: 0,
+      offset: new PIXI.Point(
+        this.pixi.screen.width / 2,
+        this.pixi.screen.height / 2
+      ),
+      radius: distBetween(
+        { x: 0, y: 0 },
+        { x: this.pixi.screen.width, y: this.pixi.screen.height }
+      ),
+    })
+    this.twistEffect.enabled = false
+    this.gameLayer.filters = [this.twistEffect]
 
-    this.players = {}
-
-    this.input = new KeyboardManager()
-
+    // Network
     this.addNetworkHandlers()
 
+    // Game components
     this.gameObjects.push(
       new Background(this),
       new Walls(this, this.bgLayer),
@@ -82,6 +102,15 @@ export default class Game {
     this.initializePlayers()
   }
 
+  public cleanup() {
+    this.pixi.stage.removeChild(this.rootContainer)
+    this.rootContainer.removeChildren()
+    this.rootContainer.destroy({
+      children: true,
+      texture: true, // Should this be false?
+    })
+  }
+
   private addPlayerStateListeners(playerId: string, state: PlayerState) {
     state.onChange = (
       changes: Parameters<Exclude<PlayerState['onChange'], undefined>>[0]
@@ -89,7 +118,7 @@ export default class Game {
       changes.forEach(c => {
         // If the player's snake changed...
         if (c.field === 'snake') {
-          console.log("SNEKKK CHANGEEE", c.value)
+          console.log('SNEKKK CHANGEEE', c.value)
           if (c.value) {
             // the player now has a snake, add the new snake to the game
             this.addSnake(playerId)
@@ -153,18 +182,12 @@ export default class Game {
       }
     })
 
-    this.network.onSelfDie((reason, killerId) => {
-      this.playerSnake?.die()
-      this.ui.setState({
-        ui: 'readyToPlay',
-        deathReason: DeathReason.self_collision,
-      })
-    })
+    this.network.onSelfDie(this.endGame.bind(this))
   }
 
   private initializePlayers() {
     for (const [id, p] of this.network.state!.players) {
-      if (id === this.network.clientId) continue // Skip self
+      if (id === this.network.clientId) continue // Skip self as we are initialized elsewhere
       this.players[id] = {
         state: p,
       }
@@ -221,8 +244,36 @@ export default class Game {
       player: this.playerSnake && {
         length: this.playerSnake.state.length,
         score: this.playerSnake.state.score,
+        kills: this.playerSnake.state.kills,
       },
       players: playersArray,
+    })
+
+    if (this.deathTime) {
+      // WE HAVE DIED :((((((
+      this.twistEffect.angle += Math.max(
+        deltaMS / 1000,
+        (deltaMS * this.twistEffect.angle) / 250 // 300
+      )
+    }
+  }
+
+  private endGame(data: Message[MESSAGETYPE.DEATH]) {
+    this.removeSnake(this.network.clientId!)
+    this.deathTime = Date.now()
+    this.twistEffect.enabled = true
+    const bg = this.gameObjects.find(o => o instanceof Background) as Background
+    bg.disableClipping() // Disable bg mask so that the twist effect will work
+    this.ui.setState({
+      ui: 'postGame',
+      postGame: {
+        deathReason: data.c,
+        killer:
+        data.c === DeathReason.player_collision
+          ? this.network.state!.players.get(data.k!)?.name
+          : undefined,
+        ...data.s
+      }
     })
   }
 
@@ -266,12 +317,4 @@ export default class Game {
         }
       : { xl, xr, yt, yb, w: s * 2, h: s * 2 }
   }
-
-  // public pointIsInArena(p: XY): boolean {
-  //   if (!this.network.state) return false
-  //   return (
-  //     Math.abs(p.x) <= this.network.state.arenaSize &&
-  //     Math.abs(p.y) <= this.network.state.arenaSize
-  //   )
-  // }
 }

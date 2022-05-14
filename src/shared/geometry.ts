@@ -5,19 +5,11 @@ import {
   intersection as pIntersect,
 } from 'polygon-clipping'
 
-// const CCW = (p1: XY, p2: XY, p3: XY) =>
-//   (p3.y - p1.y) * (p2.x - p1.x) > (p2.y - p1.y) * (p3.x - p1.x)
-
-/** Check if two line segments are intersecting (fails on colinearity which is intended) */
-// export function linesIntersect(a1: XY, a2: XY, b1: XY, b2: XY) {
-//   return (
-//     CCW(a1, b1, b2) != CCW(a2, b1, b2) && CCW(a1, a2, b1) != CCW(a1, a2, b2)
-//   )
-// }
-
 /** Get distance between two points */
-const distBetween = (p1: XY, p2: XY) => Math.hypot(p1.x - p2.x, p1.y - p2.y)
+export const distBetween = (p1: XY, p2: XY) =>
+  Math.hypot(p1.x - p2.x, p1.y - p2.y)
 
+// TODO simplify this for right lines?
 /** Get the intersection point of two line segments */
 export function getLineIntersection(
   a1: XY,
@@ -46,6 +38,7 @@ export function getLineIntersection(
 
 /** Check if a point is on a line */
 export function pointOnLine(p: XY, a: XY, b: XY) {
+  // Might need to adjust buffer
   return distBetween(a, p) + distBetween(b, p) - distBetween(a, b) < 0.01
 }
 

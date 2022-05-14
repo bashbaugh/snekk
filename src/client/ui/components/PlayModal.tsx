@@ -24,6 +24,8 @@ const PlayModal: preact.FunctionComponent<{
         window.localStorage.getItem('tskin') || defaultTerritorySkin
       )
     )
+
+    nameRef.current!.focus()
   }, [])
 
   return (

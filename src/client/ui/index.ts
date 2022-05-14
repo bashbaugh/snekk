@@ -5,7 +5,7 @@ import { DeathReason } from 'types/game'
 import UIApp from './UIApp'
 
 export interface UIState {
-  ui: 'inGame' | 'loading' | 'readyToPlay' | 'disconnected'
+  ui: 'inGame' | 'loading' | 'readyToPlay' | 'disconnected' | 'postGame'
   stats?: {
     fps: number
     ping?: number
@@ -13,6 +13,7 @@ export interface UIState {
   player?: {
     length: number
     score: number
+    kills: number
   }
   players?: Array<{
     id: string
@@ -23,18 +24,26 @@ export interface UIState {
   showStats: boolean
   loadingText: string
   wsDisconnectCode?: number
-  deathReason?: DeathReason
-
+  postGame?: {
+    deathReason: DeathReason
+    killer?: string
+    score: number
+    kills: number
+    time: number
+  }
+  
   playerTSkin: TSkinName
 }
 
-export type UIEventType = 'startPlaying'
+// TODO typing here is kinda broken
 export interface UIEventData {
   startPlaying: {
     name: string
     territorySkin: TSkinName
   }
+  destroyGame: {}
 }
+export type UIEventType = keyof UIEventData
 export class UIEvent<T extends UIEventType> extends Event {
   constructor(type: T, public data: UIEventData[T]) {
     super(type as unknown as string)
@@ -44,7 +53,7 @@ export type UIEventDispatcher = <T extends UIEventType>(
   type: T,
   data: UIEventData[T]
 ) => boolean
-export type UIEventListener = <T extends UIEventType>(e: UIEvent<T>) => void
+export type UIEventListener = (e: UIEvent<any>) => void
 
 export default class UI {
   private _state: UIState

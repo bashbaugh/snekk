@@ -67,3 +67,7 @@ export const mapPointRange = (
   x: mapNumRange(point.x, fromMin, fromMax, toMin.x, toMax.x),
   y: mapNumRange(point.y, fromMin, fromMax, toMin.y, toMax.y),
 })
+
+/** select random from array */
+export const selectRandom = <T>(arr: T[]) =>
+  arr[Math.floor(Math.random() * arr.length)]
