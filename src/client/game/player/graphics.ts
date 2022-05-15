@@ -15,58 +15,48 @@ export default class PlayerGraphics {
   private game: Game
   private tLayer: PIXI.Container
   private sLayer: PIXI.Container
-  private tContainer: PIXI.Container
-  private sContainer: PIXI.Container
-  private snakeGraphics: PIXI.Graphics
-  private tGraphics: PIXI.Graphics
-  private tSpriteMask: PIXI.Graphics
+  private tContainer = new PIXI.Container()
+  private sContainer = new PIXI.Container()
+  private snakeGraphics = new PIXI.Graphics()
+  private tGraphics = new PIXI.Graphics()
+  private tSpriteMask = new PIXI.Graphics()
+
   private _tSkin?: TSkinName
   private tSprite!: PIXI.TilingSprite
 
-  private headParticlesContainer: PIXI.Container
+  private headParticlesContainer = new PIXI.Container()
   private boostEmitter: PIXI.particles.Emitter
   private tCuttingEmitter?: PIXI.particles.Emitter
 
   private territoryParticlesContainer: PIXI.Container
 
-  private label: PIXI.Text
+  private label = new PIXI.Text('', {
+    fontSize: 16,
+    fontWeight: 'bold',
+    fill: '#ffffffaa',
+    align: 'center',
+  })
 
   constructor(snake: Snake, game: Game) {
     this.snake = snake
     this.game = game
     this.tLayer = game.territoryLayer
     this.sLayer = game.snakeLayer
-
-    // Containers
-    this.tContainer = new PIXI.Container()
-    this.sContainer = new PIXI.Container()
     this.tLayer.addChild(this.tContainer)
     this.sLayer.addChild(this.sContainer)
 
     // Territory
-    this.tGraphics = new PIXI.Graphics()
-    this.tSpriteMask = new PIXI.Graphics()
-    this.tContainer.addChild(this.tGraphics)
     this.tContainer.addChild(this.tSpriteMask)
+    this.tContainer.addChild(this.tGraphics)
     this.tSkin = defaultTerritorySkin
-    this.tContainer.addChild(this.tSprite as any)
-    this.tSprite.mask = this.tSpriteMask
     this.territoryParticlesContainer = new PIXI.Container()
     this.tLayer.addChild(this.territoryParticlesContainer)
 
     // Snake
-    this.snakeGraphics = new PIXI.Graphics()
     this.sContainer.addChild(this.snakeGraphics)
-    this.label = new PIXI.Text('', {
-      fontSize: 16,
-      fontWeight: 'bold',
-      fill: '#ffffffaa',
-      align: 'center',
-    })
     this.sContainer.addChild(this.label)
 
     // Boost particles
-    this.headParticlesContainer = new PIXI.Container()
     this.sContainer.addChild(this.headParticlesContainer)
     this.boostEmitter = new PIXI.particles.Emitter(
       this.headParticlesContainer,
@@ -143,26 +133,26 @@ export default class PlayerGraphics {
     this._tSkin = skin
     this.tSprite = new PIXI.TilingSprite(PIXI.Texture.from(skin), 100, 100)
     this.tSprite.alpha = 0.2
+    this.tSprite.mask = this.tSpriteMask
     this.tContainer.addChild(this.tSprite)
   }
 
   drawTerritory() {
-    const g = this.tGraphics
-    let tColor = hslToHex(
-      this.snake.state.hue,
-      CONFIG.g.territorySaturation,
-      CONFIG.g.territoryLightness
-    )
-    g.beginFill(tColor)
-    
     const polygonPoints = this.snake.state.territory
       .map(p => {
         const rp = this.game.getViewRelativePoint(p)
         return [rp.x, rp.y]
       })
       .flat()
-    g.drawPolygon(polygonPoints)
-    g.endFill()
+
+    let tColor = hslToHex(
+      this.snake.state.hue,
+      CONFIG.g.territorySaturation,
+      CONFIG.g.territoryLightness
+    )
+    this.tGraphics.beginFill(tColor)
+    this.tGraphics.drawPolygon(polygonPoints)
+    this.tGraphics.endFill()
 
     const o = this.game.getViewOffset()
     this.tSprite.width = this.game.app.scaledWidth
