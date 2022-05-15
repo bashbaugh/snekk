@@ -47,6 +47,7 @@ export default class PlayerGraphics {
     this.tGraphics = new PIXI.Graphics()
     this.tSpriteMask = new PIXI.Graphics()
     this.tContainer.addChild(this.tGraphics)
+    this.tContainer.addChild(this.tSpriteMask)
     this.tSkin = defaultTerritorySkin
     this.tContainer.addChild(this.tSprite as any)
     this.tSprite.mask = this.tSpriteMask
@@ -153,6 +154,7 @@ export default class PlayerGraphics {
       CONFIG.g.territoryLightness
     )
     g.beginFill(tColor)
+    
     const polygonPoints = this.snake.state.territory
       .map(p => {
         const rp = this.game.getViewRelativePoint(p)
@@ -162,11 +164,9 @@ export default class PlayerGraphics {
     g.drawPolygon(polygonPoints)
     g.endFill()
 
-    // TODO FIX
     const o = this.game.getViewOffset()
-
-    this.tSprite.width = this.game.pixi.screen.width
-    this.tSprite.height = this.game.pixi.screen.height
+    this.tSprite.width = this.game.app.scaledWidth
+    this.tSprite.height = this.game.app.scaledHeight
     this.tSprite.tilePosition.x = -o.x
     this.tSprite.tilePosition.y = -o.y
     this.tSpriteMask.beginFill()

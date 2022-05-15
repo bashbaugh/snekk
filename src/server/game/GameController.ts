@@ -154,6 +154,7 @@ export default class GameController {
     }
   }
 
+  /** Update arena sized based on number of active snakes */
   resizeArena() {
     if (this.arenaResizeTarget) {
       // Currently resizing arena
@@ -177,8 +178,7 @@ export default class GameController {
     const numSnakes = Object.values(this.players).filter(p => p.snake).length
     // Half of square root of area
     const targetArenaSize =
-      Math.sqrt(CONFIG.arena.minArea + Math.max(1, numSnakes) * CONFIG.arena.areaPerSnake) /
-      2
+      Math.max(Math.sqrt(CONFIG.arena.minArea),  Math.sqrt(numSnakes * CONFIG.arena.areaPerSnake)) / 2
 
     if (targetArenaSize === this.state.arenaSize) return
     if (targetArenaSize < this.state.arenaSize) {
@@ -186,9 +186,21 @@ export default class GameController {
       for (const [id, player] of Object.entries(this.players)) {
         if (!player.snake) continue
         // Make sure territory and head aren't near edge
-        if (!this.pointIsInArena(player.snake.head, targetArenaSize - CONFIG.arena.resizePadding)) return
+        if (
+          !this.pointIsInArena(
+            player.snake.head,
+            targetArenaSize - CONFIG.arena.resizePadding
+          )
+        )
+          return
         for (const p of player.snake.state.territory) {
-          if (!this.pointIsInArena(p, targetArenaSize - CONFIG.arena.resizePadding)) return
+          if (
+            !this.pointIsInArena(
+              p,
+              targetArenaSize - CONFIG.arena.resizePadding
+            )
+          )
+            return
         }
       }
     }

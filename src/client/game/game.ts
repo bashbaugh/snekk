@@ -17,6 +17,7 @@ import Minimap from './objects/minimap'
 import { TwistFilter } from '@pixi/filter-twist'
 import { distBetween } from 'shared/geometry'
 import { Message, MESSAGETYPE } from 'types/networking'
+import CONFIG from 'config'
 
 export default class Game {
   readonly app: App
@@ -64,7 +65,7 @@ export default class Game {
     this.arenaLayer.addChild(this.bloomLayer)
     this.arenaLayer.addChild(this.territoryLayer)
     this.arenaLayer.addChild(this.snakeLayer)
-    
+
     this.gameLayer.addChild(this.arenaLayer)
     this.gameLayer.addChild(this.arenaExternalLayer)
     this.rootContainer.addChild(this.gameLayer)
@@ -74,6 +75,7 @@ export default class Game {
 
     // Arena graphics should be clipped within the arena
     this.arenaLayer.mask = this.arenaMask
+    this.gameLayer.addChild(this.arenaMask)
 
     // Filters
     this.bloomLayer.filters = [
@@ -127,7 +129,6 @@ export default class Game {
       changes.forEach(c => {
         // If the player's snake changed...
         if (c.field === 'snake') {
-          console.log('SNEKKK CHANGEEE', c.value)
           if (c.value) {
             // the player now has a snake, add the new snake to the game
             this.addSnake(playerId)
@@ -225,6 +226,8 @@ export default class Game {
   private onTick(deltaFPS: number) {
     const deltaMS = this.pixi.ticker.deltaMS
 
+    this.app.updateScale()
+
     for (const obj of this.gameObjects) obj.update(deltaMS)
     for (const obj of this.gameObjects) obj.draw()
 
@@ -295,18 +298,20 @@ export default class Game {
     })
   }
 
-  public getViewOffset(): XY {
+  public getViewOffset(notScaled = false): XY {
     if (!this.playerSnake) return { x: 0, y: 0 }
     // Player snake should be centered in view, so the view should be offset according to its head
     const center = this.playerSnake.head
+    const w = notScaled ? this.pixi.view.width : this.app.scaledWidth,
+      h = notScaled ? this.pixi.view.height : this.app.scaledHeight
     return {
-      x: center.x - this.pixi.screen.width / 2,
-      y: center.y - this.pixi.screen.height / 2,
+      x: center.x - w / 2,
+      y: center.y - h / 2,
     }
   }
 
-  public getViewRelativePoint(p: XY): XY {
-    const o = this.getViewOffset()
+  public getViewRelativePoint(p: XY, notScaled?: boolean): XY {
+    const o = this.getViewOffset(notScaled)
     return {
       x: p.x - o.x,
       y: p.y - o.y,
@@ -327,11 +332,11 @@ export default class Game {
     return clipAtScreen
       ? {
           xl: Math.max(xl, 0),
-          xr: Math.min(xr, this.pixi.screen.width),
+          xr: Math.min(xr, this.app.scaledWidth),
           yt: Math.max(yt, 0),
-          yb: Math.min(yb, this.pixi.screen.height),
-          w: Math.min(xr, this.pixi.screen.width) - Math.max(xl, 0),
-          h: Math.min(yb, this.pixi.screen.height) - Math.max(yt, 0),
+          yb: Math.min(yb, this.app.scaledHeight),
+          w: Math.min(xr, this.app.scaledWidth) - Math.max(xl, 0),
+          h: Math.min(yb, this.app.scaledHeight) - Math.max(yt, 0),
         }
       : { xl, xr, yt, yb, w: s * 2, h: s * 2 }
   }

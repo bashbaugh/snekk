@@ -48,7 +48,7 @@ export default class ArenaRoom extends Room<GameState> {
       )
       this.onMessage<Message[MESSAGETYPE.UNFREEZE]>(MESSAGETYPE.UNFREEZE, c =>
         this.game.setPlayerFrozen(c, false)
-      )  
+      )
     }
 
     // Ping handler

@@ -17,7 +17,7 @@ export default class KeyboardManager {
   private downListener: any
 
   private lastTurn: number = 0
-  
+
   isFrozen = false
   boostState = false
 

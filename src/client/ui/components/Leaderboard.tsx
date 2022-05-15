@@ -14,7 +14,7 @@ const Leaderboard: preact.FunctionComponent<{
       <div class="flex flex-col gap-1">
         {players
           .sort((a, b) => b.score - a.score)
-          .slice(0, 11)
+          .slice(0, 10)
           .map(({ id, name, score, isSelf }, i) => (
             <div key={id} class="flex flex-row gap-1">
               <div>{i + 1}.</div>

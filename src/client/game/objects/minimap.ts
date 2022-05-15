@@ -19,8 +19,8 @@ export default class Minimap extends BaseObject {
     g.clear()
 
     const arenaSize = this.game.network.state!.arenaSize
-    const screenW = this.game.pixi.screen.width
-    const screenH = this.game.pixi.screen.height
+    const screenW = this.game.app.scaledWidth
+    const screenH = this.game.app.scaledHeight
 
     // Draw map container
     g.beginFill(0xffffff, 0.8)

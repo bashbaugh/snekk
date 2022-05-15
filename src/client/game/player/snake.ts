@@ -203,7 +203,7 @@ export default class Snake extends SnakeBehaviour {
       }
     }
     // Can't interpolate; extrapolate instead
-    else this.extrapolatePosition()
+    // else this.extrapolatePosition()
   }
 
   update(delta: number) {

@@ -28,7 +28,7 @@ export default class HomeBackground {
       hexagon.y += delta * Math.max(100, hexagon.y ** 1) * 0.001
       hexagon.rotation += delta * 0.0005
 
-      if (hexagon.position.y > this.app.pixi.screen.height) {
+      if (hexagon.position.y > this.app.scaledHeight) {
         this.container.removeChild(hexagon)
         this.hexagons.splice(i, 1)
       }
@@ -37,7 +37,7 @@ export default class HomeBackground {
     if (Date.now() - this.lastHexagonSpawned > SPAWN_RATE * 1000) {
       this.lastHexagonSpawned = Date.now()
       const h = new PIXI.Sprite(this.hexTexture)
-      h.x = Math.random() * this.app.pixi.screen.width
+      h.x = Math.random() * this.app.scaledWidth
       h.y = -50
       h.rotation = Math.random() * Math.PI * 2
       h.pivot.x = h.width / 2

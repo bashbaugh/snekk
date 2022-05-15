@@ -100,7 +100,8 @@ export default class Network {
   }
 
   public sendFrozen(frozen: boolean) {
-    this.room?.send(frozen ? MESSAGETYPE.FREEZE : MESSAGETYPE.UNFREEZE)
+    if (CONFIG.snake.allowFreezing)
+      this.room?.send(frozen ? MESSAGETYPE.FREEZE : MESSAGETYPE.UNFREEZE)
   }
 
   public onSelfSpawn(

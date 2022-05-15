@@ -143,7 +143,7 @@ export class Food extends Schema {
 export default class GameState extends Schema {
   /** Timestamp to track server time in updates */
   @type('number') ts: number = 0
-  @type('int16') arenaSize: number = Math.sqrt(CONFIG.arena.minArea)
+  @type('int16') arenaSize: number = Math.sqrt(CONFIG.arena.minArea) / 2
   @type({ map: PlayerState }) players = new MapSchema<PlayerState>()
   @type([Food]) food = new ArraySchema<Food>()
 }

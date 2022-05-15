@@ -11,6 +11,10 @@ const CONFIG = Object.freeze({
     min: 40,
     max: 80,
   },
+  targetScale: {
+    width: 1440,
+    height: 768,
+  },
   snake: {
     baseSpeed: 100,
     baseLength: dev ? 2000 : 300,
@@ -25,18 +29,18 @@ const CONFIG = Object.freeze({
     maxNameLength: 20,
 
     // allowFreezing: !!dev
-    allowFreezing: true
+    allowFreezing: true,
   },
   arena: {
     spawnPadding: 50,
-    minArea: 500 ** 2,
-    areaPerSnake: 1000 ** 2,
+    areaPerSnake: 2000 ** 2,
+    minArea: 2000 ** 2,
     resizePeriod: 3,
     resizePadding: 50,
   },
   interpDeltaMs: (1000 / PATCHRATE) * 1,
   server: {
-    maxClientsPerRoom: 15,
+    maxClientsPerRoom: 20,
     patchRate: PATCHRATE,
     devLatency: 200,
   },

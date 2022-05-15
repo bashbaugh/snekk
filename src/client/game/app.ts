@@ -25,6 +25,8 @@ export default class App {
       height: window.innerHeight,
       backgroundColor: CONFIG.g.backgroundColor,
       antialias: true,
+      powerPreference: 'high-performance',
+      resizeTo: window,
     })
     document.body.appendChild(this.pixi.view)
 
@@ -32,8 +34,9 @@ export default class App {
     this.pixi.ticker.minFPS = CONFIG.fps.min
     this.pixi.ticker.maxFPS = CONFIG.fps.max
 
+    this.updateScale()
     window.addEventListener('resize', () => {
-      this.pixi.renderer.resize(window.innerWidth, window.innerHeight)
+      this.updateScale()
     })
 
     // Instantiate base components
@@ -41,6 +44,21 @@ export default class App {
     this.network = new Network()
 
     this.initialize()
+  }
+
+  updateScale () {
+    const xScale = this.pixi.view.width / CONFIG.targetScale.width
+    const yScale = this.pixi.view.height / CONFIG.targetScale.height
+    const uniformScale = Math.max(xScale, yScale)
+    this.pixi.stage.scale.set(uniformScale)
+  }
+
+  get scaledWidth() {
+    return this.pixi.view.width / this.pixi.stage.scale.x
+  }
+
+  get scaledHeight() {
+    return this.pixi.view.height / this.pixi.stage.scale.y
   }
 
   private async initialize() {
