@@ -38,7 +38,7 @@ export default class Game {
   snakeLayer = new PIXI.Container()
   hudLayer = new PIXI.Container()
 
-  private twistEffect: TwistFilter
+  private twistEffect?: TwistFilter
   private deathTime?: number
 
   private arenaMask = new PIXI.Graphics()
@@ -78,25 +78,27 @@ export default class Game {
     this.gameLayer.addChild(this.arenaMask)
 
     // Filters
-    this.bloomLayer.filters = [
-      new PIXI.filters.AdvancedBloomFilter({
-        brightness: 0.8,
-        quality: 3,
-      }),
-    ]
-    this.twistEffect = new PIXI.filters.TwistFilter({
-      angle: 0,
-      offset: new PIXI.Point(
-        this.pixi.screen.width / 2,
-        this.pixi.screen.height / 2
-      ),
-      radius: distBetween(
-        { x: 0, y: 0 },
-        { x: this.pixi.screen.width, y: this.pixi.screen.height }
-      ),
-    })
-    this.twistEffect.enabled = false
-    this.gameLayer.filters = [this.twistEffect]
+    if (this.app.graphicsMode === 'HIGH') {
+      this.bloomLayer.filters = [
+        new PIXI.filters.AdvancedBloomFilter({
+          brightness: 0.8,
+          quality: 3,
+        }),
+      ]
+      this.twistEffect = new PIXI.filters.TwistFilter({
+        angle: 0,
+        offset: new PIXI.Point(
+          this.pixi.screen.width / 2,
+          this.pixi.screen.height / 2
+        ),
+        radius: distBetween(
+          { x: 0, y: 0 },
+          { x: this.pixi.screen.width, y: this.pixi.screen.height }
+        ),
+      })
+      this.twistEffect.enabled = false
+      this.gameLayer.filters = [this.twistEffect]
+    }
 
     // Network
     this.addNetworkHandlers()
@@ -270,7 +272,7 @@ export default class Game {
       players: playersArray,
     })
 
-    if (this.deathTime) {
+    if (this.deathTime && this.twistEffect?.enabled) {
       // WE HAVE DIED :((((((
       this.twistEffect.angle += Math.max(
         deltaMS / 1000,
@@ -282,7 +284,7 @@ export default class Game {
   private endGame(data: Message[MESSAGETYPE.DEATH]) {
     this.removeSnake(this.network.clientId!)
     this.deathTime = Date.now()
-    this.twistEffect.enabled = true
+    if (this.twistEffect) this.twistEffect.enabled = true
     const bg = this.gameObjects.find(o => o instanceof Background) as Background
     this.arenaLayer.mask = null // Disable arena mask so that the twist effect will work
     this.ui.setState({

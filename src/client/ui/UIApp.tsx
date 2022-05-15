@@ -32,7 +32,7 @@ const UIApp: preact.FunctionComponent<{
           <div class="font-bold text-3xl">{state.loadingText}</div>
         )}
         {state.ui == 'readyToPlay' && (
-          <Home dispatchEvent={dispatchEvent} tSkin={state.playerTSkin} />
+          <Home dispatchEvent={dispatchEvent} tSkin={state.playerTSkin} graphics={state.graphicsMode} />
         )}
         {state.ui === 'postGame' && (
           <PostGameInfo

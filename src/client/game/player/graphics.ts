@@ -25,7 +25,7 @@ export default class PlayerGraphics {
 
   private headParticlesContainer: PIXI.Container
   private boostEmitter: PIXI.particles.Emitter
-  private tCuttingEmitter: PIXI.particles.Emitter
+  private tCuttingEmitter?: PIXI.particles.Emitter
 
   private territoryParticlesContainer: PIXI.Container
 
@@ -70,10 +70,10 @@ export default class PlayerGraphics {
     this.sContainer.addChild(this.headParticlesContainer)
     this.boostEmitter = new PIXI.particles.Emitter(
       this.headParticlesContainer,
-      getBoostEmitterConf(this.snake.state.hue)
+      getBoostEmitterConf(this.snake.state.hue, this.game.app.graphicsMode)
     )
 
-    this.tCuttingEmitter = new PIXI.particles.Emitter(
+    if (this.game.app.graphicsMode === 'HIGH') this.tCuttingEmitter = new PIXI.particles.Emitter(
       this.territoryParticlesContainer,
       getTerritoryCutEmitterConf()
     )
@@ -83,7 +83,7 @@ export default class PlayerGraphics {
     this.clear()
     this.tLayer.removeChild(this.tContainer)
     this.sLayer.removeChild(this.sContainer)
-    this.tCuttingEmitter.cleanup()
+    this.tCuttingEmitter?.cleanup()
     this.tContainer.destroy({ children: true })
   }
 
@@ -98,11 +98,11 @@ export default class PlayerGraphics {
   }
 
   set emitBoostParticles(emit: boolean) {
-    this.boostEmitter.emit = emit
+    this.boostEmitter!.emit = emit
   }
 
   set emitTerritoryCutParticles(emit: boolean) {
-    this.tCuttingEmitter.emit = emit
+    if (this.tCuttingEmitter) this.tCuttingEmitter.emit = emit
   }
 
   drawSnake() {
@@ -133,8 +133,8 @@ export default class PlayerGraphics {
     this.headParticlesContainer.position.set(-o.x, -o.y)
     this.boostEmitter.updateOwnerPos(this.snake.head.x, this.snake.head.y)
     this.boostEmitter.update(this.game.pixi.ticker.deltaMS / 1000)
-    this.tCuttingEmitter.updateOwnerPos(this.snake.head.x, this.snake.head.y)
-    this.tCuttingEmitter.update(this.game.pixi.ticker.deltaMS / 1000)
+    this.tCuttingEmitter?.updateOwnerPos(this.snake.head.x, this.snake.head.y)
+    this.tCuttingEmitter?.update(this.game.pixi.ticker.deltaMS / 1000)
   }
 
   set tSkin(skin: TSkinName) {
@@ -178,7 +178,7 @@ export default class PlayerGraphics {
   }
 
   emitRegionParticles(spawnPolygon: XY[]) {
-    new PIXI.particles.Emitter(
+    if (this.game.app.graphicsMode !== 'LOW') new PIXI.particles.Emitter(
       this.territoryParticlesContainer,
       getRegionEmitterConf(spawnPolygon, this.snake.state.hue)
     ).playOnceAndDestroy()

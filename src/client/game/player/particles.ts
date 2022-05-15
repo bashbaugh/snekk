@@ -3,14 +3,15 @@ import { polygonPerimeter } from 'shared/geometry'
 import { hslToHex } from 'shared/util'
 
 export const getBoostEmitterConf = (
-  hue: number
+  hue: number,
+  graphics: GraphicsMode
 ): PIXI.particles.EmitterConfigV3 => ({
   emit: false,
   lifetime: {
     min: 0.5,
     max: 1.5,
   },
-  frequency: 0.05,
+  frequency: graphics === 'HIGH' ? 0.05 : 0.1,
   pos: {
     x: 0,
     y: 0,

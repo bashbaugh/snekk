@@ -1,3 +1,5 @@
+type GraphicsMode = 'LOW' | 'HIGH'
+
 interface XY {
   x: number
   y: number

@@ -18,6 +18,8 @@ export default class App {
 
   homeBG?: HomeBackground
 
+  private _graphicsMode!: GraphicsMode
+
   constructor() {
     // Set up PIXI
     this.pixi = new PIXI.Application({
@@ -26,7 +28,7 @@ export default class App {
       backgroundColor: CONFIG.g.backgroundColor,
       antialias: true,
       powerPreference: 'high-performance',
-      resizeTo: window,
+      resizeTo: window
     })
     document.body.appendChild(this.pixi.view)
 
@@ -43,7 +45,28 @@ export default class App {
     this.ui = new UI()
     this.network = new Network()
 
+    let g = window.localStorage.getItem('graphicsMode')
+    if (g !== 'HIGH' && g !== 'LOW') g = 'HIGH'
+    this.graphicsMode = g as GraphicsMode
+    this.ui.addEventListener('setGraphicsMode', (e) => {
+      this.graphicsMode = e.data.mode
+      window.localStorage.setItem('graphicsMode', this.graphicsMode)
+    })
+
     this.initialize()
+  }
+
+  set graphicsMode (m: GraphicsMode) {
+    this._graphicsMode = m
+    this.pixi.renderer.resolution = m === 'HIGH' ? 1 : 0.5
+    this.pixi.view.style.width = m === 'HIGH' ? '100%' : '200%'
+    this.pixi.view.style.height = m === 'HIGH' ? '100%' : '200%'
+
+    this.ui.setState({ graphicsMode: m })
+  }
+
+  get graphicsMode () {
+    return this._graphicsMode
   }
 
   updateScale () {

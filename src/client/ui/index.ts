@@ -33,6 +33,7 @@ export interface UIState {
   }
 
   playerTSkin: TSkinName
+  graphicsMode: GraphicsMode
 }
 
 // TODO typing here is kinda broken
@@ -42,6 +43,9 @@ export interface UIEventData {
     territorySkin: TSkinName
   }
   destroyGame: {}
+  setGraphicsMode: {
+    mode: GraphicsMode
+  }
 }
 export type UIEventType = keyof UIEventData
 export class UIEvent<T extends UIEventType> extends Event {
@@ -67,6 +71,7 @@ export default class UI {
       showStats: true,
       loadingText: 'Loading...',
       playerTSkin: defaultTerritorySkin,
+      graphicsMode: 'HIGH'
     }
   }
 

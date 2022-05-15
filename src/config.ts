@@ -5,7 +5,7 @@ const CONFIG = Object.freeze({
   gameName: 'Snekk.io',
   gameEmail: 'contact@snekk.xyz',
   debug: dev,
-  serverURL: dev ? 'ws://localhost:3001' : 'wss://server1.snekk.xyz',
+  serverURL: dev ? 'ws://localhost:3002' : 'wss://server1.snekk.xyz',
   version: '0.1.0',
   fps: {
     min: 40,
