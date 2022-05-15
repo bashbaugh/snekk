@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@colyseus/monitor": "^0.14.22",
-    "@colyseus/ws-transport": "^0.14.21",
+    "@colyseus/uwebsockets-transport": "^0.14.27",
     "@pixi/app": "^6.3.0",
     "@pixi/constants": "^6.3.0",
     "@pixi/core": "^6.3.0",
@@ -49,7 +49,8 @@
     "polygon-clipping": "^0.15.3",
     "preact": "^10.7.1",
     "react-icons": "^4.3.1",
-    "unique-names-generator": "^4.7.1"
+    "unique-names-generator": "^4.7.1",
+    "uwebsockets-express": "^1.2.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.12",

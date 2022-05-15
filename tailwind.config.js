@@ -10,6 +10,9 @@ module.exports = {
           DEFAULT: '#30E8E4' // 3055E8
         },
       },
+      fontFamily: {
+        brand: ['Aldrich', 'sans-serif'],
+      },
       animation: {
         'tilt-in': 'tilt-in 0.6s cubic-bezier(0.250, 0.460, 0.450, 0.940) 1s both;'
       },

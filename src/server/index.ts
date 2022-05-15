@@ -1,22 +1,24 @@
+console.log('Starting...')
 import { Server } from 'colyseus'
-import { createServer } from 'http'
 import express from 'express'
-import { WebSocketTransport } from '@colyseus/ws-transport'
+import expressify from "uwebsockets-express"
+import { uWebSocketsTransport } from "@colyseus/uwebsockets-transport"
 import ArenaRoom from './game/ArenaRoom'
 import { monitor } from '@colyseus/monitor'
 import basicAuth from 'express-basic-auth'
 import cors from 'cors'
 import CONFIG from 'config'
 
-console.log('Starting...')
+const transport = new uWebSocketsTransport({
+  idleTimeout: 32,
+});
 
-const app = express()
-app.disable('x-powered-by')
+const app = expressify(transport.app)
 app.use(express.json())
 
 app.use(
   cors({
-    // TODO FIX CORS (NGINX?)
+    // TODO FIX CORS
     origin: '*',
   })
 )
@@ -35,17 +37,9 @@ const adminAuthMiddleware = basicAuth({
   },
   challenge: true,
 })
-app.use('/mon', adminAuthMiddleware, monitor())
+app.use('/mon', adminAuthMiddleware as any, monitor())
 
-const gameServer = new Server({
-  transport: new WebSocketTransport({
-    server: createServer(app),
-    verifyClient: (info, next) => {
-      // TODO check origin
-      next(true)
-    },
-  }),
-})
+const gameServer = new Server({ transport })
 
 gameServer.define('arena', ArenaRoom)
 

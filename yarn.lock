@@ -66,6 +66,15 @@
   resolved "https://registry.yarnpkg.com/@colyseus/schema/-/schema-1.0.34.tgz#b20d3590c78c6aaf006daea9b9541abaff13843d"
   integrity sha512-2PfCqu9dJlfbkQsxGi9oM+fAmWpPeMLol6tazRdBxb5mj8QykUzRFMY4pipBlUB2tkQ4qidoRMQqjVHj2HznNg==
 
+"@colyseus/uwebsockets-transport@^0.14.27":
+  version "0.14.27"
+  resolved "https://registry.yarnpkg.com/@colyseus/uwebsockets-transport/-/uwebsockets-transport-0.14.27.tgz#60ce83f8b7119acd4ea96ded8c175ebcc5de8e78"
+  integrity sha512-TmGrwFc1RJYtxg03fJ4HPBPLly60UgEKq4jB4rBSwRR8X5DHrMagJ5CFrDBO8EuYi0hju56WGBLRyIrRoxRDiw==
+  dependencies:
+    "@colyseus/core" "^0.14.20"
+    "@colyseus/schema" "^1.0.15"
+    uWebSockets.js "github:uNetworking/uWebSockets.js#v19.2.0"
+
 "@colyseus/ws-transport@^0.14.21":
   version "0.14.21"
   resolved "https://registry.yarnpkg.com/@colyseus/ws-transport/-/ws-transport-0.14.21.tgz#b7f92a4e504659ab33a73668123b8839f276f2cb"
@@ -2464,6 +2473,11 @@ http-proxy@^1.18.1:
     follow-redirects "^1.0.0"
     requires-port "^1.0.0"
 
+http-status-codes@^2.1.4:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/http-status-codes/-/http-status-codes-2.2.0.tgz#bb2efe63d941dfc2be18e15f703da525169622be"
+  integrity sha512-feERVo9iWxvnejp3SEfm/+oNG517npqL2/PIA8ORjyOZjGC7TwCRQsZylciLS64i6pJ0wRYz3rkXLRwbtFa8Ng==
+
 httpie@^2.0.0-next.13:
   version "2.0.0-next.13"
   resolved "https://registry.yarnpkg.com/httpie/-/httpie-2.0.0-next.13.tgz#1e245be61d6ca2573a2c1d690cfa5ec3bac63a0c"
@@ -3072,6 +3086,11 @@ mime@1.6.0, mime@^1.4.1:
   resolved "https://registry.yarnpkg.com/mime/-/mime-1.6.0.tgz#32cd9e5c64553bd58d19a568af452acff04981b1"
   integrity sha512-x0Vn8spI+wuJ1O6S7gnbaQg8Pxh4NNHb7KSINmEWKiPE4RKOplvijn+NkmYmmRgP68mc70j2EbeTFRsrswaQeg==
 
+mime@^2.5.2:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/mime/-/mime-2.6.0.tgz#a2a682a95cd4d0cb1d6257e28f83da7e35800367"
+  integrity sha512-USPkMeET31rOMiarsBNIHZKLGgvKc/LrjofAnBlOttf5ajRvqiRA8QsenbcooctK6d6Ts6aqZXBA+XbkKthiQg==
+
 mimic-fn@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/mimic-fn/-/mimic-fn-2.1.0.tgz#7ed2c2ccccaf84d3ffcb7a69b57711fc2083401b"
@@ -3550,7 +3569,7 @@ path-parse@^1.0.7:
   resolved "https://registry.yarnpkg.com/path-parse/-/path-parse-1.0.7.tgz#fbc114b60ca42b30d9daf5858e4bd68bbedb6735"
   integrity sha512-LDJzPVEEEPR+y48z93A0Ed0yXb8pAByGWo/k5YYdYgpY2/2EsOsksJrq7lOHxryrVOn1ejG6oAp8ahvOIQD8sw==
 
-path-to-regexp@0.1.7:
+path-to-regexp@0.1.7, path-to-regexp@^0.1.7:
   version "0.1.7"
   resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-0.1.7.tgz#df604178005f522f15eb4490e7247a1bfaa67f8c"
   integrity sha1-32BBeABfUi8V60SQ5yR6G/qmf4w=
@@ -4787,6 +4806,10 @@ typescript@^4.6.3:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.6.3.tgz#eefeafa6afdd31d725584c67a0eaba80f6fc6c6c"
   integrity sha512-yNIatDa5iaofVozS/uQJEl3JRWLKKGJKh6Yaiv0GLGSuhpFJe7P3SbHZ8/yjAHRQwKRoA6YZqlfjXWmVzoVSMw==
 
+"uWebSockets.js@github:uNetworking/uWebSockets.js#v19.2.0":
+  version "19.2.0"
+  resolved "https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/77b1761c5a23ac6a5c2adf2bd808be0ae6b5000a"
+
 unbox-primitive@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/unbox-primitive/-/unbox-primitive-1.0.2.tgz#29032021057d5e6cdbd08c5129c226dff8ed6f9e"
@@ -4853,6 +4876,15 @@ uuid@^8.3.2:
   version "8.3.2"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
   integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
+
+uwebsockets-express@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/uwebsockets-express/-/uwebsockets-express-1.2.2.tgz#a75db412e091ce1ae64b6cf71dd07e7788c5e248"
+  integrity sha512-cpyVTKzzIgu3nUH4FkerHqCvHjoZXeCVO2Sd7wKNFfo1VfwtCkglF/7F99UeBkNTSnbdhS1vQUA8n9xVfuDE1g==
+  dependencies:
+    http-status-codes "^2.1.4"
+    mime "^2.5.2"
+    path-to-regexp "^0.1.7"
 
 validator@^13.7.0:
   version "13.7.0"
