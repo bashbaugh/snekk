@@ -2,7 +2,7 @@ const PATCHRATE = 20
 const dev = process.env.NODE_ENV !== 'production'
 
 const CONFIG = Object.freeze({
-  version: '0.1.0',
+  version: '0.2.0',
   gameName: 'Snekk.io',
   gameEmail: 'contact@snekk.xyz',
   debug: dev,

@@ -17,7 +17,7 @@ app.use(express.json())
 app.use(
   cors({
     // TODO FIX CORS (NGINX?)
-    origin: process.env.NODE_ENV === 'production' ? ['snekk.xyz', 's.snekk.xyz'] : '*',
+    origin: '*',
   })
 )
 
