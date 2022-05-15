@@ -31,7 +31,7 @@ export interface UIState {
     kills: number
     time: number
   }
-  
+
   playerTSkin: TSkinName
 }
 

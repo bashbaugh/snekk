@@ -1,5 +1,6 @@
 type TurnHandlerCallback = (direction: Direction) => void
 type BoostHandlerCallback = (boosting: boolean) => void
+type FreezeHandlerCallback = (frozen: boolean) => void
 
 const directions = {
   ArrowUp: 1,
@@ -11,12 +12,14 @@ const directions = {
 export default class KeyboardManager {
   private turnCb?: TurnHandlerCallback
   private boostCb?: BoostHandlerCallback
+  private freezeCb?: FreezeHandlerCallback
   private upListener: any
   private downListener: any
 
   private lastTurn: number = 0
-
-  boostState: boolean = false
+  
+  isFrozen = false
+  boostState = false
 
   constructor() {
     this.upListener = this.onKeydown.bind(this)
@@ -40,10 +43,16 @@ export default class KeyboardManager {
     if (e.key === ' ' && !this.boostState)
       this.boostCb?.((this.boostState = true))
 
+    // Fullscreen handler
     if (e.key === 'f') {
       if (!document.fullscreenElement && document.body.requestFullscreen)
         document.body.requestFullscreen()
       else document.exitFullscreen()
+    }
+
+    // Freeze handler
+    if (e.key === 's') {
+      this.freezeCb?.((this.isFrozen = !this.isFrozen))
     }
   }
 
@@ -57,5 +66,9 @@ export default class KeyboardManager {
 
   setBoostListener(cb: BoostHandlerCallback) {
     this.boostCb = cb
+  }
+
+  setFreezeListener(cb: FreezeHandlerCallback) {
+    this.freezeCb = cb
   }
 }

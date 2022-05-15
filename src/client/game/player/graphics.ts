@@ -83,6 +83,8 @@ export default class PlayerGraphics {
     this.clear()
     this.tLayer.removeChild(this.tContainer)
     this.sLayer.removeChild(this.sContainer)
+    this.tCuttingEmitter.cleanup()
+    this.tContainer.destroy({ children: true })
   }
 
   clear() {

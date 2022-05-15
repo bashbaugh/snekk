@@ -10,6 +10,8 @@ export enum MESSAGETYPE {
   JOIN,
   STARTBOOST,
   STOPBOOST,
+  FREEZE,
+  UNFREEZE,
 
   GODDISCON = 'disconnect',
   /** Special message be sent to players by game admins */
@@ -61,6 +63,8 @@ export interface Message {
     x: number
     y: number
   }
+  [MESSAGETYPE.FREEZE]: null
+  [MESSAGETYPE.UNFREEZE]: null
 
   [MESSAGETYPE.GODMSG]: {
     m: string

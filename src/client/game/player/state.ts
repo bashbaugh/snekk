@@ -29,6 +29,7 @@ export default class ClientSnakeState implements SharedSnakeState {
   score: number = 0
   kills: number = 0
   headTerritory?: string
+  frozen = false
 
   constructor(state: SharedSnakeState) {
     const t = Date.now()

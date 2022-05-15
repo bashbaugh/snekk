@@ -8,15 +8,14 @@ export interface SharedSnakeState {
   tRegions: SRegion[] | Array<Region>
   territory: XY[] | XYPoint[]
   direction: Direction
-
   length: number
   speed: number
   extraSpeed: number
   boosting: boolean
   hue: number
-
   score: number
   kills: number
+  frozen: boolean
 
   /** ID, if any, of player whose territory snake is within */
   headTerritory?: string

@@ -13,7 +13,7 @@ export default class Snake extends SnakeBehaviour {
   constructor(gameController: GameController, player: PlayerState) {
     const snake = new SnakeState(
       gameController.getRandomPoint(
-        CONFIG.snake.territoryStartMargin + CONFIG.snake.spawnMargin,
+        CONFIG.snake.territoryStartMargin + CONFIG.arena.spawnPadding,
         true
       )
     )
@@ -98,8 +98,6 @@ export default class Snake extends SnakeBehaviour {
         break
       }
     }
-
-    console.log(this.state.headTerritory)
   }
 
   updateScore() {

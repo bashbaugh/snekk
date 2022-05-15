@@ -42,6 +42,15 @@ export default class ArenaRoom extends Room<GameState> {
       this.game.onPlayerBoost(c, false)
     )
 
+    if (CONFIG.snake.allowFreezing) {
+      this.onMessage<Message[MESSAGETYPE.FREEZE]>(MESSAGETYPE.FREEZE, c =>
+        this.game.setPlayerFrozen(c, true)
+      )
+      this.onMessage<Message[MESSAGETYPE.UNFREEZE]>(MESSAGETYPE.UNFREEZE, c =>
+        this.game.setPlayerFrozen(c, false)
+      )  
+    }
+
     // Ping handler
     this.onMessage<Message[MESSAGETYPE.TIMESYNC]>(
       MESSAGETYPE.TIMESYNC,

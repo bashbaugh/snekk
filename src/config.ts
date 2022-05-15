@@ -13,17 +13,25 @@ const CONFIG = Object.freeze({
   },
   snake: {
     baseSpeed: 100,
-    baseLength: dev ? 2000 : 250,
+    baseLength: dev ? 2000 : 300,
     snakeBoostSpeed: 300,
     boostCostPerSec: 100,
     minLength: 200,
     territoryStartMargin: 100,
     territorySpeedBoost: 50,
-    spawnMargin: dev ? 1000 : 50,
 
     scoreMultiplier: 0.01,
     lengthValMultiplier: 0.1,
     maxNameLength: 20,
+
+    allowFreezing: !!dev
+  },
+  arena: {
+    spawnPadding: 50,
+    minArea: 500 ** 2,
+    areaPerSnake: 1000 ** 2,
+    resizePeriod: 3,
+    resizePadding: 50,
   },
   interpDeltaMs: (1000 / PATCHRATE) * 1,
   server: {

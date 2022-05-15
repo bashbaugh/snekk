@@ -51,7 +51,7 @@ export class Region extends Schema implements SRegion {
 
 export class SnakeState extends Schema implements SharedSnakeState {
   // Sequence number is increased with each new point in snake (lower = closer to tail)
-  @type ('number') spawnTs: number = Date.now()
+  @type('number') spawnTs: number = Date.now()
   @type([SnakePoint]) points = new ArraySchema<SnakePoint>()
   // @type([SnakePoint]) trail = new ArraySchema<SnakePoint>()
   @type([Region]) tRegions = new ArraySchema<Region>()
@@ -66,6 +66,7 @@ export class SnakeState extends Schema implements SharedSnakeState {
   @type('uint32') score: number = 0
   @type('uint8') kills: number = 0
   @type('string') headTerritory?: string
+  @type('boolean') frozen = false
 
   constructor(spawnP: XY) {
     super()
@@ -142,7 +143,7 @@ export class Food extends Schema {
 export default class GameState extends Schema {
   /** Timestamp to track server time in updates */
   @type('number') ts: number = 0
-  @type('int16') arenaSize: number = 2000
+  @type('int16') arenaSize: number = Math.sqrt(CONFIG.arena.minArea)
   @type({ map: PlayerState }) players = new MapSchema<PlayerState>()
   @type([Food]) food = new ArraySchema<Food>()
 }

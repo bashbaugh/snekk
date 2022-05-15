@@ -4,7 +4,7 @@ import { Message, MESSAGETYPE } from 'types/networking'
 import { Client } from 'colyseus'
 import Snake from './Snake'
 import { DeathReason } from 'types/game'
-import { randomInt } from 'shared/util'
+import { cubicEaseInterp, randomInt } from 'shared/util'
 import CONFIG from 'config'
 import {
   getLineIntersection,
@@ -23,6 +23,10 @@ export default class GameController {
       client: Client
     }
   > = {}
+
+  arenaResizeTs?: number
+  arenaResizeFrom?: number
+  arenaResizeTarget?: number
 
   constructor(room: ArenaRoom) {
     this.room = room
@@ -52,11 +56,9 @@ export default class GameController {
     }
   }
 
-  public pointIsInArena(p: XY): boolean {
-    return (
-      Math.abs(p.x) <= this.state.arenaSize &&
-      Math.abs(p.y) <= this.state.arenaSize
-    )
+  public pointIsInArena(p: XY, overrideArenaSize?: number): boolean {
+    const s = overrideArenaSize ?? this.state.arenaSize
+    return Math.abs(p.x) <= s && Math.abs(p.y) <= s
   }
 
   addPlayer(client: Client) {
@@ -92,8 +94,8 @@ export default class GameController {
       s: {
         kills: player.snake!.state.kills,
         score: Math.ceil(player.snake!.state.score),
-        time: Date.now() - player.snake!.state.spawnTs
-      }
+        time: Date.now() - player.snake!.state.spawnTs,
+      },
     }
 
     player.snake?.die()
@@ -110,6 +112,8 @@ export default class GameController {
       player.snake?.update(delta)
     }
 
+    this.resizeArena()
+
     this.state.ts = this.room.clock.currentTime
   }
 
@@ -123,6 +127,10 @@ export default class GameController {
 
   onPlayerBoost(client: Client, boosting: boolean) {
     this.players[client.id].snake?.boost(boosting)
+  }
+
+  setPlayerFrozen(client: Client, frozen: boolean) {
+    this.players[client.id].snake!.state.frozen = frozen
   }
 
   clipTerritories(playerId: string) {
@@ -144,5 +152,50 @@ export default class GameController {
         [intersection]
       )[0].map(playerB.snake.state.makePoint)
     }
+  }
+
+  resizeArena() {
+    if (this.arenaResizeTarget) {
+      // Currently resizing arena
+      const elapsed = Date.now() - this.arenaResizeTs!
+      const progress = elapsed / 1000 / CONFIG.arena.resizePeriod
+
+      if (progress >= 1) {
+        this.arenaResizeTarget = undefined
+        return
+      }
+
+      this.state.arenaSize = cubicEaseInterp(
+        this.arenaResizeFrom!,
+        this.arenaResizeTarget,
+        progress
+      )
+
+      return
+    }
+
+    const numSnakes = Object.values(this.players).filter(p => p.snake).length
+    // Half of square root of area
+    const targetArenaSize =
+      Math.sqrt(CONFIG.arena.minArea + Math.max(1, numSnakes) * CONFIG.arena.areaPerSnake) /
+      2
+
+    if (targetArenaSize === this.state.arenaSize) return
+    if (targetArenaSize < this.state.arenaSize) {
+      // If we are shrinking arena need to make sure there's no territory/snakes at the edges
+      for (const [id, player] of Object.entries(this.players)) {
+        if (!player.snake) continue
+        // Make sure territory and head aren't near edge
+        if (!this.pointIsInArena(player.snake.head, targetArenaSize - CONFIG.arena.resizePadding)) return
+        for (const p of player.snake.state.territory) {
+          if (!this.pointIsInArena(p, targetArenaSize - CONFIG.arena.resizePadding)) return
+        }
+      }
+    }
+
+    // Begin resize
+    this.arenaResizeTarget = targetArenaSize
+    this.arenaResizeFrom = this.state.arenaSize
+    this.arenaResizeTs = Date.now()
   }
 }

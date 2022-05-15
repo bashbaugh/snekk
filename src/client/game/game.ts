@@ -27,16 +27,20 @@ export default class Game {
 
   private gameObjects: BaseObject[] = []
 
-  private rootContainer: PIXI.Container = new PIXI.Container()
-  private gameLayer: PIXI.Container = new PIXI.Container()
-  bgLayer: PIXI.Container = new PIXI.Container()
-  bloomLayer: PIXI.Container = new PIXI.Container()
-  territoryLayer: PIXI.Container = new PIXI.Container()
-  snakeLayer: PIXI.Container = new PIXI.Container()
-  hudLayer: PIXI.Container = new PIXI.Container()
+  private rootContainer = new PIXI.Container()
+  private gameLayer = new PIXI.Container()
+  private arenaLayer = new PIXI.Container()
+  private arenaExternalLayer = new PIXI.Container()
+  bgLayer = new PIXI.Container()
+  bloomLayer = new PIXI.Container()
+  territoryLayer = new PIXI.Container()
+  snakeLayer = new PIXI.Container()
+  hudLayer = new PIXI.Container()
 
   private twistEffect: TwistFilter
   private deathTime?: number
+
+  private arenaMask = new PIXI.Graphics()
 
   // ID:player map
   players: Record<
@@ -56,15 +60,20 @@ export default class Game {
     this.pixi.ticker.add(t => this.onTick(t))
 
     // Layers and containers
-    this.gameLayer.addChild(this.bgLayer)
-    this.gameLayer.addChild(this.bloomLayer)
-    this.gameLayer.addChild(this.territoryLayer)
-    this.gameLayer.addChild(this.snakeLayer)
-
+    this.arenaLayer.addChild(this.bgLayer)
+    this.arenaLayer.addChild(this.bloomLayer)
+    this.arenaLayer.addChild(this.territoryLayer)
+    this.arenaLayer.addChild(this.snakeLayer)
+    
+    this.gameLayer.addChild(this.arenaLayer)
+    this.gameLayer.addChild(this.arenaExternalLayer)
     this.rootContainer.addChild(this.gameLayer)
     this.rootContainer.addChild(this.hudLayer)
 
     this.pixi.stage.addChild(this.rootContainer)
+
+    // Arena graphics should be clipped within the arena
+    this.arenaLayer.mask = this.arenaMask
 
     // Filters
     this.bloomLayer.filters = [
@@ -93,7 +102,7 @@ export default class Game {
     // Game components
     this.gameObjects.push(
       new Background(this),
-      new Walls(this, this.bgLayer),
+      new Walls(this, this.arenaExternalLayer),
       new Food(this, this.bloomLayer),
       new Minimap(this, this.hudLayer)
     )
@@ -160,6 +169,9 @@ export default class Game {
       })
       this.input.setBoostListener(b => {
         this.network.sendBoost(b)
+      })
+      this.input.setFreezeListener(f => {
+        this.network.sendFrozen(f)
       })
       this.players[this.network.clientId!] = {
         snake: this.playerSnake,
@@ -236,6 +248,12 @@ export default class Game {
       })
     }
 
+    // Clip the game graphics to the area within the arena
+    this.arenaMask.clear()
+    const c = this.getArenaBounds()
+    if (c) this.arenaMask.drawRect(c.xl, c.yt, c.w, c.h)
+
+    // Update UI
     this.ui.setState({
       stats: {
         fps: this.pixi.ticker.FPS,
@@ -263,17 +281,17 @@ export default class Game {
     this.deathTime = Date.now()
     this.twistEffect.enabled = true
     const bg = this.gameObjects.find(o => o instanceof Background) as Background
-    bg.disableClipping() // Disable bg mask so that the twist effect will work
+    this.arenaLayer.mask = null // Disable arena mask so that the twist effect will work
     this.ui.setState({
       ui: 'postGame',
       postGame: {
         deathReason: data.c,
         killer:
-        data.c === DeathReason.player_collision
-          ? this.network.state!.players.get(data.k!)?.name
-          : undefined,
-        ...data.s
-      }
+          data.c === DeathReason.player_collision
+            ? this.network.state!.players.get(data.k!)?.name
+            : undefined,
+        ...data.s,
+      },
     })
   }
 

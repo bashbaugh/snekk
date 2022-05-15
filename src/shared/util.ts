@@ -9,6 +9,11 @@ export const lerpPoint = (a: XY, b: XY, t: number, round?: boolean) => ({
   y: round ? Math.round(lerp(a.y, b.y, t)) : lerp(a.y, b.y, t),
 })
 
+export const easeInOutCubic = (t: number) =>
+  t < 0.5 ? 4 * t ** 3 : 1 - Math.pow(-2 * t + 2, 3) / 2
+export const cubicEaseInterp = (a: number, b: number, t: number) =>
+  a + (b - a) * easeInOutCubic(t)
+
 // https://stackoverflow.com/a/53577159/8748307
 /** Get standard deviation of array */
 export function calcStandardDev(array: number[]) {

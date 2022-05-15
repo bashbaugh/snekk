@@ -46,6 +46,7 @@ export default abstract class SnakeBehaviour {
     direction: Direction,
     speed: number
   ): XY {
+    if (this.state.frozen) return head
     const h = { x: head.x, y: head.y /*t: Date.now()*/ },
       d = direction,
       deltaSec = delta / 1000

@@ -5,7 +5,7 @@ import { formatTime, selectRandom } from 'shared/util'
 import { DeathReason } from 'types/game'
 import { UIState } from '..'
 
-const PostGameStat: preact.FunctionComponent<any> = ({ title, children}) => {
+const PostGameStat: preact.FunctionComponent<any> = ({ title, children }) => {
   return (
     <div class="flex flex-col gap-2 items-center">
       <h2 class="font-bold">{title}</h2>
@@ -49,16 +49,18 @@ const PostGameInfo: preact.FunctionComponent<{
           <p class="opacity-80 text-sm">
             {
               {
-                [DeathReason.player_collision]: `You were killed by ${g.killer || 'someone'}`,
+                [DeathReason.player_collision]: `You were killed by ${
+                  g.killer || 'someone'
+                }`,
                 [DeathReason.self_collision]: 'You kinda ran into yourself.',
                 [DeathReason.wall_collision]: 'Stay away from the walls!',
               }[g.deathReason]
             }
           </p>
-          <div class='flex gap-8 items-center'>
-          <PostGameStat title="Score">{g.score}</PostGameStat>
-          <PostGameStat title="Kills">{g.kills}</PostGameStat>
-          <PostGameStat title="Time Alive">{formatTime(g.time)}</PostGameStat>
+          <div class="flex gap-8 items-center">
+            <PostGameStat title="Score">{g.score}</PostGameStat>
+            <PostGameStat title="Kills">{g.kills}</PostGameStat>
+            <PostGameStat title="Time Alive">{formatTime(g.time)}</PostGameStat>
           </div>
           <div class="flex gap-2">
             <button
