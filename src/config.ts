@@ -24,7 +24,8 @@ const CONFIG = Object.freeze({
     lengthValMultiplier: 0.1,
     maxNameLength: 20,
 
-    allowFreezing: !!dev
+    // allowFreezing: !!dev
+    allowFreezing: true
   },
   arena: {
     spawnPadding: 50,

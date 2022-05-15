@@ -3,7 +3,6 @@ import * as PIXI from 'pixi'
 import { hslToHex } from 'shared/util'
 import CONFIG from 'config'
 import Game from '../game'
-import { polygonPerimeter } from 'shared/geometry'
 import { defaultTerritorySkin, TSkinName } from 'shared/skins'
 import {
   getBoostEmitterConf,
