@@ -6,6 +6,7 @@ import PlayerStats from './components/PlayerStats'
 import StatsDisplay from './components/StatsDisplay'
 import Leaderboard from './components/Leaderboard'
 import PostGameInfo from './components/PostGameInfo'
+import CONFIG from 'config'
 
 const UIApp: preact.FunctionComponent<{
   dispatchEvent: UIEventDispatcher
@@ -59,6 +60,18 @@ const UIApp: preact.FunctionComponent<{
             </button>
           </div>
         )}
+        {state.ui === 'versionMismatch' && <div class="bg-black bg-opacity-60 p-10 rounded-lg flex flex-col gap-3 items-center">
+            <h2 class="font-bold text-3xl text-blue-500">{CONFIG.gameName} Is Updating</h2>
+            Please try again in a minute.
+            <button
+              class="bg-blue-500 hover:bg-blue-700 font-bold py-2 px-4 rounded"
+              onClick={() => {
+                window.location.reload()
+              }}
+            >
+              Reload
+            </button>
+          </div>}
       </div>
     </div>
   )

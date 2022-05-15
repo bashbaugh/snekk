@@ -6,7 +6,7 @@ import App from './game/app'
 })()
 
 console.log(
-  `%c${CONFIG.gameName} :: Hello 👋`,
+  `%c${CONFIG.gameName} v${CONFIG.version} :: Hello 👋`,
   'background:black;color:dodgerblue;font-size:18px;font-weight:bold;padding:5px;border-radius:5px;'
 )
 console.log(

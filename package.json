@@ -23,6 +23,7 @@
     "@pixi/constants": "^6.3.0",
     "@pixi/core": "^6.3.0",
     "@pixi/display": "^6.3.0",
+    "@pixi/filter-adjustment": "^4.1.3",
     "@pixi/filter-advanced-bloom": "^4.1.5",
     "@pixi/filter-twist": "^4.1.5",
     "@pixi/graphics": "^6.3.0",

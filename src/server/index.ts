@@ -11,17 +11,22 @@ import CONFIG from 'config'
 console.log('Starting...')
 
 const app = express()
+app.disable('x-powered-by')
 app.use(express.json())
 
 app.use(
   cors({
     // TODO FIX CORS (NGINX?)
-    origin: ['snekk.xyz', 's.snekk.xyz', 'localhost:3000'],
+    origin: process.env.NODE_ENV === 'production' ? ['snekk.xyz', 's.snekk.xyz'] : '*',
   })
 )
 
 app.get('/', (req, res) =>
   res.redirect('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+)
+
+app.get('/version', (req, res) =>
+  res.send(CONFIG.version)
 )
 
 const adminAuthMiddleware = basicAuth({

@@ -2,11 +2,11 @@ const PATCHRATE = 20
 const dev = process.env.NODE_ENV !== 'production'
 
 const CONFIG = Object.freeze({
+  version: '0.1.0',
   gameName: 'Snekk.io',
   gameEmail: 'contact@snekk.xyz',
   debug: dev,
   serverURL: dev ? 'ws://localhost:3002' : 'wss://server1.snekk.xyz',
-  version: '0.1.0',
   fps: {
     min: 40,
     max: 80,

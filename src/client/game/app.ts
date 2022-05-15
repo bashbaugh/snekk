@@ -21,6 +21,16 @@ export default class App {
   private _graphicsMode!: GraphicsMode
 
   constructor() {
+    // Instantiate core components
+    this.ui = new UI()
+    this.network = new Network()
+
+    this.ui.renderUI()
+
+    // TODO check for WebGL support
+    // if (!PIXI.utils.isWebGLSupported()) {
+    // }
+
     // Set up PIXI
     this.pixi = new PIXI.Application({
       width: window.innerWidth,
@@ -41,10 +51,7 @@ export default class App {
       this.updateScale()
     })
 
-    // Instantiate base components
-    this.ui = new UI()
-    this.network = new Network()
-
+    // Set graphics mode
     let g = window.localStorage.getItem('graphicsMode')
     if (g !== 'HIGH' && g !== 'LOW') g = 'HIGH'
     this.graphicsMode = g as GraphicsMode
@@ -53,6 +60,7 @@ export default class App {
       window.localStorage.setItem('graphicsMode', this.graphicsMode)
     })
 
+    // Start async initialization
     this.initialize()
   }
 
@@ -85,7 +93,14 @@ export default class App {
   }
 
   private async initialize() {
-    this.ui.renderUI()
+    const serverVersion = await this.network.getServerVersion()
+    if (serverVersion !== CONFIG.version) { // Server version mismatch
+      // Server and cli
+      this.ui.setState({
+        ui: 'versionMismatch'
+      })
+      return // Cancel initialization
+    }
 
     await loadAssets()
 

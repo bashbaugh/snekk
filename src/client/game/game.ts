@@ -17,7 +17,6 @@ import Minimap from './objects/minimap'
 import { TwistFilter } from '@pixi/filter-twist'
 import { distBetween } from 'shared/geometry'
 import { Message, MESSAGETYPE } from 'types/networking'
-import CONFIG from 'config'
 
 export default class Game {
   readonly app: App
@@ -42,6 +41,10 @@ export default class Game {
   private deathTime?: number
 
   private arenaMask = new PIXI.Graphics()
+
+  private adjustmentFilter = new PIXI.filters.AdjustmentFilter({
+    // saturation: 1.5
+  })
 
   // ID:player map
   players: Record<
@@ -100,6 +103,8 @@ export default class Game {
       this.gameLayer.filters = [this.twistEffect]
     }
 
+    this.gameLayer.filters?.push(this.adjustmentFilter)
+
     // Network
     this.addNetworkHandlers()
 
@@ -122,6 +127,9 @@ export default class Game {
       children: true,
       texture: true, // Should this be false?
     })
+
+    this.network.removeListeners()
+    this.input.clearListeners()
   }
 
   private addPlayerStateListeners(playerId: string, state: PlayerState) {

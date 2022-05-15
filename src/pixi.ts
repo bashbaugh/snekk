@@ -34,9 +34,11 @@ Application.registerPlugin(TickerPlugin)
 // Filters
 import { AdvancedBloomFilter } from '@pixi/filter-advanced-bloom'
 import { TwistFilter } from '@pixi/filter-twist'
+import { AdjustmentFilter } from '@pixi/filter-adjustment'
 export const filters = {
   AdvancedBloomFilter,
   TwistFilter,
+  AdjustmentFilter,
 }
 
 // TODO keep VERSION up to date

@@ -5,7 +5,7 @@ import { DeathReason } from 'types/game'
 import UIApp from './UIApp'
 
 export interface UIState {
-  ui: 'inGame' | 'loading' | 'readyToPlay' | 'disconnected' | 'postGame'
+  ui: 'inGame' | 'loading' | 'readyToPlay' | 'disconnected' | 'postGame' | 'versionMismatch'
   stats?: {
     fps: number
     ping?: number

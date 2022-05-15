@@ -2,12 +2,11 @@ import { Client, Room } from 'colyseus.js'
 import { Message, MESSAGETYPE } from 'types/networking'
 import GameState, { PlayerState } from 'shared/serverState'
 import { debugLog } from '../util'
-import { DeathReason } from 'types/game'
 import ServerPinger from './ping'
 import { SharedSnakeState } from 'types/state'
 import { mean } from 'shared/util'
 import CONFIG from 'config'
-import { defaultTerritorySkin, TSkinName } from 'shared/skins'
+import { TSkinName } from 'shared/skins'
 
 const SERVERTIME_MOVING_AVG_SAMPLES = 15
 
@@ -23,6 +22,13 @@ export default class Network {
 
   constructor() {
     this.client = new Client(CONFIG.serverURL)
+  }
+
+  async getServerVersion() {
+    const v = await fetch(CONFIG.serverURL.replace('ws', 'http') + '/version')
+      .then(res => res.text())
+
+    return v
   }
 
   public get lastServerTimeOffset() {
