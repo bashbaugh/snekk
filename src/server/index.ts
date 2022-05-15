@@ -1,4 +1,3 @@
-if (process.env.NODE_ENV === 'production') require('newrelic')
 import { Server } from 'colyseus'
 import { createServer } from 'http'
 import express from 'express'
