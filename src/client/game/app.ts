@@ -7,7 +7,7 @@ import { loadAssets } from './assets'
 import Game from './game'
 import HomeBackground from './objects/homeBackground'
 
-const CONNECTION_RETRY_INTERVAL = 5000
+const CONNECTION_RETRY_INTERVAL = 4000
 
 export default class App {
   readonly pixi: PIXI.Application
@@ -93,16 +93,6 @@ export default class App {
   }
 
   private async initialize() {
-    const serverVersion = await this.network.getServerVersion()
-    if (serverVersion !== CONFIG.version) {
-      // Server version mismatch
-      // Server and cli
-      this.ui.setState({
-        ui: 'versionMismatch',
-      })
-      return // Cancel initialization
-    }
-
     await loadAssets()
 
     this.homeBG = new HomeBackground(this)
@@ -120,22 +110,33 @@ export default class App {
   private async findGame() {
     this.ui.setState({ loadingText: 'Connecting...' })
 
-    let success = false
-    while (!success) {
-      await this.network
-        .findGame(wsdisconnectCode => {
+    while (true) {
+      try {
+        const serverVersion = await this.network.getServerVersion()
+
+        if (serverVersion !== CONFIG.version) {
+          // Server version mismatch
+          // Server and cli
+          this.ui.setState({
+            ui: 'versionMismatch',
+          })
+          return // Cancel connection
+        }
+
+        await this.network.findGame(wsdisconnectCode => {
           this.ui.setState({
             ui: 'disconnected',
             wsDisconnectCode:
               wsdisconnectCode !== 1000 ? wsdisconnectCode : undefined,
           })
         })
-        .then(() => {
-          success = true
-        })
-        .catch(console.error)
 
-      if (!success) await asyncDelay(CONNECTION_RETRY_INTERVAL)
+        break // If both connections succeeded, break out of the loop
+      } catch (e) {
+        console.error(e)
+      }
+      
+      await asyncDelay(CONNECTION_RETRY_INTERVAL)
     }
 
     this.waitForStart()
