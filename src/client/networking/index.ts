@@ -25,8 +25,9 @@ export default class Network {
   }
 
   async getServerVersion() {
-    const v = await fetch(CONFIG.serverURL.replace('ws', 'http') + '/version')
-      .then(res => res.text())
+    const v = await fetch(
+      CONFIG.serverURL.replace('ws', 'http') + '/version'
+    ).then(res => res.text())
 
     return v
   }

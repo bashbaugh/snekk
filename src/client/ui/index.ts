@@ -5,7 +5,13 @@ import { DeathReason } from 'types/game'
 import UIApp from './UIApp'
 
 export interface UIState {
-  ui: 'inGame' | 'loading' | 'readyToPlay' | 'disconnected' | 'postGame' | 'versionMismatch'
+  ui:
+    | 'inGame'
+    | 'loading'
+    | 'readyToPlay'
+    | 'disconnected'
+    | 'postGame'
+    | 'versionMismatch'
   stats?: {
     fps: number
     ping?: number
@@ -71,7 +77,7 @@ export default class UI {
       showStats: true,
       loadingText: 'Loading...',
       playerTSkin: defaultTerritorySkin,
-      graphicsMode: 'HIGH'
+      graphicsMode: 'HIGH',
     }
   }
 

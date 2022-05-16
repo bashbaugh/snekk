@@ -33,7 +33,11 @@ const UIApp: preact.FunctionComponent<{
           <div class="font-bold text-3xl">{state.loadingText}</div>
         )}
         {state.ui == 'readyToPlay' && (
-          <Home dispatchEvent={dispatchEvent} tSkin={state.playerTSkin} graphics={state.graphicsMode} />
+          <Home
+            dispatchEvent={dispatchEvent}
+            tSkin={state.playerTSkin}
+            graphics={state.graphicsMode}
+          />
         )}
         {state.ui === 'postGame' && (
           <PostGameInfo
@@ -60,8 +64,11 @@ const UIApp: preact.FunctionComponent<{
             </button>
           </div>
         )}
-        {state.ui === 'versionMismatch' && <div class="bg-black bg-opacity-60 p-10 rounded-lg flex flex-col gap-3 items-center">
-            <h2 class="font-bold text-3xl text-blue-500">{CONFIG.gameName} Is Updating</h2>
+        {state.ui === 'versionMismatch' && (
+          <div class="bg-black bg-opacity-60 p-10 rounded-lg flex flex-col gap-3 items-center">
+            <h2 class="font-bold text-3xl text-blue-500">
+              {CONFIG.gameName} Is Updating
+            </h2>
             Please try again in a minute.
             <button
               class="bg-blue-500 hover:bg-blue-700 font-bold py-2 px-4 rounded"
@@ -71,7 +78,8 @@ const UIApp: preact.FunctionComponent<{
             >
               Reload
             </button>
-          </div>}
+          </div>
+        )}
       </div>
     </div>
   )

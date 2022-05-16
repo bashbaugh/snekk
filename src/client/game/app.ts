@@ -38,7 +38,7 @@ export default class App {
       backgroundColor: CONFIG.g.backgroundColor,
       antialias: true,
       powerPreference: 'high-performance',
-      resizeTo: window
+      resizeTo: window,
     })
     document.body.appendChild(this.pixi.view)
 
@@ -55,7 +55,7 @@ export default class App {
     let g = window.localStorage.getItem('graphicsMode')
     if (g !== 'HIGH' && g !== 'LOW') g = 'HIGH'
     this.graphicsMode = g as GraphicsMode
-    this.ui.addEventListener('setGraphicsMode', (e) => {
+    this.ui.addEventListener('setGraphicsMode', e => {
       this.graphicsMode = e.data.mode
       window.localStorage.setItem('graphicsMode', this.graphicsMode)
     })
@@ -64,7 +64,7 @@ export default class App {
     this.initialize()
   }
 
-  set graphicsMode (m: GraphicsMode) {
+  set graphicsMode(m: GraphicsMode) {
     this._graphicsMode = m
     this.pixi.renderer.resolution = m === 'HIGH' ? 1 : 0.5
     this.pixi.view.style.width = m === 'HIGH' ? '100%' : '200%'
@@ -73,11 +73,11 @@ export default class App {
     this.ui.setState({ graphicsMode: m })
   }
 
-  get graphicsMode () {
+  get graphicsMode() {
     return this._graphicsMode
   }
 
-  updateScale () {
+  updateScale() {
     const xScale = this.pixi.view.width / CONFIG.targetScale.width
     const yScale = this.pixi.view.height / CONFIG.targetScale.height
     const uniformScale = Math.max(xScale, yScale)
@@ -94,10 +94,11 @@ export default class App {
 
   private async initialize() {
     const serverVersion = await this.network.getServerVersion()
-    if (serverVersion !== CONFIG.version) { // Server version mismatch
+    if (serverVersion !== CONFIG.version) {
+      // Server version mismatch
       // Server and cli
       this.ui.setState({
-        ui: 'versionMismatch'
+        ui: 'versionMismatch',
       })
       return // Cancel initialization
     }
@@ -154,6 +155,7 @@ export default class App {
       this.ui.removeEventListener('startPlaying', startListener)
       this.network.joinGame(e.data)
       this.game = new Game(this)
+      ;(window as any).plausible('startGame')
     }
 
     this.ui.addEventListener('startPlaying', startListener)

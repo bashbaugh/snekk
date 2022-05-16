@@ -1,8 +1,8 @@
 console.log('Starting...')
 import { Server } from 'colyseus'
 import express from 'express'
-import expressify from "uwebsockets-express"
-import { uWebSocketsTransport } from "@colyseus/uwebsockets-transport"
+import expressify from 'uwebsockets-express'
+import { uWebSocketsTransport } from '@colyseus/uwebsockets-transport'
 import ArenaRoom from './game/ArenaRoom'
 import { monitor } from '@colyseus/monitor'
 import basicAuth from 'express-basic-auth'
@@ -11,7 +11,7 @@ import CONFIG from 'config'
 
 const transport = new uWebSocketsTransport({
   idleTimeout: 32,
-});
+})
 
 const app = expressify(transport.app)
 app.use(express.json())
@@ -27,9 +27,7 @@ app.get('/', (req, res) =>
   res.redirect('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
 )
 
-app.get('/version', (req, res) =>
-  res.send(CONFIG.version)
-)
+app.get('/version', (req, res) => res.send(CONFIG.version))
 
 const adminAuthMiddleware = basicAuth({
   users: {

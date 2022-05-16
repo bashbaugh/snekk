@@ -178,7 +178,10 @@ export default class GameController {
     const numSnakes = Object.values(this.players).filter(p => p.snake).length
     // Half of square root of area
     const targetArenaSize =
-      Math.max(Math.sqrt(CONFIG.arena.minArea),  Math.sqrt(numSnakes * CONFIG.arena.areaPerSnake)) / 2
+      Math.max(
+        Math.sqrt(CONFIG.arena.minArea),
+        Math.sqrt(numSnakes * CONFIG.arena.areaPerSnake)
+      ) / 2
 
     if (targetArenaSize === this.state.arenaSize) return
     if (targetArenaSize < this.state.arenaSize) {

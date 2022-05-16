@@ -160,12 +160,9 @@ export default class Snake extends SnakeBehaviour {
       const headInterpProgress = interpTarget - headInterpStart
       const headPercent = headInterpProgress / headInterpDelta
 
-      const { snake: {
-        points,
-        length,
-        score,
-        ...otherState
-      }} = lastF
+      const {
+        snake: { points, length, score, ...otherState },
+      } = lastF
 
       // Interpolate head using computed points and timestamps
       Object.assign(
@@ -174,16 +171,8 @@ export default class Snake extends SnakeBehaviour {
       )
 
       // Interpolate length and score
-      this.state.length = lerp(
-        length,
-        nextF.snake.length,
-        framePercent
-      )
-      this.state.score = lerp(
-        score,
-        nextF.snake.score,
-        framePercent
-      )
+      this.state.length = lerp(length, nextF.snake.length, framePercent)
+      this.state.score = lerp(score, nextF.snake.score, framePercent)
 
       // Recalculate tail
       this.updateTail()

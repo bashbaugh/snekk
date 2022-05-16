@@ -63,10 +63,11 @@ export default class PlayerGraphics {
       getBoostEmitterConf(this.snake.state.hue, this.game.app.graphicsMode)
     )
 
-    if (this.game.app.graphicsMode === 'HIGH') this.tCuttingEmitter = new PIXI.particles.Emitter(
-      this.territoryParticlesContainer,
-      getTerritoryCutEmitterConf()
-    )
+    if (this.game.app.graphicsMode === 'HIGH')
+      this.tCuttingEmitter = new PIXI.particles.Emitter(
+        this.territoryParticlesContainer,
+        getTerritoryCutEmitterConf()
+      )
   }
 
   cleanup() {
@@ -168,9 +169,10 @@ export default class PlayerGraphics {
   }
 
   emitRegionParticles(spawnPolygon: XY[]) {
-    if (this.game.app.graphicsMode !== 'LOW') new PIXI.particles.Emitter(
-      this.territoryParticlesContainer,
-      getRegionEmitterConf(spawnPolygon, this.snake.state.hue)
-    ).playOnceAndDestroy()
+    if (this.game.app.graphicsMode !== 'LOW')
+      new PIXI.particles.Emitter(
+        this.territoryParticlesContainer,
+        getRegionEmitterConf(spawnPolygon, this.snake.state.hue)
+      ).playOnceAndDestroy()
   }
 }

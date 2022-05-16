@@ -4,13 +4,16 @@ import { TSkinName } from 'shared/skins'
 import { UIEventDispatcher } from '.'
 import PlayModal from './components/PlayModal'
 
-const FooterLink: preact.FunctionComponent<{ href?: string, onClick?: () => void }> = ({
-  href = '#',
-  children,
-  onClick
-}) => {
+const FooterLink: preact.FunctionComponent<{
+  href?: string
+  onClick?: () => void
+}> = ({ href = '#', children, onClick }) => {
   return (
-    <a class="text-sm font-bold p-2 hover:underline" href={href} onClick={() => onClick?.()}>
+    <a
+      class="text-sm font-bold p-2 hover:underline"
+      href={href}
+      onClick={() => onClick?.()}
+    >
       {children}
     </a>
   )
@@ -32,9 +35,15 @@ const Home: preact.FunctionComponent<{
         />
       </div>
       <div class="absolute left-0 w-full bottom-0 flex gap-2 p-2">
-        <FooterLink onClick={() => dispatchEvent('setGraphicsMode', {
-          mode: graphics === 'HIGH' ? 'LOW' : 'HIGH'
-        })}>Graphics: {graphics}</FooterLink>
+        <FooterLink
+          onClick={() =>
+            dispatchEvent('setGraphicsMode', {
+              mode: graphics === 'HIGH' ? 'LOW' : 'HIGH',
+            })
+          }
+        >
+          Graphics: {graphics}
+        </FooterLink>
         <div class="flex-grow" />
         <FooterLink href="/changelog.txt">Changelog</FooterLink>
         <FooterLink href="/privacy.txt">Privacy</FooterLink>
