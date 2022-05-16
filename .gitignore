@@ -6,3 +6,4 @@ bundlestats.json
 temp
 .DS_Store
 newrelic_agent.log
+.env

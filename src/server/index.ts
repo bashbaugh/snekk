@@ -1,4 +1,5 @@
 console.log('Starting...')
+require('dotenv').config();
 import { Server } from 'colyseus'
 import express from 'express'
 import expressify from 'uwebsockets-express'
@@ -8,6 +9,10 @@ import { monitor } from '@colyseus/monitor'
 import basicAuth from 'express-basic-auth'
 import cors from 'cors'
 import CONFIG from 'config'
+import rollbar from './rollbar'
+import { config } from 'dotenv'
+
+rollbar.log('Initialized')
 
 const transport = new uWebSocketsTransport({
   idleTimeout: 32,
@@ -28,6 +33,8 @@ app.get('/', (req, res) =>
 )
 
 app.get('/version', (req, res) => res.send(CONFIG.version))
+
+app.use(rollbar.errorHandler())
 
 const adminAuthMiddleware = basicAuth({
   users: {
