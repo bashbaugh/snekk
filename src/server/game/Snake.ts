@@ -102,11 +102,20 @@ export default class Snake extends SnakeBehaviour {
   }
 
   updateScore() {
-    this.state.score =
+    // Composite of territory, length, and kills
+    const tScore =
       (this.state.tRegions as any[]).reduce<number>(
         (score: number, region: SRegion) => score + polygonArea(region.p),
         0
-      ) * CONFIG.snake.scoreMultiplier
+      ) * CONFIG.snake.tScoreMultiplier
+
+    const lScore = this.state.length * CONFIG.snake.lScoreMultiplier
+    const kScore = this.state.kills * CONFIG.snake.kScoreMultiplier
+
+    // TODO calc this automatically
+    const minScore = 1000
+  
+    this.state.score = Math.max(0, tScore + lScore + kScore - minScore)
   }
 
   turn(data: Message[MESSAGETYPE.TURN]) {

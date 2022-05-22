@@ -1,14 +1,15 @@
-const PATCHRATE = 20
-const dev = process.env.NODE_ENV !== 'production'
+const IS_DEV = process.env.NODE_ENV !== 'production'
 
+const PATCHRATE = 20
+const INTERP_FRAMES_DELTA = 1 // at least 1
 export const DEV_SCALE = false
 
 const CONFIG = Object.freeze({
   version: '0.2.1',
   gameName: 'Snekk.xyz',
   gameEmail: 'contact@snekk.xyz',
-  debug: dev,
-  serverURL: dev ? 'ws://localhost:3002' : 'wss://server1.snekk.xyz',
+  debug: IS_DEV,
+  serverURL: IS_DEV ? 'ws://localhost:3002' : 'wss://server1.snekk.xyz',
   fps: {
     min: 40,
     max: 80,
@@ -21,14 +22,17 @@ const CONFIG = Object.freeze({
   },
   snake: {
     baseSpeed: 100,
-    baseLength: dev ? 2000 : 300,
+    baseLength: IS_DEV ? 2000 : 300,
     snakeBoostSpeed: 300,
     boostCostPerSec: 100,
     minLength: 200,
     territoryStartMargin: 100,
     territorySpeedBoost: 50,
 
-    scoreMultiplier: 0.01,
+    tScoreMultiplier: 0.01,
+    lScoreMultiplier: 0.3,
+    kScoreMultiplier: 1000,
+
     lengthValMultiplier: 0.1,
     maxNameLength: 20,
 
@@ -42,7 +46,7 @@ const CONFIG = Object.freeze({
     resizePeriod: 3,
     resizePadding: 50,
   },
-  interpDeltaMs: (1000 / PATCHRATE) * 1,
+  interpDeltaMs: (1000 / PATCHRATE) * INTERP_FRAMES_DELTA,
   server: {
     maxClientsPerRoom: 20,
     patchRate: PATCHRATE,

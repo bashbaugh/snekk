@@ -103,9 +103,10 @@ export default class InterpolationController {
       const serverTime = this.game.network.serverTime
       // Time between extrapolation target and last available frame
       const frameDelta = serverTime - CONFIG.interpDeltaMs - frameTs
-      snakes.forEach(([id, s]) =>
-        s.extrapolatePosition(nextF.snakes[id], frameDelta)
-      )
+      snakes.forEach(([id, s]) => {
+        const sframe = nextF.snakes[id]
+        if (sframe) s.extrapolatePosition(sframe, frameDelta)
+      })
     }
   }
 }
