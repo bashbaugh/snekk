@@ -4,7 +4,6 @@ import { SourceMapSourcesMode } from 'javascript-obfuscator/typings/src/enums/so
 import GameState from 'shared/serverState'
 import { lerp } from 'shared/util'
 import { SharedSnakeState } from 'types/state'
-import snake from '../../../serverbuild/shared/snake'
 import Game from './game'
 import Snake from './player/snake'
 

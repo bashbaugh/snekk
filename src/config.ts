@@ -1,4 +1,4 @@
-const PATCHRATE = 10
+const PATCHRATE = 20
 const dev = process.env.NODE_ENV !== 'production'
 
 export const DEV_SCALE = false

@@ -130,7 +130,7 @@ export default abstract class SnakeBehaviour {
 
       let tSegments: XY[][] = []
       for (let i = 0; i < t.length; i++)
-        tSegments.push([t[i], t[(i + 1) % t.length]])
+        tSegments.push([t[i], t[(i + 1) % (t.length - 1)]])
 
       let startPoint: XY | false = false
       const snakeStartSeg = 0

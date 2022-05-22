@@ -208,7 +208,7 @@ export const getRegionEmitterConf = (
     min: 1,
     max: 1.5,
   },
-  frequency: 0.05,
+  frequency: 0.02,
   pos: {
     x: 0,
     y: 0,

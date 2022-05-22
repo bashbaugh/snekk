@@ -13,7 +13,8 @@ export default class Snake extends SnakeBehaviour {
   private game: Game
   public playerId: string
 
-  private regionIndexesAdded: number[] = []
+  /** Regions we have emitted particles for */
+  private lastRegionConfirmed: number = -1
 
   constructor(game: Game, playerId: string, initialState: SharedSnakeState) {
     super(new ClientSnakeState(Snake.cloneSnakeState(initialState)))
@@ -137,10 +138,11 @@ export default class Snake extends SnakeBehaviour {
     // Trigger particles for new regions
     for (
       let i = nextF.tRegions.length - 1;
-      i > lastF.tRegions.length - 1;
+      i > Math.max(lastF.tRegions.length - 1, this.lastRegionConfirmed);
       i--
     ) {
       const r = nextF.tRegions[i]
+      this.lastRegionConfirmed = i
       this.graphics.emitRegionParticles(r.p)
     }
   }
