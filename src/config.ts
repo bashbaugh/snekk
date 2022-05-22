@@ -1,8 +1,10 @@
 const PATCHRATE = 20
 const dev = process.env.NODE_ENV !== 'production'
 
+export const doDevScale = true
+
 const CONFIG = Object.freeze({
-  version: '0.2.0',
+  version: '0.2.1',
   gameName: 'Snekk.xyz',
   gameEmail: 'contact@snekk.xyz',
   debug: dev,
@@ -14,6 +16,8 @@ const CONFIG = Object.freeze({
   targetScale: {
     width: 1440,
     height: 768,
+    devWidth: 2560,
+    devHeight: 2000,
   },
   snake: {
     baseSpeed: 100,
@@ -43,9 +47,10 @@ const CONFIG = Object.freeze({
     maxClientsPerRoom: 20,
     patchRate: PATCHRATE,
     devLatency: 200,
+    networkCullMargin: 50,
   },
   food: {
-    foodInterval: 500,
+    foodInterval: 200,
     collisionRadius: 30,
     radius: 10,
     pulseRadius: 2,

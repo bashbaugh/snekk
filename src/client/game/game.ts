@@ -2,7 +2,7 @@ import Network from 'client/networking'
 import UI, { UIState } from 'client/ui'
 import { debugLog } from 'client/util'
 import * as PIXI from 'pixi'
-import { PlayerState, SnakeState } from 'shared/serverState'
+import GameState, { PlayerState } from 'shared/serverState'
 import { DeathReason } from 'types/game'
 import { SharedPlayerState } from 'types/state'
 import BaseObject from './objects/baseObject'
@@ -17,6 +17,7 @@ import Minimap from './objects/minimap'
 import { TwistFilter } from '@pixi/filter-twist'
 import { distBetween } from 'shared/geometry'
 import { Message, MESSAGETYPE } from 'types/networking'
+import InterpolationController from './interpolation'
 
 export default class Game {
   readonly app: App
@@ -24,6 +25,7 @@ export default class Game {
   readonly input: KeyboardManager = new KeyboardManager()
   readonly network: Network
   readonly ui: UI
+  readonly interpolator: InterpolationController
 
   private gameObjects: BaseObject[] = []
 
@@ -46,7 +48,7 @@ export default class Game {
     // saturation: 1.5
   })
 
-  // ID:player map
+  /** ID:player map  */
   players: Record<
     string,
     {
@@ -106,7 +108,9 @@ export default class Game {
     this.gameLayer.filters?.push(this.adjustmentFilter)
 
     // Network
+    this.network.startPinger()
     this.addNetworkHandlers()
+    this.interpolator = new InterpolationController(this)
 
     // Game components
     this.gameObjects.push(
@@ -127,7 +131,6 @@ export default class Game {
       children: true,
       texture: true, // Should this be false?
     })
-
     this.network.removeListeners()
     this.input.clearListeners()
   }
@@ -193,18 +196,7 @@ export default class Game {
       })
     })
 
-    this.network.onStateChange(state => {
-      // Update snakes when we receive a new state patch
-      for (const [id, { snake }] of Object.entries(this.players)) {
-        if (snake) {
-          snake.onServerState(
-            state.players.get(id)!.snake!,
-            id === this.network.clientId!
-          )
-        }
-      }
-    })
-
+    this.network.onStateChange(state => this.interpolator.onState(state))
     this.network.onSelfDie(this.endGame.bind(this))
   }
 
@@ -233,10 +225,14 @@ export default class Game {
     delete this.players[playerId].snake
   }
 
+  /** Client frame */
   private onTick(deltaFPS: number) {
     const deltaMS = this.pixi.ticker.deltaMS
 
     this.app.updateScale()
+
+    // Interpolate game state
+    this.interpolator.update(deltaMS)
 
     for (const obj of this.gameObjects) obj.update(deltaMS)
     for (const obj of this.gameObjects) obj.draw()

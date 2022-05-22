@@ -8,14 +8,15 @@ import PlayerGraphics from './graphics'
 import ClientSnakeState, { cloneSnakePoint, cloneSnakeRegion } from './state'
 import { resources } from '../assets'
 import { defaultTerritorySkin } from 'shared/skins'
+import { ServerSnakeFrame } from '../interpolation'
 
-interface ServerFrame {
-  serverTs: number
-  clientTs: number
-  snake: Omit<SharedSnakeState, `make${string}` | 'hue'>
-  head: SPoint
-  tail: SPoint
-}
+// export interface ServerFrameSnake {
+//   serverTs: number
+//   clientTs: number
+//   snake: Omit<SharedSnakeState, `make${string}` | 'hue'>
+//   head: SPoint
+//   tail: SPoint
+// }
 
 export default class Snake extends SnakeBehaviour {
   private graphics: PlayerGraphics
@@ -23,7 +24,7 @@ export default class Snake extends SnakeBehaviour {
   public playerId: string
 
   constructor(game: Game, playerId: string, initialState: SharedSnakeState) {
-    super(new ClientSnakeState(Snake.cloneServerFrameSnake(initialState)))
+    super(new ClientSnakeState(Snake.cloneSnakeState(initialState)))
     this.game = game
     this.playerId = playerId
 
@@ -38,11 +39,9 @@ export default class Snake extends SnakeBehaviour {
     }
   }
 
-  private serverQueue: Array<ServerFrame> = []
+  // private serverQueue: Array<ServerFrameSnake> = []
 
-  static cloneServerFrameSnake(
-    serverState: SharedSnakeState
-  ): SharedSnakeState {
+  static cloneSnakeState(serverState: SharedSnakeState): SharedSnakeState {
     const { points, tRegions: territory, ...snakeProperties } = serverState
 
     const _snakePoints = points.map(cloneSnakePoint)
@@ -55,34 +54,28 @@ export default class Snake extends SnakeBehaviour {
     }
   }
 
-  onServerState(serverState: SharedSnakeState, isPlayer: boolean) {
-    const snake = Snake.cloneServerFrameSnake(serverState)
+  // onServerState(serverState: SharedSnakeState, isPlayer: boolean) {
+  //   const snake = Snake.cloneSnakeState(serverState)
 
-    this.serverQueue.unshift({
-      serverTs: this.game.network.lastServerTs,
-      clientTs: Date.now(),
-      // Clone state
-      snake,
-      head: snake.points[0],
-      tail: snake.points[snake.points.length - 1],
-    })
-  }
+  //   this.serverQueue.unshift({
+  //     serverTs: this.game.network.lastServerTs,
+  //     clientTs: Date.now(),
+  //     // Clone state
+  //     snake,
+  //     head: snake.points[0],
+  //     tail: snake.points[snake.points.length - 1],
+  //   })
+  // }
 
   /** extrapolate the position of the snake from the last available frame */
-  extrapolatePosition() {
+  public extrapolatePosition(frame: ServerSnakeFrame, deltaSince: number) {
     // TODO fix extrapolation diagonal bug that can occur with low intrapolation delta/patch rate
-    if (!this.serverQueue[0]) return
-    const lastFrameTs = this.serverQueue[0].serverTs
-    const serverTime = this.game.network.serverTime
-    // Time between extrapolation target and last available frame
-    const delta = serverTime - CONFIG.interpDeltaMs - lastFrameTs
-    const lastF = this.serverQueue[0]
 
     const newHead = this.getNextHead(
-      delta,
-      lastF.head,
-      lastF.snake.direction,
-      lastF.snake.speed
+      deltaSince,
+      frame.points[0],
+      frame.direction,
+      frame.speed
     )
     Object.assign(this.head, newHead)
 
@@ -91,116 +84,91 @@ export default class Snake extends SnakeBehaviour {
   }
 
   /** Interpolate snake points and other values between server frames */
-  interpolateState() {
-    // This is the timestamp (on the server) that we're hoping to interpolate to
-    const interpTarget = this.game.network.serverTime - CONFIG.interpDeltaMs
+  public interpolateState(
+    lastF: ServerSnakeFrame,
+    nextF: ServerSnakeFrame,
+    lastTs: number,
+    nextTs: number,
+    interpTarget: number,
+    interpPercent: number
+  ) {
+    // We need to find the timestamps of the frame we will interpolate the head from and the start/end points
+    let headInterpStart = lastTs
+    let headFromPoint = lastF.points[0]
+    let headToPoint = nextF.points[0]
 
-    // Make sure that we have a frame between now and target time
-    if (this.serverQueue[0]?.serverTs >= interpTarget) {
-      const nextF = this.serverQueue[0]
+    // Snake should include all points from last frame
+    const targetPoints = lastF.points.slice()
 
-      // Find a frame on the other side of the target ts
-      let lastF: ServerFrame | undefined
-      for (const [i, f] of this.serverQueue.entries()) {
-        if (f.serverTs < interpTarget) {
-          lastF = f
+    // Now, iterate from tail to head in next frame's points
+    for (let i = nextF.points.length - 1; i >= 0; i--) {
+      const p = nextF.points[i]
 
-          // Remove old frames
-          this.serverQueue.splice(i + 1)
-          break
-        }
+      // Check if the next frame has points which aren't present in the last frame
+      // And filter points that were created after the target time
+      if (p.s > targetPoints[0].s && p.t < interpTarget) {
+        // Include the point in our interpolation
+        targetPoints.unshift(p)
+
+        // This point is the new head; we need to interpolate to it from from the point before it
+        const previousPoint = nextF.points[i + 1]
+        headInterpStart = previousPoint.t
+        headFromPoint = previousPoint
+        headToPoint = p
       }
-      if (!lastF) return // Cancel interpolation if we don't have enough frames
-
-      // We need to find the timestamps of the frame we will interpolate the head from and the start/end points
-      let headInterpStart = lastF.serverTs
-      let headFromPoint = lastF.head
-      let headToPoint = nextF.head
-
-      // Snake should include all points from last frame
-      const targetPoints = lastF.snake.points.slice()
-
-      // Now, iterate from tail to head in next frame's points
-      for (let i = nextF.snake.points.length - 1; i >= 0; i--) {
-        const p = nextF.snake.points[i]
-
-        // Check if the next frame has points which aren't present in the last frame
-        // And filter points that were created after the target time
-        if (p.s > targetPoints[0].s && p.t < interpTarget) {
-          // Include the point in our interpolation
-          targetPoints.unshift(p)
-
-          // This point is the new head; we need to interpolate to it from from the point before it
-          const previousPoint = nextF.snake.points[i + 1]
-          headInterpStart = previousPoint.t
-          headFromPoint = previousPoint
-          headToPoint = p
-        }
-        // If we don't find any new turns in the next frame
-        // We still need to find the head's point in the next frame
-        else if (p.s === headFromPoint.s) {
-          headToPoint = p
-        }
-      }
-
-      // Set non-head points on snake without interpolation
-      for (let i = 1; i < targetPoints.length; i++) {
-        const p = targetPoints[i]
-        this.state.points[i] = p
-      }
-      this.state.points.splice(targetPoints.length)
-
-      // Find interpolation percent since last frame
-      const frameDelta = nextF.serverTs - lastF.serverTs
-      const totalFrameProgress = interpTarget - lastF.serverTs
-      const framePercent = totalFrameProgress / frameDelta
-
-      // Separate interpolation percent for head
-      const headInterpDelta = nextF.serverTs - headInterpStart
-      const headInterpProgress = interpTarget - headInterpStart
-      const headPercent = headInterpProgress / headInterpDelta
-
-      const {
-        snake: { points, length, score, ...otherState },
-      } = lastF
-
-      // Interpolate head using computed points and timestamps
-      Object.assign(
-        this.head,
-        lerpPoint(headFromPoint, headToPoint, headPercent, true)
-      )
-
-      // Interpolate length and score
-      this.state.length = lerp(length, nextF.snake.length, framePercent)
-      this.state.score = lerp(score, nextF.snake.score, framePercent)
-
-      // Recalculate tail
-      this.updateTail()
-
-      // Update other properties
-      Object.assign(this.state, otherState)
-
-      this.graphics.emitBoostParticles = this.state.boosting
-      this.graphics.emitTerritoryCutParticles = !!this.state.headTerritory
-
-      // Check for new teritory regions and trigger particles if new region is created
-      for (
-        let i = nextF.snake.tRegions.length - 1;
-        i > lastF.snake.tRegions.length - 1;
-        i--
-      ) {
-        // Ignore subtractive regions
-        const r = nextF.snake.tRegions[i]
-        this.graphics.emitRegionParticles(r.p)
+      // If we don't find any new turns in the next frame
+      // We still need to find the head's point in the next frame
+      else if (p.s === headFromPoint.s) {
+        headToPoint = p
       }
     }
-    // Can't interpolate; extrapolate instead
-    else this.extrapolatePosition()
+
+    // Set non-head points on snake without interpolation
+    for (let i = 1; i < targetPoints.length; i++) {
+      const p = targetPoints[i]
+      this.state.points[i] = p
+    }
+    this.state.points.splice(targetPoints.length)
+
+    // Separate interpolation percent for head
+    const headInterpDelta = nextTs - headInterpStart
+    const headInterpProgress = interpTarget - headInterpStart
+    const headPercent = headInterpProgress / headInterpDelta
+
+    const { points, length, score, ...otherState } = lastF
+
+    // Interpolate head using computed points and timestamps
+    Object.assign(
+      this.head,
+      lerpPoint(headFromPoint, headToPoint, headPercent, true)
+    )
+
+    // Interpolate length and score
+    this.state.length = lerp(length, nextF.length, interpPercent)
+    this.state.score = lerp(score, nextF.score, interpPercent)
+
+    // Recalculate tail
+    this.updateTail()
+
+    // Update other properties
+    Object.assign(this.state, otherState)
+
+    this.graphics.emitBoostParticles = this.state.boosting
+    this.graphics.emitTerritoryCutParticles = !!this.state.headTerritory
+
+    // Check for new teritory regions and trigger particles if new region is created
+    for (
+      let i = nextF.tRegions.length - 1;
+      i > lastF.tRegions.length - 1;
+      i--
+    ) {
+      // Ignore subtractive regions
+      const r = nextF.tRegions[i]
+      this.graphics.emitRegionParticles(r.p)
+    }
   }
 
   update(delta: number) {
-    this.interpolateState()
-
     const player = this.game.network.state?.players.get(this.playerId)
     if (!player) return
 

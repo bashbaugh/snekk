@@ -58,8 +58,6 @@ export default class Network {
   async findGame(onDisconnect: (code: number) => void) {
     const r = await this.client.joinOrCreate<GameState>('arena', {})
     this.room = r
-    this.pinger = new ServerPinger(r)
-    this.pinger.startPinging(2000)
 
     debugLog('[NETWORK] Joined room', r.id, 'as', r.sessionId)
 
@@ -88,6 +86,11 @@ export default class Network {
       this.serverTimeOffsets.unshift(s.ts - Date.now())
       cb(s)
     })
+  }
+
+  public startPinger() {
+    this.pinger = new ServerPinger(this.room!)
+    this.pinger.startPinging(2000)
   }
 
   public joinGame(joinGameConfig: { name: string; territorySkin: TSkinName }) {

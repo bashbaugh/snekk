@@ -2,6 +2,7 @@ import { TSkinName } from 'shared/skins'
 import { Region, SnakePoint, XYPoint } from '../shared/serverState'
 
 export interface SharedSnakeState {
+  clientId: string
   spawnTs: number
   points: SPoint[] | Array<SnakePoint>
   // trail: SPoint[] | Array<SnakePoint>

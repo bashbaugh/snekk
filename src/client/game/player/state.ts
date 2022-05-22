@@ -14,6 +14,7 @@ export const cloneSnakeRegion = ({ p, t }: SRegion): SRegion => ({
 })
 
 export default class ClientSnakeState implements SharedSnakeState {
+  clientId: string
   spawnTs: number = Date.now()
   points: SPoint[]
   // trail: SPoint[]
@@ -33,6 +34,7 @@ export default class ClientSnakeState implements SharedSnakeState {
 
   constructor(state: SharedSnakeState) {
     const t = Date.now()
+    this.clientId = state.clientId
     this.points = state.points
     this.tRegions = state.tRegions
     this.direction = state.direction

@@ -1,6 +1,6 @@
 import Network from 'client/networking'
 import UI, { UIEvent, UIEventListener } from 'client/ui'
-import CONFIG from 'config'
+import CONFIG, { doDevScale } from 'config'
 import * as PIXI from 'pixi'
 import { asyncDelay } from 'shared/util'
 import { loadAssets } from './assets'
@@ -78,8 +78,12 @@ export default class App {
   }
 
   updateScale() {
-    const xScale = this.pixi.view.width / CONFIG.targetScale.width
-    const yScale = this.pixi.view.height / CONFIG.targetScale.height
+    const [maxW, maxH] =
+      CONFIG.debug && doDevScale
+        ? [CONFIG.targetScale.devWidth, CONFIG.targetScale.devHeight]
+        : [CONFIG.targetScale.width, CONFIG.targetScale.height]
+    const xScale = this.pixi.view.width / maxW
+    const yScale = this.pixi.view.height / maxH
     const uniformScale = Math.max(xScale, yScale)
     this.pixi.stage.scale.set(uniformScale)
   }
@@ -135,7 +139,7 @@ export default class App {
       } catch (e) {
         console.error(e)
       }
-      
+
       await asyncDelay(CONNECTION_RETRY_INTERVAL)
     }
 

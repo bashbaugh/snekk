@@ -1,5 +1,5 @@
 console.log('Starting...')
-require('dotenv').config();
+require('dotenv').config()
 import { Server } from 'colyseus'
 import express from 'express'
 import expressify from 'uwebsockets-express'
@@ -10,7 +10,6 @@ import basicAuth from 'express-basic-auth'
 import cors from 'cors'
 import CONFIG from 'config'
 import rollbar from './rollbar'
-import { config } from 'dotenv'
 
 rollbar.log('Initialized')
 

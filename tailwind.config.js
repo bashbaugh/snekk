@@ -13,6 +13,9 @@ module.exports = {
       fontFamily: {
         brand: ['Aldrich', 'sans-serif'],
       },
+      dropShadow: {
+        'glow-white': '0px 0px 12px rgba(255, 255, 255, 0.6)',
+      },
       animation: {
         'tilt-in': 'tilt-in 0.6s cubic-bezier(0.250, 0.460, 0.450, 0.940) 1s both;'
       },

@@ -1,5 +1,13 @@
-import { Schema, type, ArraySchema, MapSchema } from '@colyseus/schema'
+import {
+  Schema,
+  type,
+  filter,
+  filterChildren,
+  ArraySchema,
+  MapSchema,
+} from '@colyseus/schema'
 import CONFIG from 'config'
+import { foodFilter, snakePointsFilter } from 'server/stateFilters'
 import { SharedPlayerState, SharedSnakeState } from '../types/state'
 import { territorySkins } from './skins'
 import { randomInt } from './util'
@@ -50,10 +58,11 @@ export class Region extends Schema implements SRegion {
 }
 
 export class SnakeState extends Schema implements SharedSnakeState {
-  // Sequence number is increased with each new point in snake (lower = closer to tail)
+  @type('string') clientId: string
   @type('number') spawnTs: number = Date.now()
+  // Sequence number is increased with each new point in snake (lower = closer to tail)
+  // @filter(snakePointsFilter)
   @type([SnakePoint]) points = new ArraySchema<SnakePoint>()
-  // @type([SnakePoint]) trail = new ArraySchema<SnakePoint>()
   @type([Region]) tRegions = new ArraySchema<Region>()
   @type([XYPoint]) territory = new ArraySchema<XYPoint>()
   @type('int8') direction: Direction = 1
@@ -68,8 +77,10 @@ export class SnakeState extends Schema implements SharedSnakeState {
   @type('string') headTerritory?: string
   @type('boolean') frozen = false
 
-  constructor(spawnP: XY) {
+  constructor(spawnP: XY, cid: string) {
     super()
+
+    this.clientId = cid
 
     // Generate spawn points
     this.points.push(
@@ -145,5 +156,8 @@ export default class GameState extends Schema {
   @type('number') ts: number = 0
   @type('int16') arenaSize: number = Math.sqrt(CONFIG.arena.minArea) / 2
   @type({ map: PlayerState }) players = new MapSchema<PlayerState>()
-  @type([Food]) food = new ArraySchema<Food>()
+
+  // @filterChildren(foodFilter)
+  @type([Food])
+  food = new ArraySchema<Food>()
 }

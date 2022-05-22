@@ -27,7 +27,9 @@ const Home: preact.FunctionComponent<{
   return (
     <div>
       <div class="flex flex-col gap-16 items-center">
-        <h1 class="text-7xl font-brand">{CONFIG.gameName}</h1>
+        <h1 class="text-7xl font-brand drop-shadow-glow-white">
+          {CONFIG.gameName}
+        </h1>
         <PlayModal
           dispatchEvent={dispatchEvent}
           tSkin={tSkin}

@@ -15,7 +15,8 @@ export default class Snake extends SnakeBehaviour {
       gameController.getRandomPoint(
         CONFIG.snake.territoryStartMargin + CONFIG.arena.spawnPadding,
         true
-      )
+      ),
+      player.clientId
     )
     super(snake)
     this.player = player

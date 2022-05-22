@@ -9,8 +9,7 @@ export default class Walls extends BaseObject {
     const g = this.graphics
     g.clear()
 
-    const s = this.game.network.state?.arenaSize
-    if (!s) return
+    const s = this.game.interpolator.arenaSize
 
     const o = this.game.getViewOffset()
     const xLeft = -s - o.x
