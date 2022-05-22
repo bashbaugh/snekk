@@ -39,8 +39,6 @@ export default class Snake extends SnakeBehaviour {
     }
   }
 
-  // private serverQueue: Array<ServerFrameSnake> = []
-
   static cloneSnakeState(serverState: SharedSnakeState): SharedSnakeState {
     const { points, tRegions: territory, ...snakeProperties } = serverState
 
@@ -53,19 +51,6 @@ export default class Snake extends SnakeBehaviour {
       tRegions: _territory,
     }
   }
-
-  // onServerState(serverState: SharedSnakeState, isPlayer: boolean) {
-  //   const snake = Snake.cloneSnakeState(serverState)
-
-  //   this.serverQueue.unshift({
-  //     serverTs: this.game.network.lastServerTs,
-  //     clientTs: Date.now(),
-  //     // Clone state
-  //     snake,
-  //     head: snake.points[0],
-  //     tail: snake.points[snake.points.length - 1],
-  //   })
-  // }
 
   /** extrapolate the position of the snake from the last available frame */
   public extrapolatePosition(frame: ServerSnakeFrame, deltaSince: number) {
@@ -156,13 +141,12 @@ export default class Snake extends SnakeBehaviour {
     this.graphics.emitBoostParticles = this.state.boosting
     this.graphics.emitTerritoryCutParticles = !!this.state.headTerritory
 
-    // Check for new teritory regions and trigger particles if new region is created
+    // Trigger particles for new regions
     for (
       let i = nextF.tRegions.length - 1;
       i > lastF.tRegions.length - 1;
       i--
     ) {
-      // Ignore subtractive regions
       const r = nextF.tRegions[i]
       this.graphics.emitRegionParticles(r.p)
     }
