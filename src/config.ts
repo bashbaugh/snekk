@@ -1,7 +1,7 @@
-const PATCHRATE = 20
+const PATCHRATE = 10
 const dev = process.env.NODE_ENV !== 'production'
 
-export const doDevScale = true
+export const DEV_SCALE = false
 
 const CONFIG = Object.freeze({
   version: '0.2.1',

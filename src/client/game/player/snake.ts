@@ -1,5 +1,3 @@
-import * as PIXI from 'pixi'
-import CONFIG from 'config'
 import SnakeBehaviour from 'shared/snake'
 import { SharedSnakeState } from 'types/state'
 import { lerp, lerpPoint } from 'shared/util'
@@ -10,18 +8,12 @@ import { resources } from '../assets'
 import { defaultTerritorySkin } from 'shared/skins'
 import { ServerSnakeFrame } from '../interpolation'
 
-// export interface ServerFrameSnake {
-//   serverTs: number
-//   clientTs: number
-//   snake: Omit<SharedSnakeState, `make${string}` | 'hue'>
-//   head: SPoint
-//   tail: SPoint
-// }
-
 export default class Snake extends SnakeBehaviour {
   private graphics: PlayerGraphics
   private game: Game
   public playerId: string
+
+  private regionIndexesAdded: number[] = []
 
   constructor(game: Game, playerId: string, initialState: SharedSnakeState) {
     super(new ClientSnakeState(Snake.cloneSnakeState(initialState)))
@@ -104,6 +96,7 @@ export default class Snake extends SnakeBehaviour {
       // If we don't find any new turns in the next frame
       // We still need to find the head's point in the next frame
       else if (p.s === headFromPoint.s) {
+        targetPoints.unshift(p) // TODO should this work?
         headToPoint = p
       }
     }

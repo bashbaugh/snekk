@@ -108,7 +108,6 @@ export default class Game {
     this.gameLayer.filters?.push(this.adjustmentFilter)
 
     // Network
-    this.network.startPinger()
     this.addNetworkHandlers()
     this.interpolator = new InterpolationController(this)
 
@@ -131,7 +130,7 @@ export default class Game {
       children: true,
       texture: true, // Should this be false?
     })
-    this.network.removeListeners()
+    this.network.reset()
     this.input.clearListeners()
   }
 

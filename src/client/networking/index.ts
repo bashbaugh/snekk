@@ -13,7 +13,8 @@ const SERVERTIME_MOVING_AVG_SAMPLES = 15
 export default class Network {
   private client: Client
   private room: Room<GameState> | null = null
-  // private sTime?: ServerTimeManager
+
+  private _onDisconnect: (code: number) => void = () => {}
 
   public pinger?: ServerPinger
   public lastServerTs: number = 0
@@ -56,14 +57,22 @@ export default class Network {
   }
 
   async findGame(onDisconnect: (code: number) => void) {
+    this._onDisconnect = onDisconnect
     const r = await this.client.joinOrCreate<GameState>('arena', {})
     this.room = r
 
     debugLog('[NETWORK] Joined room', r.id, 'as', r.sessionId)
 
+    this.initializeListeners(r)
+  }
+
+  private initializeListeners(r: Room) {
+    this.pinger = new ServerPinger(this.room!)
+    this.pinger.startPinging(2000)
+
     r.onLeave((code: number) => {
       this.pinger?.stopPinging()
-      onDisconnect(code)
+      this._onDisconnect(code)
       debugLog('[NETWORK] Left session. WS code:', code)
     })
 
@@ -76,8 +85,11 @@ export default class Network {
     })
   }
 
-  public removeListeners() {
-    this.room?.removeAllListeners()
+  public reset() {
+    if (!this.room) return
+    // Remove all listeners and re-initialize
+    this.room.removeAllListeners()
+    this.initializeListeners(this.room)
   }
 
   public onStateChange(cb: (state: GameState) => void) {
@@ -86,11 +98,6 @@ export default class Network {
       this.serverTimeOffsets.unshift(s.ts - Date.now())
       cb(s)
     })
-  }
-
-  public startPinger() {
-    this.pinger = new ServerPinger(this.room!)
-    this.pinger.startPinging(2000)
   }
 
   public joinGame(joinGameConfig: { name: string; territorySkin: TSkinName }) {
