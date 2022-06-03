@@ -114,7 +114,7 @@ export default class Snake extends SnakeBehaviour {
 
     // TODO calc this automatically
     const minScore = 1000
-  
+
     this.state.score = Math.max(0, tScore + lScore + kScore - minScore)
   }
 

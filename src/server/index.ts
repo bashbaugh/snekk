@@ -8,10 +8,12 @@ import ArenaRoom from './game/ArenaRoom'
 import { monitor } from '@colyseus/monitor'
 import basicAuth from 'express-basic-auth'
 import cors from 'cors'
-import CONFIG from 'config'
+import CONFIG, { DEV_PORT } from 'config'
 import rollbar from './rollbar'
 
 rollbar.log('Initialized')
+
+const port = Number(process.env.PORT) || DEV_PORT
 
 const transport = new uWebSocketsTransport({
   idleTimeout: 32,
@@ -46,8 +48,6 @@ app.use('/mon', adminAuthMiddleware as any, monitor())
 const gameServer = new Server({ transport })
 
 gameServer.define('arena', ArenaRoom)
-
-const port = Number(process.env.PORT) || 3002
 
 const start = async () => {
   gameServer.listen(port)

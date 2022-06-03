@@ -98,11 +98,28 @@ export default class PlayerGraphics {
 
   drawSnake() {
     const g = this.snakeGraphics
-    const points = this.snake.state.points.map(p =>
-      this.game.getViewRelativePoint(p)
-    )
+
+    // Draw lines
+    const snakeWidth =
+      CONFIG.g.snakeMinWidth +
+      (this.snake.state.length / 5000) *
+        (CONFIG.g.snakeMaxWidth - CONFIG.g.snakeMinWidth)
+
+    let pointsVisible = false
+    const points = this.snake.state.points.map(p => {
+      const vp = this.game.getViewRelativePoint(p)
+      if (this.game.pointInView(vp)) pointsVisible = true
+      return vp
+    })
+
+    // Cull snake
+    if (!pointsVisible) {
+      this.label.visible = false
+      return
+    }
+
     g.lineStyle({
-      width: 7,
+      width: snakeWidth,
       color: hslToHex(
         this.snake.state.hue,
         CONFIG.g.snakeSaturation,
@@ -116,8 +133,14 @@ export default class PlayerGraphics {
       g.lineTo(points[i].x, points[i].y)
     }
 
+    // Draw head + label
     const headPos = this.game.getViewRelativePoint(this.snake.head)
+    this.label.visible = true
     this.label.position.set(headPos.x - this.label.width / 2, headPos.y + 20)
+    g.beginFill(0xffffff)
+    g.lineStyle()
+    g.drawCircle(headPos.x, headPos.y, snakeWidth / 2 + 2)
+    g.endFill()
 
     // Offset the container so that particles are rendered at the correct point
     const o = this.game.getViewOffset()
@@ -139,12 +162,17 @@ export default class PlayerGraphics {
   }
 
   drawTerritory() {
+    let territoryVisible = false
     const polygonPoints = this.snake.state.territory
       .map(p => {
         const rp = this.game.getViewRelativePoint(p)
+        if (this.game.pointInView(rp)) territoryVisible = true
         return [rp.x, rp.y]
       })
       .flat()
+    
+    // Territory not visible, cull it
+    if (!territoryVisible) return
 
     let tColor = hslToHex(
       this.snake.state.hue,

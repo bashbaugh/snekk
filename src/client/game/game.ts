@@ -18,6 +18,7 @@ import { TwistFilter } from '@pixi/filter-twist'
 import { distBetween } from 'shared/geometry'
 import { Message, MESSAGETYPE } from 'types/networking'
 import InterpolationController from './interpolation'
+import CONFIG from 'config'
 
 export default class Game {
   readonly app: App
@@ -315,12 +316,20 @@ export default class Game {
     }
   }
 
-  public getViewRelativePoint(p: XY, notScaled?: boolean): XY {
-    const o = this.getViewOffset(notScaled)
+  public getViewRelativePoint(p: XY): XY {
+    const o = this.getViewOffset()
     return {
       x: p.x - o.x,
       y: p.y - o.y,
     }
+  }
+
+  /** Checks if a VIEW-RELATIVE point is inside screen bounds */
+  public pointInView(p: XY, margin = CONFIG.g.cullMargin): boolean {
+    return p.x >= -margin &&
+      p.x <= this.app.scaledWidth + margin &&
+      p.y >= -margin &&
+      p.y <= this.app.scaledHeight + margin
   }
 
   public getArenaBounds(

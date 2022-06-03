@@ -10,6 +10,8 @@ export default class Food extends BaseObject {
   update() {}
 
   draw() {
+    // TODO create sprites and move them instead?
+
     const g = this.graphics
     g.clear()
 
@@ -18,8 +20,10 @@ export default class Food extends BaseObject {
 
     // Draw all food
     for (const f of food) {
-      g.beginFill(hslToHex(f.hue, FOOD_SATURATION, FOOD_LIGHTNESS))
       const p = this.game.getViewRelativePoint(f)
+      if (!this.game.pointInView(p)) continue
+
+      g.beginFill(hslToHex(f.hue, FOOD_SATURATION, FOOD_LIGHTNESS))
 
       // Sine-animate the food radius
       const seconds = (this.game.network.serverTime - f.t) / 1000

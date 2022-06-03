@@ -1,4 +1,5 @@
 const IS_DEV = process.env.NODE_ENV !== 'production'
+export const DEV_PORT = 3001
 
 const PATCHRATE = 20
 const INTERP_FRAMES_DELTA = 1 // at least 1
@@ -6,10 +7,10 @@ export const DEV_SCALE = false
 
 const CONFIG = Object.freeze({
   version: '0.2.1',
-  gameName: 'Snekk.xyz',
+  gameName: 'sneks.zone',
   gameEmail: 'contact@snekk.xyz',
   debug: IS_DEV,
-  serverURL: IS_DEV ? 'ws://localhost:3002' : 'wss://server1.snekk.xyz',
+  serverURL: IS_DEV ? `ws://localhost:${DEV_PORT}` : 'wss://server1.snekk.xyz',
   fps: {
     min: 40,
     max: 80,
@@ -65,11 +66,15 @@ const CONFIG = Object.freeze({
   g: {
     snakeSaturation: 1,
     snakeLightness: 0.8,
+    snakeMinWidth: 6,
+    snakeMaxWidth: 12,
     territorySaturation: 0.8,
     territoryLightness: 0.55,
 
     backgroundColor: 0x05041c,
     backgroundPatternColor: 0xd90000,
+
+    cullMargin: 30,
   },
 })
 
