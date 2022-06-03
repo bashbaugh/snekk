@@ -113,7 +113,7 @@ export default class Snake extends SnakeBehaviour {
     const kScore = this.state.kills * CONFIG.snake.kScoreMultiplier
 
     // TODO calc this automatically
-    const minScore = 1000
+    const minScore = 490
 
     this.state.score = Math.max(0, tScore + lScore + kScore - minScore)
   }

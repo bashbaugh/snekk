@@ -72,7 +72,7 @@ export class SnakeState extends Schema implements SharedSnakeState {
   @type('int16') extraSpeed: number = 0
   @type('boolean') boosting: boolean = false
   @type('int16') hue: number
-  @type('uint32') score: number = 0
+  @type('int32') score: number = 0
   @type('uint8') kills: number = 0
   @type('string') headTerritory?: string
   @type('boolean') frozen = false
