@@ -10,7 +10,7 @@ const CONFIG = Object.freeze({
   gameName: 'sneks.zone',
   gameEmail: 'contact@sneks.zone',
   debug: IS_DEV,
-  serverURL: IS_DEV ? `ws://localhost:${DEV_PORT}` : 'wss://server1.sneks.zone',
+  serverURL: IS_DEV ? `ws://localhost:${DEV_PORT}` : 'wss://server1.snekk.xyz',
   fps: {
     min: 40,
     max: 80,
