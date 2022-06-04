@@ -6,7 +6,7 @@ const INTERP_FRAMES_DELTA = 1 // at least 1
 export const DEV_SCALE = false
 
 const CONFIG = Object.freeze({
-  version: '0.2.4',
+  version: '0.2.5',
   gameName: 'sneks.zone',
   gameEmail: 'contact@sneks.zone',
   debug: IS_DEV,
