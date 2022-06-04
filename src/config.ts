@@ -6,11 +6,11 @@ const INTERP_FRAMES_DELTA = 1 // at least 1
 export const DEV_SCALE = false
 
 const CONFIG = Object.freeze({
-  version: '0.2.3',
+  version: '0.2.4',
   gameName: 'sneks.zone',
-  gameEmail: 'contact@snekk.xyz',
+  gameEmail: 'contact@sneks.zone',
   debug: IS_DEV,
-  serverURL: IS_DEV ? `ws://localhost:${DEV_PORT}` : 'wss://server1.snekk.xyz',
+  serverURL: IS_DEV ? `ws://localhost:${DEV_PORT}` : 'wss://server1.sneks.zone',
   fps: {
     min: 40,
     max: 80,
